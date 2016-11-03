@@ -5,15 +5,22 @@ const bodyParser = require('body-parser'),
   MongoClient = require('mongodb').MongoClient,
   parser = require('mongo-parse'),
   ObjectId = require('bson').ObjectId,
-  env = require('node-env-file'),
   pug = require('pug');
 
+console.log(process.env.NODE_ENV);
+
+if (process.env.NODE_ENV == 'development') {
+  env = require('node-env-file');
+  env(__dirname + '/.env');
+}
+// heroku config:set NPM_CONFIG_PRODUCTION=true
 // sudo rm /var/lib/mongodb/mongod.lock
 // sudo service mongodb restart
+// env = require('node-env-file')
 
 const app = express()
 const router = express.Router();
-env(__dirname + '/.env');
+// env(__dirname + '/.env');
 const port = process.env.PORT || 3000;
 var db;
 
@@ -32,6 +39,8 @@ app.use((err, req, res, next) => {
     error: err
   });
 });
+
+console.log('process.env.MONGO_URL', process.env.MONGO_URL);
 
 MongoClient.connect(
   process.env.MONGO_URL,
