@@ -1,0 +1,42 @@
+html
+  head
+    title Activities
+    link(rel='stylesheet', href='/css/bootstrap.css')
+    link(rel='stylesheet', href='/css/styles.css')
+  body
+    script(src='https://d3js.org/d3-queue.v3.min.js')
+    script(src='/javascripts/lib/jquery.min.js')
+    script(src='/javascripts/lib/bootstrap.min.js')
+
+    div#activities
+      .container
+        .row
+          .col-md-6.float-left
+            h1 Activities
+        div(data-bind='with: activity')
+          <new-activity params="activitiesViewModel: activitiesViewModel, userViewModel: userViewModel"></new-activity>
+
+      div(data-bind='with: activities', style="margin-left: 200px;").container-fluid
+        div(data-bind='foreach: activityRows')
+          .row(data-bind='foreach: $data')
+            .col-xs-3(style='border: 1px solid #666; margin: 5px;')
+              .row(style="margin-left: 5px")
+                .col-xs-3
+                  h4(data-bind='text: $data.activity')
+              .row
+                .col-xs
+                  img(src='/clipboard.png')
+              .row(style="margin-left: 5px")
+                .col-xs
+                  br
+                  a(data-bind="attr: { href: '#activities/' + $data._id}")
+                    p(data-toggle='modal', data-target='#myModal')
+                      | More Info
+
+
+      div(data-bind='with: activity')
+        <activity-modal params="viewModel: self"></activity-modal>
+
+    script(data-main='/javascripts/main.js', src='/javascripts/lib/require.js')
+
+

@@ -1,0 +1,8 @@
+activity-modal .remove-activity button {
+  margin-right: 45px;
+}
+
+activity-modal .description {
+  overflow: auto;
+  max-height: 100px;
+}
