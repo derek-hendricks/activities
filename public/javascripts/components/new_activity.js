@@ -1,7 +1,8 @@
 define([
   'knockout',
-  'activity_model'
-], function(ko, ActivityModel) {
+  'activity_model',
+  'utils'
+], function(ko, ActivityModel, Utils) {
 
   const newActivityComponent = {
     view: function (params) {
@@ -9,13 +10,14 @@ define([
       var activityModel = null, activitiesViewModel = null, organizer_user;
       var userViewModel = params.userViewModel;
 
-      self.first_name = ko.observable('Alice');
-      self.last_name = ko.observable('Blue');
-      self.email = ko.observable('alice_blue' + Math.floor(Math.random() * 100000) + '@email.com');
-      self.activity = ko.observable('Skating' + Math.floor(Math.random() * 100000));
-      self.participants = ko.observableArray(['Alice', 'Lily', 'Derek']);
-      self.start_date = ko.observable('2016-11-09');
-      self.description = ko.observable('Skating and hanging out');
+      self.first_name = ko.observable();
+      self.last_name = ko.observable();
+      self.email = ko.observable();
+      self.activity = ko.observable();
+      self.participants = ko.observableArray([]);
+      var today = Utils.formatDate(new Date(Date.now()))
+      self.start_date = ko.observable(today);
+      self.description = ko.observable();
 
       self.newActivity = function() {
         activityModel = new ActivityModel();

@@ -4,6 +4,7 @@ require.config({
 		backbone: 'lib/backbone-min',
 		underscore: 'lib/underscore-min',
 		jquery: 'lib/jquery.min',
+		utils: 'utils/index',
 		activity: 'views/activity',
 		activities: 'views/activities',
 		activity_model: 'models/activity',
