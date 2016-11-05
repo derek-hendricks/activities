@@ -5,7 +5,7 @@ define([
 ], function(ko, ActivityModel, Utils) {
 
   const newActivityComponent = {
-    view: function (params) {
+    vm: function (params) {
       var self = this;
       var activityModel = null, activitiesViewModel = null, organizer_user;
       var userViewModel = params.userViewModel;
@@ -59,13 +59,13 @@ define([
         };
 
         function createActivity(callback) {
-          // debugger;
           activitiesViewModel = params.activitiesViewModel;
           activity_data = {
             activity: self.activity(),
             organizer_id: user_model.id,
             participants: self.participants(),
             description: self.description() || null,
+            img: '/clipboard.png',
             start_date: self.start_date(),
             created_at: new Date(),
           };

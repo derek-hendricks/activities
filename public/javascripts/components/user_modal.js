@@ -2,54 +2,9 @@ define([
   'knockout',
 ], function(ko) {
 
-  const ActivityComponent = {
+  const UserComponent = {
     vm: function (params) {
-      var self = this, user_model;
-      // activity info
-      self.activity = ko.observable();
-      self.description = ko.observable();
-      self.activity_organizer = ko.observable();
-      self.participants = ko.observableArray([]);
-      self.activity_date = ko.observable();
-
-      // user info
-      self.organizer_email = ko.observable();
-      self.organizer_name = ko.observable();
-
-      params.model.subscribe(function(model) {
-        if (model) self.getActivityInfo(model);
-      });
-
-      params.user_model.subscribe(function(model) {
-        if (model) self.getUserInfo(model);
-      });
-
-      self.getActivityInfo = function(model) {
-        self.activity(model.get('activity'));
-        self.description(model.get('description'));
-        self.participants(model.get('participants'));
-        self.activity_date(model.get('start_date'));
-      };
-
-      self.getUserInfo = function(model) {
-        self.organizer_email(model.get('email'));
-        self.organizer_name(model.get('name'));
-      };
-
-      self.editActivity = function() {
-        console.log('edit activity:', self.activity_id());
-      };
-
-      self.removeActivity = function() {
-        params.channel.publish('activity.remove', {user_model: user_model, callback: function(err) {
-          if (err) return console.log(err);
-          console.log('remove success');
-        }});
-      };
-
-      self.viewUserProfile = function() {
-        console.log('view user profile');
-      };
+      var self = this;
     },
 
     template: '\
@@ -59,7 +14,7 @@ define([
             <div class="modal-header">\
               <div class="row">\
                 <div class="col-md-6">\
-                  <h4 class="modal-title" data-bind="text: model.get(\"_id\")" id="myModalLabel"></h4>\
+                  <h4 class="modal-title" data-bind="text: activity" id="myModalLabel"></h4>\
                 </div>\
                 <div class="col-md-6">\
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>\
@@ -119,7 +74,7 @@ define([
       </div>\
     '
   }
-  return ActivityComponent;
+  return UserComponent;
 });
 
 

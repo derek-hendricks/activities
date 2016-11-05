@@ -1,8 +1,14 @@
 activity-modal .remove-activity button {
   margin-right: 45px;
 }
-
 activity-modal .description {
   overflow: auto;
   max-height: 100px;
+}
+.delete-activities {
+  margin-left: -55px;
+}
+.delete-activities:hover {
+  color: deepskyblue;
+  cursor: pointer;
 }

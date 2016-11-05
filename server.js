@@ -7,20 +7,13 @@ const bodyParser = require('body-parser'),
   ObjectId = require('bson').ObjectId,
   pug = require('pug');
 
-console.log(process.env.NODE_ENV);
-
-if (process.env.NODE_ENV == 'development') {
+if (process.env.NODE_ENV != 'production') {
   env = require('node-env-file');
   env(__dirname + '/.env');
 }
-// heroku config:set NPM_CONFIG_PRODUCTION=true
-// sudo rm /var/lib/mongodb/mongod.lock
-// sudo service mongodb restart
-// env = require('node-env-file')
 
 const app = express()
 const router = express.Router();
-// env(__dirname + '/.env');
 const port = process.env.PORT || 3000;
 var db;
 
@@ -39,8 +32,6 @@ app.use((err, req, res, next) => {
     error: err
   });
 });
-
-console.log('process.env.MONGO_URL', process.env.MONGO_URL);
 
 MongoClient.connect(
   process.env.MONGO_URL,
@@ -89,7 +80,7 @@ router.get('/users', (req, res) => {
 router.get('/users/:id', (req, res) => {
   db.collection('users').findOne({'_id': ObjectId(req.params.id)}, function(err, user) {
     if (err) return next(err);
-    res.json({user});
+    res.json(user);
   })
 });
 
@@ -115,6 +106,7 @@ router.put(['/activities/:id', '/users/:id'], (req, res) => {
 });
 
 router.post('/activities', (req, res) => {
+  console.log('post');
   db.collection('activities').save(req.body, (err, result) => {
     if (err) return next(err);
     // TODO: res.json({}) and 're-'handle success callback
@@ -123,6 +115,7 @@ router.post('/activities', (req, res) => {
 });
 
 router.get('/activities/:id', (req, res) => {
+  console.log('get activity', req.params.id);
   db.collection('activities').findOne({'_id': ObjectId(req.params.id)}, function(err, activity) {
     if (err) return next(err);
     res.json(activity);
@@ -130,9 +123,15 @@ router.get('/activities/:id', (req, res) => {
 });
 
 router.delete(['/activities/:id', '/users/:id'], (req, res) => {
-  var database = req.body.db;
-  db.collection(database).remove({'_id': ObjectId(req.params.id)}, (err, result) => {
+  var database = req.body.db, query;
+  if (query = req.body.query) {
+    query['_id']['$in'] = query['_id']['$in'].map((id) => { return ObjectId(id) });
+  } else {
+    query = {'_id': ObjectId(req.params.id)};
+  }
+  db.collection(database).remove(query, (err, result) => {
     if (err) return next(err);
-    res.json({});
+    var response = req.body.query ? req.body.query : {};
+    res.json(response);
   });
 });

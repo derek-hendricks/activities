@@ -1,2 +1,4 @@
 .env
 node_modules
+.vscode/
+public/javascripts/lib/backbone.fetch-cache.min.js

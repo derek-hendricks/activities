@@ -5,7 +5,7 @@ define([
 	'user_collection'
 ], function (ko, _, UserModel, UserCollection) {
 
-	var ViewModel = function () {
+	var ViewModel = function(channel) {
 		var self = this;
     self.userCollection = ko.observable();
 		self.users = ko.observableArray([]);
@@ -15,6 +15,11 @@ define([
     self.activities = ko.observableArray([]);
     self.organizer = ko.observable(false);
     self.participant = ko.observable(true);
+
+    var subscription = channel.subscribe('users.delete', function(data) {
+      var users = data.models || self.userCollection().models;
+			self.removeUsers(users, data.callback);
+    });
 
 		self.getUser = function(query, callback) {
 			var user = self.userCollection().find(query);
@@ -55,7 +60,7 @@ define([
 			model.set('activities', activities);
 			var query = activities.length ?
 			  {$set: {activities: activities}} :
-				{$unset: {activities: ''}}
+				{$unset: {activities: ''}};
 
 			self.updateUser(query, model, function(err, result) {
 				if (err) return callback(err);
@@ -65,18 +70,27 @@ define([
 
 		self.addUserActivities = function(model, activity_data, callback) {
 			var activities = model.get('activities') || [];
-			// activities = activities.filter(function(activity){return activity !== null});
-
 			activities.push(activity_data._id);
 			model.set('activities', activities);
-			console.log('activities', activities);
-
 			var update_query = {$set: {activities: activities}}
 			self.updateUser(update_query, model, function(response) {
 				callback(response);
 			});
-		}
-	};
+		};
 
+		self.removeUsers = function(users, callback) {
+			var user_ids = users.map(function(user){return user.id});
+			var query = {'_id': {'$in': user_ids}};
+			users[0].destroy({data: {db: 'users', query: query},
+			  processData: true,
+			  success: function(models, response) {
+					callback()
+        }, error: function(err) {
+				  return callback(err);
+			  }
+		  });
+		};
+
+	};
 	return ViewModel;
 });

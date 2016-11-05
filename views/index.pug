@@ -17,25 +17,30 @@ html
           <new-activity params="activitiesViewModel: activitiesViewModel, userViewModel: userViewModel"></new-activity>
 
       div(data-bind='with: activities', style="margin-left: 200px;").container-fluid
-        div(data-bind='foreach: activityRows')
-          .row(data-bind='foreach: $data')
-            .col-xs-3(style='border: 1px solid #666; margin: 5px;')
-              .row(style="margin-left: 5px")
-                .col-xs-3
-                  h4(data-bind='text: $data.activity')
-              .row
-                .col-xs
-                  img(src='/clipboard.png')
-              .row(style="margin-left: 5px")
-                .col-xs
-                  br
-                  a(data-bind="attr: { href: '#activities/' + $data._id}")
-                    p(data-toggle='modal', data-target='#myModal')
-                      | More Info
-
+        div(data-bind='visible: activities().length', style='display: none')
+          .row
+            .col-md-3.pull-left
+              p(data-bind='text: activities().length + (activities().length > 1 ? " activities" : " activity")')
+            .col-md-3.pull-right
+              a.delete-activities(data-bind="click: deleteAll") delete all
+          div(data-bind='foreach: activityRows')
+            .row(data-bind='foreach: $data')
+              .col-xs-3(style='border: 1px solid #666; margin: 5px;')
+                .row(style="margin-left: 5px")
+                  .col-xs-3
+                    h4(data-bind='text: $data.activity')
+                .row
+                  .col-xs
+                    img(data-bind="attr: {src: $data.img}")
+                .row(style="margin-left: 5px")
+                  .col-xs
+                    br
+                    a(data-bind= "attr: { href: '#activities/' + $data._id}")
+                      p(data-toggle='modal', data-target='#myModal')
+                        | More Info
 
       div(data-bind='with: activity')
-        <activity-modal params="viewModel: self"></activity-modal>
+        <activity-modal params="user_model: user_model, channel: channel, model: model"></activity-modal>
 
     script(data-main='/javascripts/main.js', src='/javascripts/lib/require.js')
 
