@@ -92,7 +92,6 @@ router.post('/users', (req, res, next) => {
   });
 });
 
-
 router.put(['/activities/:id', '/users/:id'], (req, res, next) => {
   var update_query = req.body.query;
   var database = req.body.db;
@@ -101,7 +100,6 @@ router.put(['/activities/:id', '/users/:id'], (req, res, next) => {
     if (err) console.log(err);
     if (err) return next(err);
     console.log('success: ' + database + ' ' + req.params.id + ' edited:', update_query);
-    console.log('result', result);
     res.json({});
   });
 });

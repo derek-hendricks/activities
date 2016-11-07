@@ -9,26 +9,34 @@ html
     script(src='/javascripts/lib/bootstrap.min.js')
 
     div#activities
+      nav(class="navbar navbar-default navbar-static-top")
+        div(class="container-fluid")
+          div(class="navbar-header")
+            a(class="navbar-brand" href="/")
+              img(alt="Brand" height="20" width="20" src="./clipboard.png")
+            span(class="navbar-brand") Activities
+
       .container
         .row
           .col-md-6.float-left
-            h1 Activities
+            //- title
         div(data-bind='with: activity')
           <new-activity params="activitiesViewModel: activitiesViewModel, userViewModel: userViewModel"></new-activity>
 
-      div(data-bind='with: activities', style="margin-left: 200px;").container-fluid
+      div(data-bind='with: activities').container
         div(data-bind='visible: activities().length', style='display: none')
           .row
-            .col-md-3.pull-left
+            .col-md-4.activity-list-count
               p(data-bind='text: activities().length + (activities().length > 1 ? " Activities" : " Activity")')
-            .col-md-3.pull-right
+            .col-md-4
+            .col-md-4.activity-list-delete
               a.delete-activities(data-bind="click: deleteAll") delete all
-          div(data-bind='foreach: activityRows')
-            .row(data-bind='foreach: $data')
-              .col-xs-3(style='border: 1px solid #666; margin: 5px;')
+          div(class="row activity-rows" data-bind='foreach: activityRows')
+            .row(data-bind='foreach: $data', class="data-row")
+              .col-xs-3(class='activity-col')
                 .row(style="margin-left: 5px")
-                  .col-xs-3
-                    h4(data-bind='text: $data.activity')
+                  .col-xs-12.activity-title
+                    p(data-bind='text: $data.activity')
                 .row
                   .col-xs
                     img(data-bind="attr: {src: $data.img}")

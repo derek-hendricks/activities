@@ -13,7 +13,7 @@ define([
 			rows.push(current);
 			for (var i = 0; i < self.activities().length; i += 1) {
 				current.push(self.activities()[i]);
-					if (((i + 1) % 3) === 0) {
+					if (((i + 1) % 4) === 0) {
 						current = [];
 						rows.push(current);
 					}

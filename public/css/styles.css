@@ -32,3 +32,45 @@ activity-modal .activity-img {
   color: deepskyblue;
   cursor: pointer;
 }
+.activity-title {
+  margin-bottom: 15px;
+  margin-top: 10px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 18px;
+  line-height: 20px;
+}
+new-activity > .row {
+  margin-bottom: 50px;
+}
+new-activity input[type='date']:before {
+  content: attr(placeholder) !important;
+  color: #aaa;
+  margin-right: 0.5em;
+}
+new-activity input[type='date']:focus:before, new-activity input[type='date']:valid:before {
+  content: "";
+}
+new-activity .new-form-1 {
+  margin-bottom: 5px;
+}
+new-activity .left {
+  margin-left: -20px;
+}
+.activity-col {
+  border: 1px solid #e7e7e7;
+}
+.data-row .activity-col:nth-child(2), .data-row .activity-col:nth-child(3), .data-row .activity-col:nth-child(4) {
+  border-left: none;
+}
+.data-row:nth-child(odd) {
+  margin-bottom: 5px;
+}
+.activity-list-delete {
+  text-align: right;
+}
+.activity-list-count {
+  text-align: left;
+}
+

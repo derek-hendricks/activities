@@ -15,8 +15,7 @@ define([
       self.email = ko.observable();
       self.activity = ko.observable();
       self.participants = ko.observableArray([]);
-      var today = Utils.formatDate(new Date(Date.now()))
-      self.start_date = ko.observable(today);
+      self.start_date = ko.observable();
       self.description = ko.observable();
 
       self.newActivity = function() {
@@ -43,14 +42,7 @@ define([
         };
 
         function createUser(callback) {
-          organizer_user = {
-            first_name: self.first_name(),
-            last_name: self.last_name(),
-            email: self.email(),
-            organizer: true,
-            participant: true,
-            activities: []
-          };
+          organizer_user = {email: self.email(), organizer: true, participant: true,activities: []};
           userViewModel.newUser(organizer_user, function(err, _model, _user) {
             if (err) return (console.log(err), callback(err));
             user_model = _model;
@@ -96,20 +88,36 @@ define([
 
   template: '\
     <div class="row">\
-      <div class="col-md-6.float-left">\
-        <input data-bind="value: email" type="text" placeholder="Organizer Email"\>\
-        <input data-bind="value: first_name" type="text" placeholder="Organizer First Name"\>\
-        <input data-bind="value: last_name" type="text" placeholder="Organizer Last Name"\>\
-        <br>\
-        <input data-bind="value: activity" type="text" placeholder="Activity" name="activity"\>\
-        <br/>\
-        <textarea data-bind="value: participants" type="text" placeholder="Participants"></textarea>\
-        <br/>\
-        <input data-bind="value: start_date" type="date" placeholder="Activity Date"\>\
-        <br/>\
-        <textarea data-bind="value: description" type="text" placeholder="Description"></textarea>\
-        <br/>\
-        <button data-bind="click: newActivity" type="button">Submit</button>\
+      <div class="col-md-6">\
+        <div class="row">\
+          <div class="col-md-6 new-form-1">\
+            <input class="form-control" data-bind="value: activity" type="text" placeholder="Activity" name="activity"\>\
+          </div>\
+          <div class="col-md-6 new-form-1 left">\
+            <input class="form-control" data-bind="value: start_date" type="date" placeholder="Activity Date"\>\
+          </div>\
+        </div>\
+        \
+        <div class="row">\
+          <div class="col-md-6 new-form-1">\
+            <input class="form-control" data-bind="value: email" type="text" placeholder="Organizer Email"\>\
+          </div>\
+          <div class="col-md-6 new-form-1 left">\
+            <input class="form-control" data-bind="value: participants" type="text" placeholder="Participants"\>\
+          </div>\
+        </div>\
+        \
+        <div class="row">\
+          <div class="col-md-6">\
+            <textarea class="form-control" rows="3" data-bind="value: description" type="text" placeholder="Description"></textarea>\
+          </div>\
+        </div> <br/>\
+        <div class="row">\
+                  <div class="col-md-6">\
+            <button class="btn btn-primary" data-bind="click: newActivity" type="button">Create New</button>\
+          </div>\
+          </div>\
+        \
       </div>\
     </div>\
   '

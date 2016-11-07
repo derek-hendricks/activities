@@ -145,7 +145,7 @@ define([
               </div>\
               <div class="row"><br/>\
                 <div class="col-md-2"><p>Description:</p></div>\
-                <div class="col-md-8 description">\
+                <div class="col-md-9 description">\
                   <p data-bind="text: description, visible: !edit_mode()"></p>\
                   <div class="form-group">\
                     <textarea class="form-control" rows="3" data-bind="value: description, visible: edit_mode" type="text" placeholder="Description"></textarea>\
