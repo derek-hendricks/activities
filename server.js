@@ -63,37 +63,37 @@ app.get('/', (req, res) => {
   res.render('index');
 });
 
-router.get('/activities', (req, res) => {
+router.get('/activities', (req, res, next) => {
   db.collection('activities').find().sort({created_at: -1}).toArray(function(err, results) {
     if (err) return next(err);
     res.json({activities: results});
   });
 });
 
-router.get('/users', (req, res) => {
+router.get('/users', (req, res, next) => {
   db.collection('users').find().toArray(function(err, results) {
     if (err) return next(err);
     res.json({users: results});
   });
 });
 
-router.get('/users/:id', (req, res) => {
+router.get('/users/:id', (req, res, next) => {
   db.collection('users').findOne({'_id': ObjectId(req.params.id)}, function(err, user) {
     if (err) return next(err);
     res.json(user);
   })
 });
 
-router.post('/users', (req, res) => {
+router.post('/users', (req, res, next) => {
   console.log('users post', req.body);
   db.collection('users').save(req.body, (err, result) => {
     if (err) return next(err);
-    // TODO: res.json({}) and 're-'handle success callback
-    res.json(result.ops[0]);
+    res.json({_id: result.ops[0]._id});
   });
 });
 
-router.put(['/activities/:id', '/users/:id'], (req, res) => {
+
+router.put(['/activities/:id', '/users/:id'], (req, res, next) => {
   var update_query = req.body.query;
   var database = req.body.db;
   console.log('put update_query', update_query);
@@ -101,20 +101,20 @@ router.put(['/activities/:id', '/users/:id'], (req, res) => {
     if (err) console.log(err);
     if (err) return next(err);
     console.log('success: ' + database + ' ' + req.params.id + ' edited:', update_query);
+    console.log('result', result);
     res.json({});
   });
 });
 
-router.post('/activities', (req, res) => {
+router.post('/activities', (req, res, next) => {
   console.log('post');
   db.collection('activities').save(req.body, (err, result) => {
     if (err) return next(err);
-    // TODO: res.json({}) and 're-'handle success callback
     res.json({_id: result.ops[0]._id});
   });
 });
 
-router.get('/activities/:id', (req, res) => {
+router.get('/activities/:id', (req, res, next) => {
   console.log('get activity', req.params.id);
   db.collection('activities').findOne({'_id': ObjectId(req.params.id)}, function(err, activity) {
     if (err) return next(err);
@@ -122,7 +122,7 @@ router.get('/activities/:id', (req, res) => {
   });
 });
 
-router.delete(['/activities/:id', '/users/:id'], (req, res) => {
+router.delete(['/activities/:id', '/users/:id'], (req, res, next) => {
   var database = req.body.db, query;
   if (query = req.body.query) {
     query['_id']['$in'] = query['_id']['$in'].map((id) => { return ObjectId(id) });

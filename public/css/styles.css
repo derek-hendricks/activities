@@ -1,9 +1,29 @@
 activity-modal .remove-activity button {
   margin-right: 45px;
 }
+activity-modal .modal-input-1 {
+  width: 55%;
+}
+activity-modal .modal-input-1-date {
+  width: 55%;
+  margin-bottom: 5px;
+}
 activity-modal .description {
-  overflow: auto;
+  overflow-y: scroll;
   max-height: 100px;
+}
+activity-modal .user-activities {
+  overflow: auto;
+  max-height: 60px;
+}
+activity-modal .user-activities:hover {
+  color: deepskyblue;
+  cursor: pointer;
+}
+activity-modal .activity-img {
+  width: 150px;
+  height: 150px;
+  margin-left: 30px;
 }
 .delete-activities {
   margin-left: -55px;

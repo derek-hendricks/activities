@@ -45,6 +45,12 @@ define([
 		  self.activitiesCollection().remove(model);
 	  };
 
+		channel.subscribe('activity_collection.updated', function(data) {
+			self.activitiesCollection().add(data.model, {merge: true});
+			var index = self.activities().indexOf(_.findWhere(self.activities(), {_id: data.model.id}))
+			self.activities.splice(index, 1, _.clone(data.model.attributes));
+		});
+
 	  self.deleteAll = function() {
 		  queue = d3.queue();
 		  queue.defer(function(callback) {

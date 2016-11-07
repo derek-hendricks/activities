@@ -20,6 +20,7 @@
     "jquery": "^3.1.0",
     "knockout": "^3.4.0",
     "method-override": "^2.3.6",
+    "moment": "^2.15.2",
     "mongo-parse": "^1.0.8",
     "mongodb": "^2.1.4",
     "mongoose": "^4.6.5",

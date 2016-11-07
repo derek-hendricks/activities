@@ -17,7 +17,7 @@ define([
         viewModel[viewCollection](collection);
       },
       error: function(response) {
-        throw new Error(response.responseText);
+        console.log(response.responseText);
       }
     });
   };
@@ -64,7 +64,9 @@ define([
 
     getUser: function(id) {
       console.log('router: getUser: id', id);
-      // get from collection
+      getModel(UserModel, id, function(err, model){
+        console.log(err, model);
+      });
     },
 
     index: function() {

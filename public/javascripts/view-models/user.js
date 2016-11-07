@@ -26,13 +26,14 @@ define([
 			return user;
 		};
 
-		self.updateUser = function(update_query, model, callback) {
+		self.updateUser = function(update_query, model, attributes, callback) {
 			model.save(null, {
 				data: {query: update_query, db: 'users'}, processData: true,
 				success: function(model, response) {
-					self.userCollection().add(model, {merge: true});
+					model.set(attributes);
+				  self.userCollection().add(model, {merge: true});
 					var index = self.users().indexOf(_.findWhere(self.users(), {_id: model.id}))
-					self.users()[index].activities = model.get('activities');
+					self.users.splice(index, 1, _.clone(model.attributes));
 					return callback(null);
 				}, error: function(response) {
 				  return callback(response.responseText);
@@ -41,8 +42,10 @@ define([
 		};
 
 		self.newUser = function(user, callback) {
-			self.userCollection().create(user, {
-			  success: function(model, response) {
+			model = new UserModel();
+			model.save(user, {
+				wait: true,
+				success: function(model, response) {
 					self.users().push(model.attributes);
 					self.userCollection().add(model);
 					callback(null, model, response);
@@ -54,26 +57,23 @@ define([
 		};
 
 		self.removeUserActivity = function(model, activity_id, callback) {
-			var activities = model.get('activities');
+			var activities = model.get('activities').slice();
 			var index = activities.indexOf(activity_id);
 			activities.splice(index, 1);
-			model.set('activities', activities);
 			var query = activities.length ?
 			  {$set: {activities: activities}} :
 				{$unset: {activities: ''}};
-
-			self.updateUser(query, model, function(err, result) {
+			self.updateUser(query, model, {activities: activities}, function(err, result) {
 				if (err) return callback(err);
 				callback()
 			});
 		};
 
 		self.addUserActivities = function(model, activity_data, callback) {
-			var activities = model.get('activities') || [];
+			var activities = model.get('activities').slice() || [];
 			activities.push(activity_data._id);
-			model.set('activities', activities);
-			var update_query = {$set: {activities: activities}}
-			self.updateUser(update_query, model, function(response) {
+			var update_query = {$set: {activities: activities}};
+			self.updateUser(update_query, model, {activities: activities}, function(response) {
 				callback(response);
 			});
 		};
@@ -84,6 +84,8 @@ define([
 			users[0].destroy({data: {db: 'users', query: query},
 			  processData: true,
 			  success: function(models, response) {
+					self.userCollection().reset();
+					self.users([]);
 					callback()
         }, error: function(err) {
 				  return callback(err);

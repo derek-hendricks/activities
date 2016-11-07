@@ -20,7 +20,7 @@ html
         div(data-bind='visible: activities().length', style='display: none')
           .row
             .col-md-3.pull-left
-              p(data-bind='text: activities().length + (activities().length > 1 ? " activities" : " activity")')
+              p(data-bind='text: activities().length + (activities().length > 1 ? " Activities" : " Activity")')
             .col-md-3.pull-right
               a.delete-activities(data-bind="click: deleteAll") delete all
           div(data-bind='foreach: activityRows')
@@ -40,7 +40,7 @@ html
                         | More Info
 
       div(data-bind='with: activity')
-        <activity-modal params="user_model: user_model, channel: channel, model: model"></activity-modal>
+        <activity-modal params="user_model: user_model, userActivities: userActivities, channel: channel, model: model"></activity-modal>
 
     script(data-main='/javascripts/main.js', src='/javascripts/lib/require.js')
 
