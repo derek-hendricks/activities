@@ -63,8 +63,8 @@ define([
           };
           activityModel.save(activity_data, {
             wait: true,
-            success: function(activity_model, response) {
-              activity_data._id = activity_model.id;
+            success: function(model, response) {
+              activity_data._id = model.id;
               callback(null);
             },
             error: function(model, response) {
@@ -94,7 +94,7 @@ define([
             <input class="form-control" data-bind="value: activity" type="text" placeholder="Activity" name="activity"\>\
           </div>\
           <div class="col-md-6 new-form-1 left">\
-            <input class="form-control" data-bind="value: start_date" type="date" placeholder="Activity Date"\>\
+            <input class="form-control" data-bind="value: start_date" type="date" placeholder="Date"\>\
           </div>\
         </div>\
         \
@@ -109,7 +109,7 @@ define([
         \
         <div class="row">\
           <div class="col-md-6">\
-            <textarea class="form-control" rows="3" data-bind="value: description" type="text" placeholder="Description"></textarea>\
+            <textarea class="form-control" rows="3" data-bind="value: description" type="text" placeholder="Details"></textarea>\
           </div>\
         </div> <br/>\
         <div class="row">\

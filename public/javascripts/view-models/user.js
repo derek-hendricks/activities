@@ -60,6 +60,7 @@ define([
 			var activities = model.get('activities').slice();
 			var index = activities.indexOf(activity_id);
 			activities.splice(index, 1);
+			// var query = {$set: {activities: activities}};
 			var query = activities.length ?
 			  {$set: {activities: activities}} :
 				{$unset: {activities: ''}};

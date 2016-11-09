@@ -19,7 +19,6 @@ html
       .container
         .row
           .col-md-6.float-left
-            //- title
         div(data-bind='with: activity')
           <new-activity params="activitiesViewModel: activitiesViewModel, userViewModel: userViewModel"></new-activity>
 
@@ -34,18 +33,13 @@ html
           div(class="row activity-rows" data-bind='foreach: activityRows')
             .row(data-bind='foreach: $data', class="data-row")
               .col-xs-3(class='activity-col')
-                .row(style="margin-left: 5px")
+                .row.title
                   .col-xs-12.activity-title
-                    p(data-bind='text: $data.activity')
+                    a(data-bind="attr: { href: '#activities/' + $data._id}")
+                      span(data-bind="text: $data.activity", data-toggle='modal', data-target='#myModal')
                 .row
                   .col-xs
                     img(data-bind="attr: {src: $data.img}")
-                .row(style="margin-left: 5px")
-                  .col-xs
-                    br
-                    a(data-bind= "attr: { href: '#activities/' + $data._id}")
-                      p(data-toggle='modal', data-target='#myModal')
-                        | More Info
 
       div(data-bind='with: activity')
         <activity-modal params="user_model: user_model, userActivities: userActivities, channel: channel, model: model"></activity-modal>

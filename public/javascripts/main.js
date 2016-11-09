@@ -10,13 +10,15 @@ require.config({
 		activity: 'view-models/activity',
 		activities: 'view-models/activities',
 		activity_model: 'models/activity',
+		image_model: 'models/images',
 		activity_collection: 'collections/activity',
+		image_collection: 'collections/image',
 		user: 'view-models/user',
+		images: 'view-models/images',
 		user_model: 'models/user',
 		user_collection: 'collections/user',
 		activity_component: 'components/activity_modal',
-		new_activity_component: 'components/new_activity',
-		user_component: 'components/user_modal'
+		new_activity_component: 'components/new_activity'
 	}
 });
 
@@ -27,20 +29,21 @@ require([
 	'activities',
 	'activity',
 	'user',
+	'images',
 	'activity_component',
 	'new_activity_component',
-	'user_component',
 	'router'
-], function (ko, Backbone, Postal, ActivitiesViewModel, ActivityViewModel, UserViewModel, ActivityComponent, NewActivityComponent, UserComponent, Router) {
+], function (ko, Backbone, Postal, ActivitiesViewModel, ActivityViewModel, UserViewModel, ImageViewModel, ActivityComponent, NewActivityComponent, Router) {
 
 	var ViewModel = function () {
 		var self = this;
 		var channel = Postal.channel();
 		self.user = new UserViewModel(channel);
 		self.activities = new ActivitiesViewModel(channel);
+		self.images = new ImageViewModel(channel);
 		self.activity = new ActivityViewModel(self.activities, self.user, channel);
 
-		new Router({channel: channel, activityViewModel: self.activity, activitiesViewModel: self.activities, userViewModel: self.user});
+		new Router({channel: channel, activityViewModel: self.activity, activitiesViewModel: self.activities, userViewModel: self.user, imageViewModel: self.images});
 
 		Backbone.history.start();
 	};
@@ -55,10 +58,6 @@ require([
 		template: NewActivityComponent.template
 	});
 
-	ko.components.register('user-modal', {
-		ViewModel: UserComponent.vm,
-		template: UserComponent.template
-	});
 
 	ko.applyBindings(new ViewModel(), document.getElementById('activities'));
 });

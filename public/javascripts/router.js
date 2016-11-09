@@ -4,12 +4,13 @@ define([
 'user_model',
 'activity_collection',
 'user_collection',
+'image_collection',
 'underscore'
-], function (Backbone, ActivityModel, UserModel, ActivityCollection, UserCollection, _) {
+], function (Backbone, ActivityModel, UserModel, ActivityCollection, UserCollection, ImageCollection, _) {
 
   var self;
 
-  const getCollection = function(Collection, viewModel, viewCollection, values) {
+  const fetchCollection = function(Collection, viewModel, viewCollection, values) {
     var collection = new Collection();
     collection.fetch({
       success: function(_collection, response) {
@@ -38,9 +39,11 @@ define([
       self.activitiesViewModel = options.activitiesViewModel;
       self.activityViewModel = options.activityViewModel;
       self.userViewModel = options.userViewModel;
+      self.imageViewModel = options.imageViewModel;
 
-      getCollection(ActivityCollection, self.activitiesViewModel, 'activitiesCollection', 'activities');
-      getCollection(UserCollection, self.userViewModel, 'userCollection', 'users');
+      fetchCollection(ActivityCollection, self.activitiesViewModel, 'activitiesCollection', 'activities');
+      fetchCollection(UserCollection, self.userViewModel, 'userCollection', 'users');
+      // fetchCollection(ImageCollection, self.imageViewModel, 'imageCollection', 'images');
     },
 
     routes: {
