@@ -135,6 +135,9 @@ new-activity .left {
 .data-row .activity-col:nth-child(2), .data-row .activity-col:nth-child(3), .data-row .activity-col:nth-child(4) {
   border-left: none;
 }
+.activity-list-img {
+  text-align: center;
+}
 .data-row {
   margin-bottom: 5px;
 }

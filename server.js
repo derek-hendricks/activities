@@ -1,7 +1,9 @@
 const bodyParser = require('body-parser'),
   express = require('express'),
   path = require('path'),
+  compression = require('compression'),
   methodOverride = require('method-override'),
+  favicon = require('serve-favicon'),
   MongoClient = require('mongodb').MongoClient,
   parser = require('mongo-parse'),
   ObjectId = require('bson').ObjectId,
@@ -20,7 +22,8 @@ var db, flickr;
 
 const parseQuery = (query) => {
   return parser.parse(query).mapValues((field, stringId) => {
-    if (field === '_id') return ObjectId(stringId)
+    if (field.indexOf('_id') > 1) return ObjectId(stringId);
+    return stringId;
   });
 };
 
@@ -44,7 +47,6 @@ var saveActivityImgUrls = (text, activity_id, callback) => {
     var image_set = {urls: urls, text: text, activity_id: activity_id};
     db.collection('images').save(image_set, (err, result, options) => {
       if (err) return console.log(err);
-      console.log('image_set saved success', urls.length, urls[0], urls[1], urls[0], text, activity_id);
       if (callback) callback(err, result, urls);
     });
   });
@@ -61,7 +63,7 @@ app.use((err, req, res, next) => {
 });
 
 MongoClient.connect(
-  process.env.MONGO_URL,
+  process.env.DB_URL,
   { replset: {
     socketOptions: {
       connectTimeoutMS: 30000 }
@@ -76,25 +78,29 @@ MongoClient.connect(
     db.collection('users').createIndex({email: 1}, {unique: true});
     db.collection('images').createIndex({text: 1}, {unique: true});
     // db.collection('images').dropIndex({activity_id: 1});
+     // db.createCollection("images", { size: 2147483648 } );
     app.listen(port, () => {
       console.log('listening on ' + port);
       var flickrOptions = {api_key: process.env.FLICKR_KEY, secret: process.env.FLICKR_SECRET, progress: false};
       Flickr.tokenOnly(flickrOptions, (err, _flickr) => {
-        if (err) return console.log(err); flickr = _flickr;
+        if (err) return console.log(err);
+        flickr = _flickr;
       });
     });
 });
 
+app.set('view cache', true);
 app.set('view engine', 'pug');
+app.set('x-powered-by', false);
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.json());
+app.use(bodyParser.json({type: 'application/json'}));
+app.use(compression());
+app.use(favicon(__dirname + '/public/images/favicon.ico'));
 app.use('/api', router);
-
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
-  res.render('index');
-  // db.createCollection("images", { size: 2147483648 } );
+  res.render('index', {title: 'Activities'});
 });
 
 router.get('/activities', (req, res, next) => {
@@ -119,16 +125,13 @@ router.get('/images', (req, res, next) => {
 });
 
 router.get('/images/:id/:text', (req, res, next) => {
-  console.log('/images/:id/:text', req.params);
   db.collection('images').findOne({text: req.params.text}, (err, image) => {
     if (err || !image) return next(err);
-    console.log('found image', image);
     res.json(image);
   });
 });
 
 router.get('/images/:id', (req, res, next) => {
-  console.log('req.params.id', req.params.id);
   db.collection('images').findOne({'activity_id': ObjectId(req.params.id)}, (err, image) => {
     if (err) return next(err);
     res.json(image);
@@ -143,21 +146,18 @@ router.get('/users/:id', (req, res, next) => {
 });
 
 router.post('/users', (req, res, next) => {
-  console.log('users post', req.body);
   db.collection('users').save(req.body, (err, result) => {
     if (err) return next(err);
-    res.json({_id: result.ops[0]._id});
+    res.json(result.ops[0]);
   });
 });
 
 router.put(['/activities/:id', '/users/:id'], (req, res, next) => {
   var update_query = req.body.query;
-  var database = req.body.db;
-  console.log('update_query', update_query);
-  db.collection(database).update({_id: ObjectId(req.params.id)}, update_query, (err, result) => {
+  var col = req.body.col;
+  db.collection(col).update({_id: ObjectId(req.params.id)}, update_query, (err, result) => {
     if (err) return next(err);
-    console.log('success: ' + database + ' ' + req.params.id + ' edited:', update_query);
-    res.json({});
+    res.json(result);
   });
 });
 
@@ -165,17 +165,14 @@ router.put('/images/:id', (req, res, next) => {
   var activity_id = req.body.activity_id;
   var text = req.body.text;
   var search_options = {safe_search: 1, in_gallery: true, content_type: 1, text: text};
-  console.log('images: put', activity_id, text);
   flickerApi(search_options, function(err, urls) {
     if (err) return next(err);
     var update_query = {urls: urls, text: text};
-    console.log('images: put: update_query', update_query.urls.length);
     updateImage(update_query);
   });
   updateImage = function(update_query) {
     db.collection(database).update({_id: ObjectId(req.params.id)}, update_query, (err, result) => {
       if (err) return next(err);
-      console.log('success: ' + update_query.urls.length, activity_id);
       res.json({});
     });
   };
@@ -184,21 +181,20 @@ router.put('/images/:id', (req, res, next) => {
 router.post('/images', (req, res, next) => {
   saveActivityImgUrls(req.body.text, req.body.activity_id, function(err, result, urls) {
     if (err) return next(err);
-    console.log('result.ops[0]._id', result.ops[0]._id);
     return res.json({urls: urls});
   });
 });
 
 router.post('/activities', (req, res, next) => {
-  db.collection('activities').save(req.body, (err, result) => {
+  var query = parseQuery(req.body);
+  db.collection('activities').save(query, (err, result) => {
     if (err) return next(err);
     if (flickr) saveActivityImgUrls(req.body.activity, result.ops[0]._id);
-    return res.json({_id: result.ops[0]._id});
+    return res.json(result.ops[0]);
   });
 });
 
 router.get('/activities/:id', (req, res, next) => {
-  console.log('get activity', req.params.id);
   db.collection('activities').findOne({'_id': ObjectId(req.params.id)}, function(err, activity) {
     if (err) return next(err);
     res.json(activity);
@@ -206,15 +202,17 @@ router.get('/activities/:id', (req, res, next) => {
 });
 
 router.delete(['/activities/:id', '/users/:id'], (req, res, next) => {
-  var database = req.body.db, query;
+  var col = req.body.col, query;
   if (query = req.body.query) {
     query['_id']['$in'] = query['_id']['$in'].map((id) => { return ObjectId(id) });
   } else {
     query = {'_id': ObjectId(req.params.id)};
   }
-  db.collection(database).remove(query, (err, result) => {
+  db.collection(col).remove(query, (err, result) => {
     if (err) return next(err);
     var response = req.body.query ? req.body.query : {};
     res.json(response);
   });
 });
+
+module.exports = app;

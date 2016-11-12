@@ -3,7 +3,7 @@ define([
   'underscore'
 ], function (Backbone, _) {
 
-  const ImageModel = Backbone.Model.extend({
+  ImageModel = Backbone.Model.extend({
     idAttribute: '_id',
     urlRoot: '/api/images',
     url: function() {

@@ -24,6 +24,7 @@ define([
   };
 
   const getModel = function(Model, id, callback) {
+    debugger;
     var model = new Model({_id: id});
     model.fetch({success: function(_model, response) {
       callback(null, _model);

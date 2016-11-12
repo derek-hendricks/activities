@@ -3,6 +3,7 @@ html
     title Activities
     link(rel='stylesheet', href='/css/bootstrap.css')
     link(rel='stylesheet', href='/css/styles.css')
+    link(rel='icon', type='image/png', href='/images/favicon.ico')
   body
     script(src='https://d3js.org/d3-queue.v3.min.js')
     script(src='/javascripts/lib/jquery.min.js')
@@ -20,7 +21,7 @@ html
         .row
           .col-md-6.float-left
         div(data-bind='with: activity')
-          <new-activity params="activitiesViewModel: activitiesViewModel, userViewModel: userViewModel"></new-activity>
+          <new-activity params="channel: channel, activitiesViewModel: activitiesViewModel, userViewModel: userViewModel"></new-activity>
 
       div(data-bind='with: activities').container
         div(data-bind='visible: activities().length', style='display: none')
@@ -38,12 +39,11 @@ html
                     a(data-bind="attr: { href: '#activities/' + $data._id}")
                       span(data-bind="text: $data.activity", data-toggle='modal', data-target='#myModal')
                 .row
-                  .col-xs
-                    img(data-bind="attr: {src: $data.img}")
+                  .col-xs.activity-list-img
+                    a(data-bind="attr: { href: '#activities/' + $data._id}")
+                      img(data-bind="attr: {src: $data.img}", data-toggle='modal', data-target='#myModal')
 
       div(data-bind='with: activity')
         <activity-modal params="user_model: user_model, userActivities: userActivities, channel: channel, model: model"></activity-modal>
 
     script(data-main='/javascripts/main.js', src='/javascripts/lib/require.js')
-
-

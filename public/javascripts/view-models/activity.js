@@ -55,7 +55,7 @@ define([
 
 		channel.subscribe('activity.update', function(data) {
       data.model.save(null, {
-				data: {query: data.query, db: 'activities'},
+				data: {query: data.query, col: 'activities'},
 			  processData: true,
 				success: function(model, response) {
 					model.set(data.attributes);
@@ -70,7 +70,7 @@ define([
 	  channel.subscribe('activity.remove', function(data) {
 		  var id = self.model().id;
 			self.activitiesViewModel.activityRemoved(self.model());
-			self.model().destroy({data: {db: 'activities'},
+			self.model().destroy({data: {col: 'activities'},
 			  processData: true,
 			  success: function(model, response) {
 					if (!data.user_model) return data.callback();

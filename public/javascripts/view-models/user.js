@@ -28,7 +28,7 @@ define([
 
 		self.updateUser = function(update_query, model, attributes, callback) {
 			model.save(null, {
-				data: {query: update_query, db: 'users'}, processData: true,
+				data: {query: update_query, col: 'users'}, processData: true,
 				success: function(model, response) {
 					model.set(attributes);
 				  self.userCollection().add(model, {merge: true});
@@ -46,7 +46,7 @@ define([
 			model.save(user, {
 				wait: true,
 				success: function(model, response) {
-					self.users().push(model.attributes);
+					self.users().push(response);
 					self.userCollection().add(model);
 					callback(null, model, response);
 				},
@@ -60,7 +60,6 @@ define([
 			var activities = model.get('activities').slice();
 			var index = activities.indexOf(activity_id);
 			activities.splice(index, 1);
-			// var query = {$set: {activities: activities}};
 			var query = activities.length ?
 			  {$set: {activities: activities}} :
 				{$unset: {activities: ''}};
@@ -82,7 +81,7 @@ define([
 		self.removeUsers = function(users, callback) {
 			var user_ids = users.map(function(user){return user.id});
 			var query = {'_id': {'$in': user_ids}};
-			users[0].destroy({data: {db: 'users', query: query},
+			users[0].destroy({data: {col: 'users', query: query},
 			  processData: true,
 			  success: function(models, response) {
 					self.userCollection().reset();

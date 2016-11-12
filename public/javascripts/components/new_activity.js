@@ -2,13 +2,14 @@ define([
   'knockout',
   'activity_model',
   'utils'
-], function(ko, ActivityModel, Utils) {
+], function(ko, ActivityModel, utils) {
 
   const newActivityComponent = {
     vm: function (params) {
       var self = this;
       var activityModel = null, activitiesViewModel = null, organizer_user;
       var userViewModel = params.userViewModel;
+      var channel = params.channel;
 
       self.first_name = ko.observable();
       self.last_name = ko.observable();
@@ -42,7 +43,7 @@ define([
         };
 
         function createUser(callback) {
-          organizer_user = {email: self.email(), organizer: true, participant: true,activities: []};
+          organizer_user = {email: self.email(), organizer: true, participant: true, activities: []};
           userViewModel.newUser(organizer_user, function(err, _model, _user) {
             if (err) return (console.log(err), callback(err));
             user_model = _model;
@@ -91,10 +92,10 @@ define([
       <div class="col-md-6">\
         <div class="row">\
           <div class="col-md-6 new-form-1">\
-            <input class="form-control" data-bind="value: activity" type="text" placeholder="Activity" name="activity"\>\
+            <input autofocus class="form-control" data-bind="value: activity" type="text" placeholder="Activity" name="activity"\>\
           </div>\
           <div class="col-md-6 new-form-1 left">\
-            <input class="form-control" data-bind="value: start_date" type="date" placeholder="Date"\>\
+            <input class="form-control" id="date" data-bind="value: start_date" type="date" placeholder="Date"\>\
           </div>\
         </div>\
         \
