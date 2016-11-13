@@ -18,7 +18,8 @@ require.config({
 		user_model: 'models/user',
 		user_collection: 'collections/user',
 		activity_component: 'components/activity_modal',
-		new_activity_component: 'components/new_activity'
+		new_activity_component: 'components/new_activity',
+		images_component: 'components/images'
 	}
 });
 
@@ -32,8 +33,9 @@ require([
 	'images',
 	'activity_component',
 	'new_activity_component',
+	'images_component',
 	'router'
-], function (ko, Backbone, Postal, ActivitiesViewModel, ActivityViewModel, UserViewModel, ImageViewModel, ActivityComponent, NewActivityComponent, Router) {
+], function (ko, Backbone, Postal, ActivitiesViewModel, ActivityViewModel, UserViewModel, ImageViewModel, ActivityComponent, NewActivityComponent, ImageComponent, Router) {
 
 	var ViewModel = function () {
 		var self = this;
@@ -58,6 +60,10 @@ require([
 		template: NewActivityComponent.template
 	});
 
+	ko.components.register('images', {
+    viewModel: ImageComponent.vm,
+		template: ImageComponent.template
+	});
 
 	ko.applyBindings(new ViewModel(), document.getElementById('activities'));
 });

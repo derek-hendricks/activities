@@ -17,6 +17,7 @@ activity-modal .modal-input-1-date {
 }
 activity-modal .description {
   overflow-y: scroll;
+  overflow-x: hidden;
   max-height: 100px;
 }
 activity-modal .user-activities {
@@ -28,15 +29,16 @@ activity-modal .user-activities:hover {
   cursor: pointer;
 }
 activity-modal .activity-img {
-  width: 150px;
-  height: 150px;
-  margin-left: 30px;
+  width: 150;
+  height: 150;
+  /*margin-left: -30px;*/
 }
 activity-modal .activity-img-container {
   height: 190px;
 }
 activity-modal .image-cols {
   text-align: center;
+  margin-top: 30px;
 }
 activity-modal .image-cols .image-col {
   display: inline-block;
@@ -161,3 +163,4 @@ new-activity .left {
     box-shadow: 0 0 1px rgba(255,255,255,.5);
     -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
 }
+

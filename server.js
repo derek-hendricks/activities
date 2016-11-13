@@ -8,7 +8,7 @@ const bodyParser = require('body-parser'),
   parser = require('mongo-parse'),
   ObjectId = require('bson').ObjectId,
   pug = require('pug'),
-  Flickr = require("flickrapi");
+  Flickr = require('flickrapi');
 
 if (process.env.NODE_ENV != 'production') {
   env = require('node-env-file');
@@ -40,14 +40,16 @@ const flickerApi = (search_options, callback) => {
   });
 };
 
-var saveActivityImgUrls = (text, activity_id, callback) => {
-  var search_options = {safe_search: 1, in_gallery: true, content_type: 1, text: text};
+var saveActivityImgUrls = (activity, callback) => {
+  var image_set, search_options = {safe_search: 1, sort: 'relevance', content_type: 1, text: activity.text};
   flickerApi(search_options, (err, urls) => {
-    if (err) return console.log(err);
-    var image_set = {urls: urls, text: text, activity_id: activity_id};
+    if (err) return callback(err);
+    if (((urls = urls || []) ? urls.length : 0) < 1) {
+      return callback(null, {message: 'Could not find results for ' + activity.text}, null);
+    }
+    image_set = {urls: urls, text: activity.text, activity_id: activity.activity_id};
     db.collection('images').save(image_set, (err, result, options) => {
-      if (err) return console.log(err);
-      if (callback) callback(err, result, urls);
+      callback(err, null, image_set);
     });
   });
 };
@@ -124,7 +126,8 @@ router.get('/images', (req, res, next) => {
   });
 });
 
-router.get('/images/:id/:text', (req, res, next) => {
+router.get('/images/:id/text/:text', (req, res, next) => {
+  console.log('req.params', req.params);
   db.collection('images').findOne({text: req.params.text}, (err, image) => {
     if (err || !image) return next(err);
     res.json(image);
@@ -162,26 +165,25 @@ router.put(['/activities/:id', '/users/:id'], (req, res, next) => {
 });
 
 router.put('/images/:id', (req, res, next) => {
-  var activity_id = req.body.activity_id;
-  var text = req.body.text;
-  var search_options = {safe_search: 1, in_gallery: true, content_type: 1, text: text};
-  flickerApi(search_options, function(err, urls) {
+  if (!req.body.urls) return updateImage(req.body);
+  if (flickr) saveActivityImgUrls(req.body, function(err, message, image_set) {
     if (err) return next(err);
-    var update_query = {urls: urls, text: text};
-    updateImage(update_query);
+    if (message) return res.json({image_set: image_set, error_message: message});
+    updateImage(image_set);
+    var updateImage = function(update_query) {
+      db.collection(database).update({_id: ObjectId(req.params.id)}, update_query, (err, result) => {
+        if (err) return next(err);
+        res.json({});
+      });
+    };
   });
-  updateImage = function(update_query) {
-    db.collection(database).update({_id: ObjectId(req.params.id)}, update_query, (err, result) => {
-      if (err) return next(err);
-      res.json({});
-    });
-  };
 });
 
 router.post('/images', (req, res, next) => {
-  saveActivityImgUrls(req.body.text, req.body.activity_id, function(err, result, urls) {
+  if (flickr) saveActivityImgUrls(req.body, function(err, message, image_set) {
     if (err) return next(err);
-    return res.json({urls: urls});
+    if (message) return res.json({image_set, error_message: message});
+    res.json(image_set);
   });
 });
 
@@ -189,7 +191,6 @@ router.post('/activities', (req, res, next) => {
   var query = parseQuery(req.body);
   db.collection('activities').save(query, (err, result) => {
     if (err) return next(err);
-    if (flickr) saveActivityImgUrls(req.body.activity, result.ops[0]._id);
     return res.json(result.ops[0]);
   });
 });
@@ -201,7 +202,7 @@ router.get('/activities/:id', (req, res, next) => {
   });
 });
 
-router.delete(['/activities/:id', '/users/:id'], (req, res, next) => {
+router.delete(['/activities/:id', '/users/:id', '/images/:id'], (req, res, next) => {
   var col = req.body.col, query;
   if (query = req.body.query) {
     query['_id']['$in'] = query['_id']['$in'].map((id) => { return ObjectId(id) });

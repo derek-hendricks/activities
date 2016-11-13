@@ -9,7 +9,9 @@ define([
     url: function() {
       var root_url = '/api/images';
       if (this.isNew()) return root_url;
-      return root_url + '/' + encodeURIComponent(this.id) + '/' + encodeURIComponent(this.get('text'));
+      return root_url + '/' +
+        encodeURIComponent(this.id) + '/text/' +
+        encodeURIComponent(this.get('text'));
     }
   });
 

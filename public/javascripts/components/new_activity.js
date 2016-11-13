@@ -57,7 +57,7 @@ define([
             activity: self.activity(),
             organizer_id: user_model.id,
             participants: self.participants(),
-            description: self.description() || null,
+            description: self.description(),
             img: '/clipboard.png',
             start_date: self.start_date(),
             created_at: new Date(),
@@ -66,6 +66,10 @@ define([
             wait: true,
             success: function(model, response) {
               activity_data._id = model.id;
+              channel.publish('image.create', {activity_id: model.id, text: model.get('activity'), callback: function(err, result){
+                // TODO: display images before activity creation - on activity input field focus event
+                console.log(err, result);
+              }});
               callback(null);
             },
             error: function(model, response) {
@@ -113,11 +117,12 @@ define([
             <textarea class="form-control" rows="3" data-bind="value: description" type="text" placeholder="Details"></textarea>\
           </div>\
         </div> <br/>\
+        \
         <div class="row">\
-                  <div class="col-md-6">\
+          <div class="col-md-6">\
             <button class="btn btn-primary" data-bind="click: newActivity" type="button">Create New</button>\
           </div>\
-          </div>\
+        </div>\
         \
       </div>\
     </div>\

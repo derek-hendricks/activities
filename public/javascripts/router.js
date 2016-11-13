@@ -24,7 +24,6 @@ define([
   };
 
   const getModel = function(Model, id, callback) {
-    debugger;
     var model = new Model({_id: id});
     model.fetch({success: function(_model, response) {
       callback(null, _model);
@@ -46,15 +45,13 @@ define([
       fetchCollection(UserCollection, self.userViewModel, 'userCollection', 'users');
       // fetchCollection(ImageCollection, self.imageViewModel, 'imageCollection', 'images');
     },
+    // "search/:query/p:page": "search",
 
     routes: {
-      'activities/:id': 'getActivity',
-      'users/:id' : 'getUser',
-      "": 'index'
+      'activities/:id': 'getActivity'
     },
 
     getActivity: function(activity_id) {
-      console.log('router: id', activity_id);
       self.channel.publish('activity.show', {
         id: activity_id,
         getActivityModel: function(callback) {
@@ -64,16 +61,6 @@ define([
           getModel(UserModel, user_id, callback);
         }
       });
-    },
-
-    getUser: function(id) {
-      console.log('router: getUser: id', id);
-      getModel(UserModel, id, function(err, model){
-        console.log(err, model);
-      });
-    },
-
-    index: function() {
     }
   });
 

@@ -12,9 +12,9 @@ define([
 		var imageRows = function(image) {
 			var rows = [], current = [];
 			rows.push(current);
-			for (var i = 0; i < image.urls.length; i += 1) {
+			for (var i = 0; i < image.urls.length; i++) {
 				current.push(image.urls[i]);
-				if ((i + 1) % 5 === 0 && i != image.urls.length - 1) {
+				if ((i + 1) % 5 === 0 && i !== image.urls.length - 1) {
 					current = [];
 					rows.push(current);
 				}
@@ -25,48 +25,49 @@ define([
 		var fetchImage = function(params, callback) {
 			model = new ImageModel(params);
 			model.fetch({success: function(model, result) {
-				if (!result) return callback(new Error('No image urls'));
+				self.images.unshift(model.attributes);
 			  return callback(null, model);
 			}, error: function(err) {
 			  return callback(err);
 			}});
 		};
 
-		var createImage = function(activity_id, activity, callback) {
+		channel.subscribe('image.create', function(data) {
+      createImage(data.activity_id, data.text, data.callback);
+		});
+
+		var createImage = function(activity_id, text, callback) {
 			var model = new ImageModel();
-			model.save({activity_id: activity_id, text: activity, urls: []}, {
-				wait: true,
+			model.save({activity_id: activity_id, text: text}, {
 				success: function(model, response, options) {
+					var _urls;
+					if (response.error_message) return callback(response.error_message);
+					if (((_urls = model.get('urls') || []) ? _urls.length : 0) < 1)  {
+					  return callback({message: 'Could not find results for ' + text});
+					}
 					self.images.unshift(response);
 					return callback(null, model);
-				}, error: function(response) {
-					return callback(response.responseText);
+				}, error: function(err) {
+					if (callback) return callback({message: 'Could not find results for ' + text});
 				}
 		  });
 		};
 
     channel.subscribe('image.rows', function(data) {
-		  var image = self.images().find(function(_image) {
-				return _image.activity_id === data.id;
+		  var ref, image;
+			image = self.images().find(function(_image) {
+				return _image.text === data.text;
 			});
-			if ((typeof image !== "undefined" && image !== null ? image.urls.length : void 0) > 0) {
-				if (image.text.toLowerCase() === data.activity.toLowerCase()) return data.callback(null, imageRows(image));
-				return fetchImage({_id: data.id, text: data.activity}, function(err, model) {
-					if (model) return data.callback(null, imageRows(model.attributes));
-					createImage(data.id, data.activity, function(err, model) {
-						if (err) return data.callback(err);
-            return data.callback(null, imageRows(model.attributes));
-					});
-				});
-      } else {
-				fetchImage({_id: data.id, text: data.activity}, function(err, model) {
-					if (model) return data.callback(null, imageRows(model.attributes));
-					createImage(data.id, data.activity, function(err, model) {
-						if (err) return data.callback(err);
-						return data.callback(null, imageRows(model.attributes));
-					});
-				});
+			if (image) {
+        if (image.text.toLowerCase() === data.text.toLowerCase()) return data.callback(null, imageRows(image));
 			}
+			return fetchImage({_id: data.id, text: data.text}, function(err, model) {
+				if (model) return data.callback(null, imageRows(model.attributes));
+				createImage(data.id, data.text, function(err, model) {
+					if (err) return data.callback(err);
+					return data.callback(null, imageRows(model.attributes));
+				});
+			});
     });
 
 		self.getImageModel = function(query, callback) {
@@ -80,3 +81,5 @@ define([
 
 	return ViewModel;
 });
+
+
