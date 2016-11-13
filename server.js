@@ -142,7 +142,17 @@ router.get('/images/:id', (req, res, next) => {
 });
 
 router.get('/users/:id', (req, res, next) => {
+  console.log('/users/is', req.params);
   db.collection('users').findOne({'_id': ObjectId(req.params.id)}, (err, user) => {
+    console.log(err, user);
+    if (err) return next(err);
+    res.json(user);
+  });
+});
+
+router.get('/users/:email', (req, res, next) => {
+  console.log('/users/email', req.params);
+  db.collection('users').findOne({'email': req.params.email}, (err, user) => {
     if (err) return next(err);
     res.json(user);
   });
@@ -151,6 +161,7 @@ router.get('/users/:id', (req, res, next) => {
 router.post('/users', (req, res, next) => {
   db.collection('users').save(req.body, (err, result) => {
     if (err) return next(err);
+
     res.json(result.ops[0]);
   });
 });

@@ -33,13 +33,12 @@ define([
         });
 
         function checkActivityOrganizer(callback) {
-          var _user_model, user_query;
-          user_query = {email: self.email()}
-          if (_user_model = userViewModel.getUser(user_query)) {
+          debugger;
+          channel.publish('fetch.user', {query: {email: self.email()}, callback: function(err, _user_model) {
+            if (err) return createUser(callback);
             user_model = _user_model;
             return callback(null);
-          }
-          return createUser(callback);
+          }});
         };
 
         function createUser(callback) {

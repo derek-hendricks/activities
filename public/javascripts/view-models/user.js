@@ -16,21 +16,36 @@ define([
     self.organizer = ko.observable(false);
     self.participant = ko.observable(true);
 
-    var subscription = channel.subscribe('users.delete', function(data) {
+    channel.subscribe('users.delete', function(data) {
       var users = data.models || self.userCollection().models;
 			self.removeUsers(users, data.callback);
     });
 
-		self.getUser = function(query, callback) {
-			var user = self.userCollection().find(query);
-			return user;
+		var getUser = function(query, callback) {
+			return self.userCollection().find(query);
 		};
 
-		self.updateUser = function(update_query, model, attributes, callback) {
+		channel.subscribe('fetch.user', function(data) {
+			var user = getUser(data.query);
+			if (user) return data.callback(null, user);
+      fetchUser(data.query, data.callback);
+    });
+
+    var fetchUser = function(query, callback) {
+      var model = new UserModel(query);
+			model.fetch({success: function(model, response) {
+				if (model.id) return callback(null, model);
+				return callback(model);
+			}, error: function(err) {
+				callback(err);
+			}});
+		};
+
+		self.updateUser = function(update_query, model, callback) {
 			model.save(null, {
 				data: {query: update_query, col: 'users'}, processData: true,
+				wait: true,
 				success: function(model, response) {
-					model.set(attributes);
 				  self.userCollection().add(model, {merge: true});
 					var index = self.users().indexOf(_.findWhere(self.users(), {_id: model.id}))
 					self.users.splice(index, 1, _.clone(model.attributes));
@@ -63,17 +78,26 @@ define([
 			var query = activities.length ?
 			  {$set: {activities: activities}} :
 				{$unset: {activities: ''}};
-			self.updateUser(query, model, {activities: activities}, function(err, result) {
+			self.updateUser(query, model, function(err, result) {
 				if (err) return callback(err);
 				callback()
 			});
 		};
 
 		self.addUserActivities = function(model, activity_data, callback) {
-			var activities = model.get('activities').slice() || [];
-			activities.push(activity_data._id);
-			var update_query = {$set: {activities: activities}};
-			self.updateUser(update_query, model, {activities: activities}, function(response) {
+			var activities;
+			if (activities = model.get('activities')) {
+        if (activities.constructor == Array) {
+					activities.push(activity_data._id)
+				} else {
+					activities = [activity_data._id]
+				}
+			} else {
+				activities = [activity_data._id]
+			}
+			model.set({activities: activities});
+			var update_query = {'$push': {'activities': activity_data._id}}
+			self.updateUser(update_query, model, function(response) {
 				callback(response);
 			});
 		};

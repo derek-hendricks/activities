@@ -152,7 +152,6 @@ define([
                 <div class="col-md-4"><p>Details:</p></div>\
                 <div class="col-md-8">\
                   <div class="description" data-bind="text: description, visible: !edit_mode()"></div>\
-                  <i data-bind="visible: !description() || !edit_mode()">No details yet.</i>\
                   <div class="form-group">\
                     <textarea class="form-control" rows="3" data-bind="value: description, visible: edit_mode" type="text" placeholder="Details"></textarea>\
                   </div>\

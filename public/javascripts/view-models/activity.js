@@ -14,30 +14,28 @@ define([
 		self.activitiesViewModel = activitiesViewModel;
 		self.channel = channel;
 
-		var show = channel.subscribe('activity.show', function(data) {
-			var getUser, user, model;
+		var show = self.channel.subscribe('activity.show', function(data) {
+			var user, model;
 			model = self.activitiesViewModel.getActivityModel({_id: data.id});
 			if (model) {
 				self.model(model);
-				user = self.userViewModel.getUser({_id: model.get('organizer_id')});
-				self.user_model(user);
-				var _user_activities = getUserActivities();
-				self.userActivities(_user_activities);
+				getUser(model.get('organizer_id'));
 			} else {
 				data.getActivityModel(function(err, _model) {
 					if (err) return callback(err);
 					self.model(_model);
 					getUser(_model.get('organizer_id'));
 				});
-				getUser = function(user_id) {
-          data.getUserModel(user_id, function(err, _user_model) {
-					  if (err) return callback(err);
-					  self.user_model(_user_model);
-						self.userActivities(getUserActivities());
-				  });
-				};
 			}
     });
+
+		var getUser = function(id) {
+			self.channel.publish('fetch.user', {query: {_id: id}, callback: function(err, _user_model) {
+				self.user_model(_user_model);
+				var _user_activities = getUserActivities();
+				self.userActivities(_user_activities);
+			}});
+		};
 
 		var getUserActivities = function() {
 			var related_activities = [], user_activity, current_id;
@@ -53,7 +51,7 @@ define([
 			return related_activities;
 		};
 
-		channel.subscribe('activity.update', function(data) {
+		self.channel.subscribe('activity.update', function(data) {
       data.model.save(null, {
 				data: {query: data.query, col: 'activities'},
 			  processData: true,
@@ -67,7 +65,7 @@ define([
 			});
 		});
 
-	  channel.subscribe('activity.remove', function(data) {
+	  self.channel.subscribe('activity.remove', function(data) {
 		  var id = self.model().id;
 			self.activitiesViewModel.activityRemoved(self.model());
 			self.model().destroy({data: {col: 'activities'},

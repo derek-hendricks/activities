@@ -63,7 +63,7 @@ define([
 				var activities = self.activitiesCollection().models;
 				var activity_ids = activities.map(function(activity){return activity.id});
 				var query = {'_id': {'$in': activity_ids}};
-				activities[0].destroy({data: {db: 'activities', query: query},
+				activities[0].destroy({data: {col: 'activities', query: query},
 					processData: true,
 					success: function(models, response) {
 						self.activities([]);
