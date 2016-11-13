@@ -33,7 +33,6 @@ define([
         });
 
         function checkActivityOrganizer(callback) {
-          debugger;
           channel.publish('fetch.user', {query: {email: self.email()}, callback: function(err, _user_model) {
             if (err) return createUser(callback);
             user_model = _user_model;
