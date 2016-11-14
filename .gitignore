@@ -4,3 +4,5 @@ node_modules
 public/javascripts/lib/backbone.fetch-cache.min.js
 resources
 test
+archived
+src

@@ -6,8 +6,8 @@ html
     link(rel='icon', type='image/png', href='/images/favicon.ico')
   body
     script(src='https://d3js.org/d3-queue.v3.min.js')
-    script(src='/javascripts/lib/jquery.min.js')
-    script(src='/javascripts/lib/bootstrap.min.js')
+    script(src='/lib/jquery.min.js')
+    script(src='/lib/bootstrap.min.js')
 
     div#activities
       nav(class="navbar navbar-default navbar-static-top")
@@ -46,4 +46,4 @@ html
       div(data-bind='with: activity')
         <activity-modal params="user_model: user_model, userActivities: userActivities, channel: channel, model: model"></activity-modal>
 
-    script(data-main='/javascripts/main.js', src='/javascripts/lib/require.js')
+    script(src='./bundle.js')

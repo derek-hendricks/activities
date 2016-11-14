@@ -99,6 +99,7 @@ app.use(bodyParser.json({type: 'application/json'}));
 app.use(compression());
 app.use(favicon(__dirname + '/public/images/favicon.ico'));
 app.use('/api', router);
+app.use(express.static(path.join(__dirname, 'dist')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('/', (req, res) => {
