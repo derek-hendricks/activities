@@ -1,9 +1,10 @@
 .env
+./npm-debug.log
 node_modules
 .vscode/
-public/javascripts/lib/backbone.fetch-cache.min.js
 resources
 test
+tests
 archived
 src
 data

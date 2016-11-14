@@ -47,7 +47,8 @@ var saveActivityImgUrls = (activity, callback) => {
     if (((urls = urls || []) ? urls.length : 0) < 1) {
       return callback(null, {message: 'Could not find results for ' + activity.text}, null);
     }
-    image_set = {urls: urls, text: activity.text, activity_id: activity.activity_id};
+    image_set = {urls: urls, text: activity.text};
+    if (!activity.save) return callback(null, null, image_set);
     db.collection('images').save(image_set, (err, result, options) => {
       callback(err, null, image_set);
     });
@@ -65,7 +66,7 @@ app.use((err, req, res, next) => {
 });
 
 MongoClient.connect(
-  process.env.DB_URL,
+  process.env.TEST_DB_URL,
   { replset: {
     socketOptions: {
       connectTimeoutMS: 30000 }
@@ -127,25 +128,17 @@ router.get('/images', (req, res, next) => {
   });
 });
 
-router.get('/images/:id/text/:text', (req, res, next) => {
-  console.log('req.params', req.params);
-  db.collection('images').findOne({text: req.params.text}, (err, image) => {
-    if (err || !image) return next(err);
-    res.json(image);
-  });
-});
-
 router.get('/images/:id', (req, res, next) => {
-  db.collection('images').findOne({'activity_id': ObjectId(req.params.id)}, (err, image) => {
+  console.log('/images/:id', req.params);
+  db.collection('images').findOne({text: req.params.id}, (err, image) => {
     if (err) return next(err);
+    if (!image) return res.json({message: 'Could not find image ' + req.params.text});
     res.json(image);
   });
 });
 
 router.get('/users/:id', (req, res, next) => {
-  console.log('/users/is', req.params);
   db.collection('users').findOne({'_id': ObjectId(req.params.id)}, (err, user) => {
-    console.log(err, user);
     if (err) return next(err);
     res.json(user);
   });
@@ -180,7 +173,7 @@ router.put('/images/:id', (req, res, next) => {
   if (!req.body.urls) return updateImage(req.body);
   if (flickr) saveActivityImgUrls(req.body, function(err, message, image_set) {
     if (err) return next(err);
-    if (message) return res.json({image_set: image_set, error_message: message});
+    if (message) return res.json({image_set: image_set, message: message});
     updateImage(image_set);
     var updateImage = function(update_query) {
       db.collection(database).update({_id: ObjectId(req.params.id)}, update_query, (err, result) => {
@@ -192,9 +185,10 @@ router.put('/images/:id', (req, res, next) => {
 });
 
 router.post('/images', (req, res, next) => {
-  if (flickr) saveActivityImgUrls(req.body, function(err, message, image_set) {
+  console.log('images post', req.body);
+  if (flickr) saveActivityImgUrls({text: req.body.id, save: req.body.save}, function(err, message, image_set) {
     if (err) return next(err);
-    if (message) return res.json({image_set, error_message: message});
+    if (message) return res.json({image_set, message: message});
     res.json(image_set);
   });
 });

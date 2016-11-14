@@ -4,10 +4,6 @@ a:hover {
 activity-modal .remove-activity button {
   margin-right: 45px;
 }
-/*activity-modal .modal-header{
-  background-image: url('./pattern.png');
-  background-repeat: repeat;
-}*/
 activity-modal .modal-input-1 {
   width: 100%;
 }
@@ -31,7 +27,11 @@ activity-modal .user-activities:hover {
 activity-modal .activity-img {
   width: 150;
   height: 150;
-  /*margin-left: -30px;*/
+  text-align: center;
+}
+activity-modal .activity-img img{
+  border-radius: 4px;
+  margin-bottom: 3px;
 }
 activity-modal .activity-img-container {
   height: 190px;
@@ -154,13 +154,18 @@ new-activity .left {
   text-align: left;
 }
 ::-webkit-scrollbar {
-    -webkit-appearance: none;
-    width: 7px;
+  -webkit-appearance: none;
+  width: 7px;
 }
 ::-webkit-scrollbar-thumb {
-    border-radius: 4px;
-    background-color: rgba(0,0,0,.5);
-    box-shadow: 0 0 1px rgba(255,255,255,.5);
-    -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+  border-radius: 4px;
+  background-color: rgba(0,0,0,.5);
+  box-shadow: 0 0 1px rgba(255,255,255,.5);
+  -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
 }
-
+images .message {
+  text-align: left;
+}
+images .message div {
+  margin-bottom: 10px;
+}
