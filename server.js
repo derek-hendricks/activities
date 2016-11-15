@@ -78,10 +78,7 @@ MongoClient.connect(
   (err, database) => {
     if (err) return console.log(err);
     db = database;
-    db.collection('users').createIndex({email: 1}, {unique: true});
     db.collection('images').createIndex({text: 1}, {unique: true});
-    // db.collection('images').dropIndex({activity_id: 1});
-     // db.createCollection("images", { size: 2147483648 } );
     app.listen(port, () => {
       console.log('listening on ' + port);
       var flickrOptions = {api_key: process.env.FLICKR_KEY, secret: process.env.FLICKR_SECRET, progress: false};
@@ -138,32 +135,23 @@ router.get('/images/:id', (req, res, next) => {
 });
 
 router.get('/users/:id', (req, res, next) => {
-  db.collection('users').findOne({'_id': ObjectId(req.params.id)}, (err, user) => {
-    if (err) return next(err);
-    res.json(user);
-  });
-});
-
-router.get('/users/:email', (req, res, next) => {
-  console.log('/users/email', req.params);
-  db.collection('users').findOne({'email': req.params.email}, (err, user) => {
+  db.collection('users').findOne({_id: req.params.id}, (err, user) => {
     if (err) return next(err);
     res.json(user);
   });
 });
 
 router.post('/users', (req, res, next) => {
-  db.collection('users').save(req.body, (err, result) => {
+  db.collection('users').update(req.body.query, req.body.update, {upsert: !!req.body.upsert}, (err, result) => {
     if (err) return next(err);
-
-    res.json(result.ops[0]);
+    res.json(result);
   });
 });
 
 router.put(['/activities/:id', '/users/:id'], (req, res, next) => {
-  var update_query = req.body.query;
   var col = req.body.col;
-  db.collection(col).update({_id: ObjectId(req.params.id)}, update_query, (err, result) => {
+  var query = {_id: ObjectId(req.params.id)};
+  db.collection(col).update(query, req.body.query, (err, result) => {
     if (err) return next(err);
     res.json(result);
   });
@@ -185,7 +173,6 @@ router.put('/images/:id', (req, res, next) => {
 });
 
 router.post('/images', (req, res, next) => {
-  console.log('images post', req.body);
   if (flickr) saveActivityImgUrls({text: req.body.id, save: req.body.save}, function(err, message, image_set) {
     if (err) return next(err);
     if (message) return res.json({image_set, message: message});
@@ -194,8 +181,7 @@ router.post('/images', (req, res, next) => {
 });
 
 router.post('/activities', (req, res, next) => {
-  var query = parseQuery(req.body);
-  db.collection('activities').save(query, (err, result) => {
+  db.collection('activities').save(req.body, (err, result) => {
     if (err) return next(err);
     return res.json(result.ops[0]);
   });
@@ -208,7 +194,14 @@ router.get('/activities/:id', (req, res, next) => {
   });
 });
 
-router.delete(['/activities/:id', '/users/:id', '/images/:id'], (req, res, next) => {
+router.delete('/users/:id', (req, res, next) => {
+  db.collection('users').remove(req.body.query, (err, result) => {
+    if (err) return next(err);
+    res.json({});
+  });
+});
+
+router.delete(['/activities/:id', '/images/:id'], (req, res, next) => {
   var col = req.body.col, query;
   if (query = req.body.query) {
     query['_id']['$in'] = query['_id']['$in'].map((id) => { return ObjectId(id) });
@@ -217,8 +210,7 @@ router.delete(['/activities/:id', '/users/:id', '/images/:id'], (req, res, next)
   }
   db.collection(col).remove(query, (err, result) => {
     if (err) return next(err);
-    var response = req.body.query ? req.body.query : {};
-    res.json(response);
+    res.json({});
   });
 });
 
