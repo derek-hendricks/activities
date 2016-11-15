@@ -126,7 +126,6 @@ router.get('/images', (req, res, next) => {
 });
 
 router.get('/images/:id', (req, res, next) => {
-  console.log('/images/:id', req.params);
   db.collection('images').findOne({text: req.params.id}, (err, image) => {
     if (err) return next(err);
     if (!image) return res.json({message: 'Could not find image ' + req.params.text});
