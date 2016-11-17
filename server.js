@@ -31,7 +31,7 @@ const flickerApi = (search_options, callback) => {
   flickr.photos.search(search_options, (err,result) => {
     if (err) return callback(err);
     var photos = result.photos.photo, url, urls = [];
-    if (!photos) return callback('No results found');
+    if (!photos) return callback(true);
     for (var i = 0; i < photos.length; i++) {
       url = 'https://farm'+photos[i].farm+'.staticflickr.com/'+photos[i].server+'/'+photos[i].id+'_'+photos[i].secret+'.jpg';
       urls.push(url);
@@ -79,6 +79,7 @@ MongoClient.connect(
     if (err) return console.log(err);
     db = database;
     db.collection('images').createIndex({text: 1}, {unique: true});
+    db.collection('users').dropIndex({email: 1});
     app.listen(port, () => {
       console.log('listening on ' + port);
       var flickrOptions = {api_key: process.env.FLICKR_KEY, secret: process.env.FLICKR_SECRET, progress: false};
@@ -147,7 +148,15 @@ router.post('/users', (req, res, next) => {
   });
 });
 
-router.put(['/activities/:id', '/users/:id'], (req, res, next) => {
+router.put('/users/:id', (req, res, next) => {
+  var query = {_id: req.params.id};
+  db.collection('users').update(query, req.body.query, (err, result) => {
+    if (err) return next(err);
+    res.json(result);
+  });
+});
+
+router.put('/activities/:id', (req, res, next) => {
   var col = req.body.col;
   var query = {_id: ObjectId(req.params.id)};
   db.collection(col).update(query, req.body.query, (err, result) => {

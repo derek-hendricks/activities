@@ -21,7 +21,7 @@ html
         .row
           .col-md-6.float-left
         div(data-bind='with: activity')
-          <new-activity params="channel: channel, activitiesViewModel: activitiesViewModel, userViewModel: userViewModel"></new-activity>
+          <new-activity params="channel: channel, activitiesViewModel: activitiesViewModel"></new-activity>
 
       div(data-bind='with: activities').container
         div(data-bind='visible: activities().length', style='display: none')
