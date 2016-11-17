@@ -78,8 +78,9 @@ MongoClient.connect(
   (err, database) => {
     if (err) return console.log(err);
     db = database;
-    db.collection('images').createIndex({text: 1}, {unique: true});
     db.collection('users').dropIndex({email: 1});
+    db.collection('images').remove({});
+    db.collection('images').createIndex({text: 1}, {unique: true});
     app.listen(port, () => {
       console.log('listening on ' + port);
       var flickrOptions = {api_key: process.env.FLICKR_KEY, secret: process.env.FLICKR_SECRET, progress: false};
