@@ -2,6 +2,7 @@ const bodyParser = require('body-parser'),
   express = require('express'),
   path = require('path'),
   compression = require('compression'),
+  moment = require('moment'),
   methodOverride = require('method-override'),
   favicon = require('serve-favicon'),
   MongoClient = require('mongodb').MongoClient,
@@ -41,14 +42,16 @@ const flickerApi = (search_options, callback) => {
 };
 
 var saveActivityImgUrls = (activity, callback) => {
-  var image_set, search_options = {safe_search: 1, sort: 'relevance', content_type: 1, text: activity.text};
+  var image_set, search_options = {safe_search: 1, sort: 'relevance', content_type: 1, text: activity.text},
+  err_msg = {message: 'Could not find results for ' + activity.text};
   flickerApi(search_options, (err, urls) => {
     if (err) return callback(err);
     if (((urls = urls || []) ? urls.length : 0) < 1) {
-      return callback(null, {message: 'Could not find results for ' + activity.text}, null);
+      return callback(null, err_msg, null);
     }
     image_set = {urls: urls, text: activity.text};
     if (!activity.save) return callback(null, null, image_set);
+    image_set.expireAt = moment().add(5, 'days').toISOString();
     db.collection('images').save(image_set, (err, result, options) => {
       callback(err, null, image_set);
     });
@@ -66,7 +69,7 @@ app.use((err, req, res, next) => {
 });
 
 MongoClient.connect(
-  process.env.DB_URL,
+  process.env.TEST_DB_URL,
   { replset: {
     socketOptions: {
       connectTimeoutMS: 30000 }
@@ -79,8 +82,8 @@ MongoClient.connect(
     if (err) return console.log(err);
     db = database;
     db.collection('users').dropIndex({email: 1});
-    db.collection('images').remove({});
     db.collection('images').createIndex({text: 1}, {unique: true});
+    db.collection('images').createIndex({"expireAt": 1}, {expireAfterSeconds: 0});
     app.listen(port, () => {
       console.log('listening on ' + port);
       var flickrOptions = {api_key: process.env.FLICKR_KEY, secret: process.env.FLICKR_SECRET, progress: false};
