@@ -69,7 +69,7 @@ app.use((err, req, res, next) => {
 });
 
 MongoClient.connect(
-  process.env.TEST_DB_URL,
+  process.env.DB_URL,
   { replset: {
     socketOptions: {
       connectTimeoutMS: 30000 }
