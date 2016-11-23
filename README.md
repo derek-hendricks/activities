@@ -1,0 +1,1 @@
+![alt tag](https://activity-organizer.herokuapp.com/images/screenshot.png)
