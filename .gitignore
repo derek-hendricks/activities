@@ -3,10 +3,8 @@
 node_modules
 .vscode/
 resources
-test
 tests
 archived
-src
 data
 Rakefile
 spec
