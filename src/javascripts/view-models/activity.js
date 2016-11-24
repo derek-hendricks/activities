@@ -1,14 +1,12 @@
 import ko from 'knockout';
 import _ from 'underscore';
-import UserModel from '../models/user';
-import UserCollection from '../collections/user';
+import ActivityModel from '../models/activity';
 
-var ViewModel = function (activitiesViewModel, userViewModel, channel) {
+var ViewModel = function (activitiesViewModel, channel) {
 	var self = this;
 	self.model = ko.observable();
 	self.user_model = ko.observable();
 	self.userActivities = ko.observableArray([]);
-	self.userViewModel = userViewModel;
 	self.activitiesViewModel = activitiesViewModel;
 	self.channel = channel;
 
@@ -19,7 +17,7 @@ var ViewModel = function (activitiesViewModel, userViewModel, channel) {
 			getUser(model.get('organizer_id'));
 		} else {
 			data.getActivityModel(function(err, _model) {
-				if (err) return callback(err);
+				if (err) return data.callback(err);
 				self.model(_model);
 				getUser(_model.get('organizer_id'));
 			});
@@ -29,8 +27,7 @@ var ViewModel = function (activitiesViewModel, userViewModel, channel) {
 	var getUser = function(id) {
 		self.channel.publish('fetch.user', {query: {_id: id}, callback: function(err, _user_model) {
 			self.user_model(_user_model);
-			var _user_activities = getUserActivities();
-			self.userActivities(_user_activities);
+			self.userActivities(getUserActivities());
 		}});
 	};
 
@@ -43,8 +40,17 @@ var ViewModel = function (activitiesViewModel, userViewModel, channel) {
 			user_activity = self.activitiesViewModel.getActivityModel({_id: activity_ids[i]})
 			if (user_activity) related_activities.push(user_activity);
 		}
-	return related_activities;
-};
+	  return related_activities;
+  };
+
+  self.channel.subscribe('activity.create', function(data) {
+		var activityModel = new ActivityModel();
+		activityModel.save(data.activity, { wait: true, success: function(model, response) {
+			data.callback(null, model);
+		}, error: function(model, response) {
+			data.callback(response);
+		}});
+	});
 
 	self.channel.subscribe('activity.update', function(data) {
 		data.model.save(null, {
@@ -61,15 +67,16 @@ var ViewModel = function (activitiesViewModel, userViewModel, channel) {
 	});
 
 	self.channel.subscribe('activity.remove', function(data) {
-		var id = data.model.id;
 		self.activitiesViewModel.activityRemoved(data.model);
 		data.model.destroy({data: {col: 'activities'},
 			processData: true,
 			success: function(model, response) {
 				if (!data.user_model) return data.callback();
-				return self.userViewModel.removeUserActivity(data.user_model, id, data.callback);
+				self.channel.publish('remove.user.activity', {
+					user_model: data.user_model, activity_id: data.model.id, callback: data.callback
+				});
 			}, error: function(err) {
-				return data.callback(err);
+			  data.callback(err);
 			}
 		});
 	});

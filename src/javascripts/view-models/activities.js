@@ -9,7 +9,7 @@ const ViewModel = function (channel) {
 	self.activityRows = ko.computed(function () {
 		var rows = [], current = [];
 		rows.push(current);
-		for (var i = 0; i < self.activities().length; i += 1) {
+		for (var i = 0; i < self.activities().length; i++) {
 			current.push(self.activities()[i]);
 				if (((i + 1) % 4) === 0) {
 					current = [];
@@ -31,11 +31,6 @@ const ViewModel = function (channel) {
 		}
 	};
 
-	self.activityAdded = function(activity) {
-		self.activities.unshift(activity.attributes);
-		self.activitiesCollection().add(activity);
-	};
-
 	self.activityRemoved = function(model) {
 		var index = self.activities().indexOf(_.findWhere(self.activities(), {_id: model.id}));
 		self.activities.splice(index, 1);
@@ -46,6 +41,11 @@ const ViewModel = function (channel) {
 		self.activitiesCollection().add(data.model, {merge: true});
 		var index = self.activities().indexOf(_.findWhere(self.activities(), {_id: data.model.id}))
 		self.activities.splice(index, 1, _.clone(data.model.attributes));
+	});
+
+	channel.subscribe('activity.added', function(data) {
+		self.activities.unshift(data.model.attributes);
+		self.activitiesCollection().add(data.model);
 	});
 
 	self.deleteAll = function() {

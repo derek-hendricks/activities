@@ -18,7 +18,7 @@ var ViewModel = function () {
 	self.user = new UserViewModel(channel);
 	self.activities = new ActivitiesViewModel(channel);
 	self.images = new ImageViewModel(channel);
-	self.activity = new ActivityViewModel(self.activities, self.user, channel);
+	self.activity = new ActivityViewModel(self.activities, channel);
 
 	new Router({channel: channel, activityViewModel: self.activity, activitiesViewModel: self.activities, userViewModel: self.user, imageViewModel: self.images});
 

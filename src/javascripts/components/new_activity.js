@@ -1,11 +1,9 @@
 import ko from 'knockout';
 import _ from 'underscore';
-import ActivityModel from '../models/activity';
 
 const newActivityComponent = {
   vm: function (params) {
     var self = this;
-    var activityModel = null, activitiesViewModel = null;
     var channel = params.channel;
 
     self.email = ko.observable();
@@ -16,7 +14,6 @@ const newActivityComponent = {
 
     self.newActivity = function() {
       if (!self.activity()) return;
-      activityModel = new ActivityModel();
       var activity_data = null;
       var queue = d3.queue(1);
 
@@ -36,24 +33,24 @@ const newActivityComponent = {
       };
 
       function createActivity(callback) {
-        activitiesViewModel = params.activitiesViewModel;
         activity_data = {
           activity: self.activity(), organizer_id: self.email() || 'mail@activities.ca', participants: self.participants(),
           description: self.description(), img: '/clipboard.png', start_date: self.start_date() && new Date(self.start_date()).toISOString(), created_at: new Date()
         };
-        activityModel.save(activity_data, { wait: true, success: function(model, response) {
+        channel.publish('activity.create', {activity: activity_data, callback: function(err, model) {
+          if (err) return callback(err);
           activity_data._id = model.id;
           updateActivitiesViewModel(model);
           callback(null);
-        }, error: function(model, response) {
-          callback(response);
         }});
       };
 
-      function updateActivitiesViewModel(model) {
+      var updateActivitiesViewModel = function(model) {
+        // activitiesViewModel = params.activitiesViewModel;
         self.email(''); self.activity('');
         self.description(''); self.participants(''); self.start_date('');
-        activitiesViewModel.activityAdded(model);
+        channel.publish('activity.added', {model: model});
+        // activitiesViewModel.activityAdded(model);
       };
   };
 },

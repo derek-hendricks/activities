@@ -3,7 +3,7 @@ import _ from 'underscore';
 import UserModel from '../models/user';
 import UserCollection from '../collections/user';
 
-var ViewModel = function(channel) {
+const ViewModel = function(channel) {
 	var self = this;
 	self.userCollection = ko.observable();
 	self.users = ko.observableArray([]);
@@ -68,17 +68,17 @@ var ViewModel = function(channel) {
 		});
 	});
 
-	self.removeUserActivity = function(model, activity_id, callback) {
-		var activities = model.get('activities');
-		var index = activities.indexOf(activity_id);
+  channel.subscribe('remove.user.activity', function(data) {
+		var activities = data.user_model.get('activities');
+		var index = activities.indexOf(data.activity_id);
 		activities.splice(index, 1);
-		model.set({activities: activities});
-		var update = {'$pull': {'activities': activity_id}};
-		self.updateUser({_id: model.id}, update, null, function(err, result) {
-			if (err) return callback(err);
-			callback()
+		data.user_model.set({activities: activities});
+		var update = {'$pull': {'activities': data.activity_id}};
+		self.updateUser({_id: data.user_model.id}, update, null, function(err, result) {
+			if (err) return data.callback(err);
+			data.callback()
 		});
-	};
+	});
 
 	self.removeUsers = function(data, callback) {
 		var query = {};
