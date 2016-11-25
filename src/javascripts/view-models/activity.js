@@ -6,7 +6,7 @@ var ViewModel = function (activitiesViewModel, channel) {
 	var self = this;
 	self.model = ko.observable();
 	self.user_model = ko.observable();
-	self.userActivities = ko.observableArray([]);
+	self.user_activities = ko.observableArray([]);
 	self.activitiesViewModel = activitiesViewModel;
 	self.channel = channel;
 
@@ -27,7 +27,7 @@ var ViewModel = function (activitiesViewModel, channel) {
 	var getUser = function(id) {
 		self.channel.publish('fetch.user', {query: {_id: id}, callback: function(err, _user_model) {
 			self.user_model(_user_model);
-			self.userActivities(getUserActivities());
+			self.user_activities(getUserActivities());
 		}});
 	};
 

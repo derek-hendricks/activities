@@ -17,7 +17,7 @@ const ActivityComponent = {
     self.image = ko.observable();
 
     self.organizer_email = ko.observable();
-    self.userActivities = ko.observableArray([]);
+    self.user_activities = ko.observableArray([]);
 
     self.search = ko.observable();
     self.image_progress = ko.observable();
@@ -39,9 +39,9 @@ const ActivityComponent = {
       }
     });
 
-    params.userActivities.subscribe(function(models) {
-      if (models.length > 1) return self.userActivities(models);
-      self.userActivities([]);
+    params.user_activities.subscribe(function(models) {
+      if (models.length > 1) return self.user_activities(models);
+      self.user_activities([]);
     });
 
     self.getActivityInfo = function(model, set) {
@@ -80,9 +80,9 @@ const ActivityComponent = {
         if (err) return;
         if (self.activity_model()._previousAttributes.activity !== attributes.activity) {
           self.channel.publish('reset.images', {text: model.get('activity')});
-          var user_activities = self.userActivities().slice();
-          self.userActivities([]);
-          self.userActivities(user_activities);
+          var user_activities = self.user_activities().slice();
+          self.user_activities([]);
+          self.user_activities(user_activities);
         }
       }});
     };
@@ -110,7 +110,7 @@ const ActivityComponent = {
 
     self.changeUserActivity = function(model, event) {
       self.getActivityInfo(model, true);
-      self.userActivities.unshift((self.userActivities()).splice(self.userActivities.indexOf(model), 1)[0]);
+      self.user_activities.unshift((self.user_activities()).splice(self.user_activities.indexOf(model), 1)[0]);
     };
 
     self.viewUserProfile = function() {
@@ -173,11 +173,11 @@ const ActivityComponent = {
             </div>\
             <div class="row">\
               <div class="col-md-4">\
-                <p data-bind="visible: userActivities().length > 0">Organizer\'s Activities:</p>\
+                <p data-bind="visible: user_activities().length > 0">Organizer\'s Activities:</p>\
               </div>\
               <div class="col-md-8">\
                   <div class="user-activities">\
-                    <div data-bind="foreach: userActivities">\
+                    <div data-bind="foreach: user_activities">\
                       <a data-bind="click: $parent.changeUserActivity, text: get(\'activity\')"></a><br/>\
                     </div>\
                   </div>\
