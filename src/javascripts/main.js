@@ -1,8 +1,8 @@
 import Backbone from 'backbone';
 import ko from 'knockout';
 import Postal from 'postal';
-import _ from 'underscore';
-import ActivityModel from './models/activity';
+// import _ from 'underscore';
+// import ActivityModel from './models/activity';
 import ActivitiesViewModel from './view-models/activities';
 import ActivityViewModel from './view-models/activity';
 import UserViewModel from './view-models/user';
@@ -10,6 +10,7 @@ import ImageViewModel from './view-models/images';
 import ActivityComponent from './components/activity_modal';
 import NewActivityComponent from './components/new_activity';
 import ImageComponent from './components/images';
+import ActivitySearchComponent from './components/activity_search';
 import Router from './router';
 
 var ViewModel = function () {
@@ -20,7 +21,7 @@ var ViewModel = function () {
 	self.images = new ImageViewModel(channel);
 	self.activity = new ActivityViewModel(self.activities, channel);
 
-	new Router({channel: channel, activityViewModel: self.activity, activitiesViewModel: self.activities, userViewModel: self.user, imageViewModel: self.images});
+	new Router({channel: channel, activityViewModel: self.activity, activitiesViewModel: self.activities, userViewModel: self.user});
 
 	Backbone.history.start();
 };
@@ -38,6 +39,11 @@ ko.components.register('new-activity', {
 ko.components.register('images', {
 	viewModel: ImageComponent.vm,
 	template: ImageComponent.template
+});
+
+ko.components.register('activity-search', {
+	viewModel: ActivitySearchComponent.vm,
+	template: ActivitySearchComponent.template
 });
 
 ko.applyBindings(new ViewModel(), document.getElementById('activities'));

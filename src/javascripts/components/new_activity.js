@@ -46,11 +46,9 @@ const newActivityComponent = {
       };
 
       var updateActivitiesViewModel = function(model) {
-        // activitiesViewModel = params.activitiesViewModel;
         self.email(''); self.activity('');
         self.description(''); self.participants(''); self.start_date('');
         channel.publish('activity.added', {model: model});
-        // activitiesViewModel.activityAdded(model);
       };
   };
 },

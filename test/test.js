@@ -61,8 +61,6 @@ describe('Activities', () => {
       if (err) done();
       db = database;
       reset();
-      db.collection('images').createIndex({text: 1}, {unique: true});
-      db.collection('users').dropIndex({email: 1});
       createDoc('activities', activity, null, (err, result) => {
         if (err) done();
         activity._id = String(result.ops[0]._id);

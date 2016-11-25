@@ -102,14 +102,24 @@ activity-modal .setselected {
   cursor: pointer;
 }
 .activity-title {
-  margin-bottom: 15px;
-  margin-top: 10px;
+  position: absolute;
+  top: 55;
+  background: rgba(0,0,0,.2);
+  margin-top: -5px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   font-size: 18px;
-  line-height: 20px;
-  text-align: center;
+  line-height: 40px;
+  width: 249px;
+  box-shadow: 0 2px 2px -2px grey;
+}
+.activity-title a {
+  color: rgba(255,255,255,.8);
+}
+.activity-title a:hover {
+  color: rgba(255,255,255,1);
+  text-decoration: none;
 }
 new-activity > .row {
   margin-bottom: 50px;
@@ -128,20 +138,25 @@ new-activity .new-form-1 {
 new-activity .left {
   margin-left: -20px;
 }
-.activity-col {
+/*.activity-col {
   border: 1px solid #e7e7e7;
+}*/
+.activities-display {
+  width: inherit;
 }
 .activity-col .title {
   height: 50px;
 }
-.data-row .activity-col:nth-child(2), .data-row .activity-col:nth-child(3), .data-row .activity-col:nth-child(4) {
+/*.data-row .activity-col:nth-child(2), .data-row .activity-col:nth-child(3), .data-row .activity-col:nth-child(4) {
   border-left: none;
-}
+}*/
 .activity-list-img {
   text-align: center;
 }
 .data-row {
   margin-bottom: 5px;
+  margin-left: 0px !important;
+  margin-right: 0px !important;
 }
 .data-row img {
   width: 249px;
@@ -168,4 +183,8 @@ images .message {
 }
 images .message div {
   margin-bottom: 10px;
+}
+activity-search .activity-search {
+  margin-top: 8px;
+  margin-left: 70px;
 }

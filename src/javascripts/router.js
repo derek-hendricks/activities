@@ -37,7 +37,6 @@ var AppRouter = Backbone.Router.extend({
     self.activitiesViewModel = options.activitiesViewModel;
     self.activityViewModel = options.activityViewModel;
     self.userViewModel = options.userViewModel;
-    self.imageViewModel = options.imageViewModel;
 
     fetchCollection(ActivityCollection, self.activitiesViewModel, 'activitiesCollection', 'activities');
     fetchCollection(UserCollection, self.userViewModel, 'userCollection', 'users');

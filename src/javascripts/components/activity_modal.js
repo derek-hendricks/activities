@@ -74,7 +74,7 @@ const ActivityComponent = {
     self.saveChanges = function() {
       self.edit_mode(!self.edit_mode());
       var attributes = {activity: self.activity_name(), img: self.image(), description: self.description(), participants: self.participants()};
-      if (self.start_date().indexOf('-') > -1) attributes.start_date = self.start_date();
+      if (self.start_date() && self.start_date().indexOf('-') > -1) attributes.start_date = self.start_date();
       var query = {$set: attributes};
       self.channel.publish('activity.update', {model: self.activity_model(), query: query, attributes: attributes, callback: function(err, model) {
         if (err) return;
