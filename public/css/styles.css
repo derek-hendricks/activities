@@ -111,8 +111,10 @@ activity-modal .setselected {
   text-overflow: ellipsis;
   font-size: 18px;
   line-height: 40px;
-  width: 249px;
+  width: 270px;
   box-shadow: 0 2px 2px -2px grey;
+  border-top-left-radius: 6px;
+  border-top-right-radius: 6px;
 }
 .activity-title a {
   color: rgba(255,255,255,.8);
@@ -159,8 +161,8 @@ new-activity .left {
   margin-right: 0px !important;
 }
 .data-row img {
-  width: 249px;
-  height: 249px;
+  width: 270px;
+  height: 270px;
 }
 .activity-list-delete {
   text-align: right;

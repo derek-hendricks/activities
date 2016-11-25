@@ -43,7 +43,7 @@ html
                 .row
                   .col-xs.activity-list-img
                     a(data-bind="attr: { href: '#activities/' + $data._id}")
-                      img(data-bind="attr: {src: $data.img}", data-toggle='modal', data-target='#myModal').img-responsive
+                      img(data-bind="attr: {src: $data.img}", data-toggle='modal', data-target='#myModal').img-responsive.img-rounded
 
       div(data-bind='with: activity')
         <activity-modal params="user_model: user_model, userActivities: userActivities, channel: channel, model: model"></activity-modal>
