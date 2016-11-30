@@ -13,6 +13,7 @@ const ImageComponent = {
     self.channel.subscribe('reset.images', function(data) {
       self.text(data.text);
       self.images([]);
+      self.imageCols([]);
     });
 
     self.viewImages = function(data, event, save, callback) {

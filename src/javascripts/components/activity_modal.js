@@ -79,7 +79,6 @@ const ActivityComponent = {
       self.channel.publish('activity.update', {model: self.activity_model(), query: query, attributes: attributes, callback: function(err, model) {
         if (err) return;
         if (self.activity_model()._previousAttributes.activity !== attributes.activity) {
-          self.channel.publish('reset.images', {text: model.get('activity')});
           var user_activities = self.user_activities().slice();
           self.user_activities([]);
           self.user_activities(user_activities);

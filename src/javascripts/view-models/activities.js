@@ -20,11 +20,21 @@ const ViewModel = function (channel) {
 		return rows;
 	}, self);
 
-	self.getActivity = function(id) {
+	self.getActivity = function(attr, value) {
 		return self.activities().find(function(activity) {
-		  return activity._id === id;
+		  return activity[attr].toLowerCase() === value.toLowerCase();
 		});
 	};
+
+	self.channel.subscribe('activity.search', function(data) {
+    var activity = self.getActivity(data.attr, data.value);
+		if (!activity) {
+			return data.callback({err: 'Could not find ' + data.value});
+		}
+		var index = self.activities.indexOf(activity);
+		self.activities.unshift((self.activities()).splice(index, 1)[0]);
+		data.callback(null, {message: data.value + ' found'});
+	});
 
 	self.getActivityModel = function(query) {
 		if (self.activitiesCollection()) {

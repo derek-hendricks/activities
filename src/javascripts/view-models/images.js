@@ -9,7 +9,7 @@ const ViewModel = function (channel) {
 
 	var imageRows = function(image, cols) {
 		var rows = [], current = [], urls;
-		if ((((urls = image.urls || []) ? urls.length : 0) < 1)) return [];
+		if ((((urls = image.urls || []) ? urls.length : 0) < 1)) return rows;
 		rows.push(current);
 		for (var i = 0; i < image.urls.length; i++) {
 			current.push(image.urls[i]);

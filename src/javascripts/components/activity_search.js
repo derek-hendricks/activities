@@ -8,7 +8,14 @@ const ActivitySearchComponent = {
     self.search = ko.observable();
 
     self.search.subscribe(function(text) {
-      console.log('search', text);
+      if (text.length >= 3) {
+        self.channel.publish('activity.search', {
+          attr: 'activity', value: text,
+          callback: function(err, message) {
+            console.log(err, message);
+          }
+        });
+      }
     });
   },
 

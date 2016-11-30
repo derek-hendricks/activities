@@ -1,8 +1,6 @@
 import Backbone from 'backbone';
 import ko from 'knockout';
 import Postal from 'postal';
-// import _ from 'underscore';
-// import ActivityModel from './models/activity';
 import ActivitiesViewModel from './view-models/activities';
 import ActivityViewModel from './view-models/activity';
 import UserViewModel from './view-models/user';
