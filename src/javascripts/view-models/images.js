@@ -75,6 +75,3 @@ const ViewModel = function (channel) {
 };
 
 module.exports = ViewModel;
-
-
-
