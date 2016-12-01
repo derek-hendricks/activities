@@ -2,7 +2,6 @@ import Backbone from 'backbone';
 import _ from 'underscore';
 import ActivityCollection from './collections/activity';
 import UserCollection from './collections/user';
-import ImageCollection from './collections/image';
 import ActivityModel from './models/activity';
 import UserModel from './models/user';
 
