@@ -33,7 +33,7 @@ const ViewModel = function(channel) {
 		var model = new UserModel(query);
 		model.fetch({success: function(model, response) {
 			if (model.id) return callback(null, model);
-			return callback(model);
+			callback(model);
 		}, error: function(err) {
 			callback(err);
 		}});
