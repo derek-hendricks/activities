@@ -134,7 +134,7 @@ const ActivityComponent = {
           </div>\
           <div class="modal-body">\
             <div class="row">\
-            <div class="col-md-7">\
+            <div class="col-xs-7">\
             <div class="row">\
               <div class="col-md-4">\
                 <p>Activity Date:</p>\
@@ -183,7 +183,7 @@ const ActivityComponent = {
                 </div>\
               </div>\
             </div>\
-            <div class="col-md-3 activity-img-container">\
+            <div class="col-xs-3 activity-img-container">\
               <div class="activity-img">\
                 <img style="width: inherit; height: inherit" data-bind="attr: {src: image}"\>\
                 <input data-bind="textInput: search" class="form-control" placeholder="image search"/>\
@@ -195,10 +195,10 @@ const ActivityComponent = {
           </div>\
           <div class="modal-footer">\
             <div class="row">\
-              <div class="col-md-4 remove-activity">\
+              <div class="col-xs-4 remove-activity">\
                 <button data-bind="click: removeActivity" type="button" class="btn btn-default" data-dismiss="modal">Remove Activity</button>\
               </div>\
-              <div class="col-md-8">\
+              <div class="col-xs-8">\
                 <button data-bind="visible: !edit_mode()" type="button" class="btn btn-default" data-dismiss="modal">Close</button>\
                 <button data-bind="click: toggleEditActivity, visible: !edit_mode()" type="button" class="btn btn-primary">Edit Activity</button>\
                 \

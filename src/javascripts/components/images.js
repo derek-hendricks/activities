@@ -83,11 +83,11 @@ const ImageComponent = {
       </div>\
       </div>\
       <div data-bind="visible: imageCols().length > 0" class="row">\
-      <div class="col-md-4 previous-image">\
+      <div class="col-xs-4 previous-image">\
         <img data-bind="click: previousImageSet"  src="./arrow.png"/>\
       </div>\
       <div class="col-md-4"></div>\
-      <div class="col-md-4 next-image">\
+      <div class="col-xs-4 next-image">\
         <img data-bind="click: nextImageSet" src="./arrow.png"/>\
       </div>\
     </div>\

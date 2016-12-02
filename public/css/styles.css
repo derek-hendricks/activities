@@ -70,21 +70,17 @@ activity-modal .image-select {
   text-align: center;
   margin: 5px 0;
 }
-activity-modal .next-image{
+activity-modal .next-image {
   text-align: right;
+  float: right;
 }
 activity-modal .previous-image img {
   margin: 5px;
-  position: absolute;
-  top: -90px;
   -ms-transform: rotate(180deg);
   -webkit-transform: rotate(180deg);
   transform: rotate(180deg);
 }
 activity-modal .next-image img {
-  position: absolute;
-  top: -90px;
-  left: 150;
   margin: 5px;
 }
 activity-modal .next-image img:hover, activity-modal .previous-image img:hover {
@@ -140,18 +136,12 @@ new-activity .new-form-1 {
 new-activity .left {
   margin-left: -20px;
 }
-/*.activity-col {
-  border: 1px solid #e7e7e7;
-}*/
 .activities-display {
   width: inherit;
 }
 .activity-col .title {
   height: 50px;
 }
-/*.data-row .activity-col:nth-child(2), .data-row .activity-col:nth-child(3), .data-row .activity-col:nth-child(4) {
-  border-left: none;
-}*/
 .activity-list-img {
   text-align: center;
 }
@@ -190,3 +180,38 @@ activity-search .activity-search {
   margin-top: 8px;
   margin-left: 70px;
 }
+
+@media screen and (max-width: 1250px) and (min-width: 768px) {
+  .activity-search {
+    float: right;
+  }
+}
+@media screen and (max-width: 767px) {
+  .activity-search {
+    display: inline;
+  }
+  activity-search .activity-search {
+    margin-left: 0px;
+  }
+  .activity-search input {
+    margin: 0 10px 0 15px;
+    width: 95%;
+    height: 50px;
+  }
+}
+@media screen and (max-width: 991px) {
+  new-activity .left {
+    margin-left: 0px;
+  }
+}
+@media screen and (max-width: 1199px) {
+  .activity-title {
+    width: 100%;
+  }
+}
+@media screen and (max-width: 444px) {
+  .activity-img {
+    margin-left: -30px;
+  }
+}
+
