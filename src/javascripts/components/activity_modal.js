@@ -3,7 +3,8 @@ import _ from 'underscore';
 import moment from 'moment';
 
 const ActivityComponent = {
-  vm: function (params) {
+  name: 'activity-modal',
+  viewModel: function (params) {
     var self = this, user_model, input = 3, search = true, ms = 500;
     self.channel = params.channel;
     self.image_columns = 5;

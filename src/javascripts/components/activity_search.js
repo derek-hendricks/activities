@@ -2,7 +2,8 @@ import ko from 'knockout';
 import _ from 'underscore';
 
 const ActivitySearchComponent = {
-  vm: function (params) {
+  name: 'activity-search',
+  viewModel: function (params) {
     var self = this;
     self.channel = params.channel;
     self.search = ko.observable();

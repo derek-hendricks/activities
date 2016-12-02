@@ -29,10 +29,8 @@ const parseQuery = (query) => {
 };
 
 const flickerApi = (search_options, callback) => {
-  flickr.photos.search(search_options, (err, result, options) => {
+  flickr.photos.search(search_options, (err, result) => {
     if (err) return callback(err);
-    console.log('result', result);
-    console.log('options', options);
     var photos = result.photos.photo, url, urls = [];
     if (!photos) return callback(true);
     for (var i = 0; i < photos.length; i++) {

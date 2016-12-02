@@ -2,7 +2,8 @@ import ko from 'knockout';
 import _ from 'underscore';
 
 const newActivityComponent = {
-  vm: function (params) {
+  name: 'new-activity',
+  viewModel: function (params) {
     var self = this;
     var channel = params.channel;
 

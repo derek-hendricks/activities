@@ -2,7 +2,8 @@ import ko from 'knockout';
 import _ from 'underscore';
 
 const ImageComponent = {
-  vm: function (params) {
+  name: 'images',
+  viewModel: function (params) {
     var self = this, image_columns = params.columns;
     self.text = ko.observable();
     self.channel = params.channel;
