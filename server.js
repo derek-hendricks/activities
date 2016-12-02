@@ -29,8 +29,10 @@ const parseQuery = (query) => {
 };
 
 const flickerApi = (search_options, callback) => {
-  flickr.photos.search(search_options, (err,result) => {
+  flickr.photos.search(search_options, (err, result, options) => {
     if (err) return callback(err);
+    console.log('result', result);
+    console.log('options', options);
     var photos = result.photos.photo, url, urls = [];
     if (!photos) return callback(true);
     for (var i = 0; i < photos.length; i++) {
@@ -83,7 +85,7 @@ MongoClient.connect(
     db = database;
     app.listen(port, () => {
       console.log('listening on ' + port);
-      var flickrOptions = {api_key: process.env.FLICKR_KEY, secret: process.env.FLICKR_SECRET, progress: false};
+      var flickrOptions = {api_key: process.env.FLICKR_KEY, secret: process.env.FLICKR_SECRET, progress: true};
       Flickr.tokenOnly(flickrOptions, (err, _flickr) => {
         if (err) return console.log(err);
         flickr = _flickr;
