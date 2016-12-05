@@ -56,7 +56,7 @@ const newActivityComponent = {
 
 template: '\
   <div class="row">\
-    <div class="col-md-6">\
+    <div class="col-md-12">\
       <div class="row">\
         <div class="col-md-6 new-form-1">\
           <input autofocus class="form-control" data-bind="value: activity" type="text" placeholder="Activity" name="activity"\>\

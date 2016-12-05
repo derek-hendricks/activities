@@ -10,11 +10,16 @@ const ViewModel = function (channel) {
 	self.activityRows = ko.computed(function () {
 		var rows = [], current = [];
 		rows.push(current);
-		for (var i = 0; i < self.activities().length; i++) {
+		for (var i = 1; i < self.activities().length; i++) {
 			current.push(self.activities()[i]);
 			if (((i + 1) % 4) === 0) {
 			  current = [];
 			  rows.push(current);
+			}
+		}
+		if (rows && rows[0].length) {
+			for (var i = 1; i < rows.length; i++) {
+			  if (rows[i].length) rows[i-1].push(rows[i].shift(0))
 			}
 		}
 		return rows;
@@ -28,12 +33,14 @@ const ViewModel = function (channel) {
 
 	self.channel.subscribe('activity.search', function(data) {
     var activity = self.getActivity(data.attr, data.value);
-		if (!activity) {
+		var model = self.getActivityModel({activity: data.value});
+		if (!model) {
 			return data.callback({err: 'Could not find ' + data.value});
 		}
 		var index = self.activities.indexOf(activity);
 		self.activities.unshift((self.activities()).splice(index, 1)[0]);
-		data.callback(null, {message: data.value + ' found'});
+		self.channel.publish('feature.image', model);
+		data.callback(null);
 	});
 
 	self.getActivityModel = function(query) {

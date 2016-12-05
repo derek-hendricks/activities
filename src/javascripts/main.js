@@ -13,22 +13,23 @@ import ActivityComponent from './components/activity_modal';
 import NewActivityComponent from './components/new_activity';
 import ImageComponent from './components/images';
 import ActivitySearchComponent from './components/activity_search';
+import FeaturedActivityComponent from './components/featured_activity';
 
 
 var ViewModel = function () {
 	var self = this;
-	var channel = Postal.channel();
-	self.user = new UserViewModel(channel);
-	self.activities = new ActivitiesViewModel(channel);
-	self.images = new ImageViewModel(channel);
-	self.activity = new ActivityViewModel(self.activities, channel);
+	self.channel = Postal.channel();
+	self.user = new UserViewModel(self.channel);
+	self.activities = new ActivitiesViewModel(self.channel);
+	self.images = new ImageViewModel(self.channel);
+	self.activity = new ActivityViewModel(self.activities, self.channel);
 
-	new Router({channel: channel, activityViewModel: self.activity, activitiesViewModel: self.activities, userViewModel: self.user});
+	new Router({channel: self.channel, activityViewModel: self.activity, activitiesViewModel: self.activities, userViewModel: self.user});
 
 	Backbone.history.start();
 };
 
-var loadComponent = function(component) {
+var registerComponent = function(component) {
   ko.components.register(component.name, {
     viewModel: component.viewModel,
     template: component.template
@@ -39,11 +40,12 @@ var _components = [
   ActivityComponent,
   NewActivityComponent,
   ImageComponent,
-  ActivitySearchComponent
+  ActivitySearchComponent,
+  FeaturedActivityComponent
 ];
 
 for (var i = 0; i < _components.length; i++) {
-  loadComponent(_components[i]);
+  registerComponent(_components[i]);
 }
 
 ko.applyBindings(new ViewModel(), document.getElementById('activities'));

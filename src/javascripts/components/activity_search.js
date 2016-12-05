@@ -12,8 +12,9 @@ const ActivitySearchComponent = {
       if (text.length >= 3) {
         self.channel.publish('activity.search', {
           attr: 'activity', value: text,
-          callback: function(err, message) {
-            console.log(err, message);
+          callback: function(err) {
+           if (err) return;
+           console.log(text + ' found');
           }
         });
       }

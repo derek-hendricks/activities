@@ -8,26 +8,28 @@ html
     script(src='https://d3js.org/d3-queue.v3.min.js')
     script(src='/lib/jquery.min.js')
     script(src='/lib/bootstrap.min.js')
-
+    //- create navbar component
     div#activities
-      nav(class="navbar navbar-default navbar-static-top")
-        div(class="container-fluid")
-          div(class="navbar-header")
-            a(class="navbar-brand" href="/")
-              img(alt="Brand" height="20" width="20" src="./clipboard.png")
-            a(class="navbar-brand" href="/") Activities
+      nav(class='navbar navbar-default navbar-static-top')
+        div(class='container-fluid')
+          div(class='navbar-header')
+            a(class='navbar-brand' href='/')
+              img(alt='Brand' height='20' width='20' src='./clipboard.png')
+            a(class='navbar-brand' href='/') Activities
           div(data-bind='with: activities')
-            <activity-search params="channel: channel"></activity-search>
+            <activity-search params='channel: channel'></activity-search>
 
       .container
         .row
-          .col-md-6.float-left
-        div(data-bind='with: activity')
-          <new-activity params="channel: channel, activitiesViewModel: activitiesViewModel"></new-activity>
-
-      div(data-bind='with: activities').container
+          .col-sm-6
+            <new-activity params='channel: channel'></new-activity>
+          .col-sm-6
+            div(data-bind='with: activities')
+              <featured-activity params='channel: channel, activities: activities'></featured-activity>
+      //- create activity rows component
+      div(data-bind='with: activities').container.activities-container
         div(data-bind='visible: activities().length', style='display: none').activities-display
-          .row
+          .row.list-toolbar
             .col-md-4.activity-list-count
               p(data-bind='text: activities().length + (activities().length > 1 ? " Activities" : " Activity")')
             .col-md-4
@@ -38,12 +40,13 @@ html
               .col-xs-3(class='activity-col')
                 .row.title
                   .col-xs-12.activity-title
-                    a(data-bind="attr: { href: '#activities/' + $data._id}")
-                      span(data-bind="text: $data.activity", data-toggle='modal', data-target='#myModal')
+                    a(data-bind="attr: {href: '#activities/' + $data._id}")
+                      span(data-bind="text: $data.activity", data-toggle='modal', data-target='#activityModal')
                 .row
                   .col-xs.activity-list-img
-                    a(data-bind="attr: { href: '#activities/' + $data._id}")
-                      img(data-bind="attr: {src: $data.img}", data-toggle='modal', data-target='#myModal').img-responsive.img-rounded
+                    a(data-bind="attr: {href: '#activities/' + $data._id}")
+                      .activity-list-img-container
+                        img(data-bind="attr: {src: $data.img}", data-toggle='modal', data-target='#activityModal').img-responsive
 
       div(data-bind='with: activity')
         <activity-modal params="user_model: user_model, user_activities: user_activities, channel: channel, model: model"></activity-modal>

@@ -119,13 +119,13 @@ const ActivityComponent = {
   },
 
   template: '\
-    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">\
+    <div class="modal fade" id="activityModal" tabindex="-1" role="dialog" aria-labelledby="activityModalLabel">\
       <div class="modal-dialog" role="document">\
         <div class="modal-content">\
           <div class="modal-header">\
             <div class="row">\
               <div class="col-md-6">\
-                <h4 class="modal-title" data-bind="text: activity_name, visible: !edit_mode()" id="myModalLabel"></h4>\
+                <h4 class="modal-title" data-bind="text: activity_name, visible: !edit_mode()" id="activityModalLabel"></h4>\
                 <input autofocus class="form-control" data-bind="value: activity_name, visible: edit_mode"/>\
               </div>\
               <div class="col-md-6">\
@@ -135,47 +135,47 @@ const ActivityComponent = {
           </div>\
           <div class="modal-body">\
             <div class="row">\
-            <div class="col-xs-7">\
-            <div class="row">\
-              <div class="col-md-4">\
-                <p>Activity Date:</p>\
-              </div>\
-              <div class="col-md-8">\
-                <p data-bind="text: start_date, visible: !edit_mode()"></p>\
-                <input class="form-control modal-input-1-date" data-bind="value: start_date, visible: edit_mode" type="date"/>\
-              </div>\
-            </div>\
-            <div class="row">\
-              <div class="col-md-4"><p>Organizer:</p></div>\
-              <div class="col-md-8">\
-                <a data-bind="click: viewUserProfile">\
-                  <p data-bind="text: organizer_email"></p>\
-                </a>\
-              </div>\
-            </div>\
-            <div class="row">\
-              <div class="col-md-4">\
-                <p>Participants:</p>\
-              </div>\
-              <div class="col-md-8">\
-                <p data-bind="text: participants, visible: !edit_mode()"></p>\
-                <input class="form-control modal-input-1-date" data-bind="value: participants, visible: edit_mode"/>\
-              </div>\
-            </div>\
-            <div class="row">\
-              <div class="col-md-4"><p>Details:</p></div>\
-              <div class="col-md-8">\
-                <div class="description" data-bind="text: description, visible: !edit_mode()"></div>\
-                <div class="form-group">\
-                  <textarea class="form-control" rows="3" data-bind="value: description, visible: edit_mode" type="text" placeholder="Details"></textarea>\
+              <div class="col-xs-7">\
+              <div class="row">\
+                <div class="col-md-4">\
+                  <p>Activity Date:</p>\
+                </div>\
+                <div class="col-md-8">\
+                  <p data-bind="text: start_date, visible: !edit_mode()"></p>\
+                  <input class="form-control modal-input-1-date" data-bind="value: start_date, visible: edit_mode" type="date"/>\
                 </div>\
               </div>\
-            </div>\
-            <div class="row">\
-              <div class="col-md-4">\
-                <p data-bind="visible: user_activities().length > 0">Organizer\'s Activities:</p>\
+              <div class="row">\
+                <div class="col-md-4"><p>Organizer:</p></div>\
+                <div class="col-md-8">\
+                  <a data-bind="click: viewUserProfile">\
+                    <p data-bind="text: organizer_email"></p>\
+                  </a>\
+                </div>\
               </div>\
-              <div class="col-md-8">\
+              <div class="row">\
+                <div class="col-md-4">\
+                  <p>Participants:</p>\
+                </div>\
+                <div class="col-md-8">\
+                  <p data-bind="text: participants, visible: !edit_mode()"></p>\
+                  <input class="form-control modal-input-1-date" data-bind="value: participants, visible: edit_mode"/>\
+                </div>\
+              </div>\
+              <div class="row">\
+                <div class="col-md-4"><p>Details:</p></div>\
+                <div class="col-md-8">\
+                  <div class="description" data-bind="text: description, visible: !edit_mode()"></div>\
+                  <div class="form-group">\
+                    <textarea class="form-control" rows="3" data-bind="value: description, visible: edit_mode" type="text" placeholder="Details"></textarea>\
+                  </div>\
+                </div>\
+              </div>\
+              <div class="row">\
+                <div class="col-md-4">\
+                  <p data-bind="visible: user_activities().length > 0">Organizer\'s Activities:</p>\
+                </div>\
+                <div class="col-md-8">\
                   <div class="user-activities">\
                     <div data-bind="foreach: user_activities">\
                       <a data-bind="click: $parent.changeUserActivity, text: get(\'activity\')"></a><br/>\
@@ -184,11 +184,15 @@ const ActivityComponent = {
                 </div>\
               </div>\
             </div>\
-            <div class="col-xs-3 activity-img-container">\
-              <div class="activity-img">\
-                <img style="width: inherit; height: inherit" data-bind="attr: {src: image}"\>\
+            <div class="col-xs-3">\
+              <div class="search-input">\
                 <input data-bind="textInput: search" class="form-control" placeholder="image search"/>\
                 <div data-bind="text: image_progress"></div>\
+              </div>\
+              <div>\
+                <div class="activity-img-container">\
+                  <img class="activity-img" data-bind="attr: {src: image}"\>\
+                </div>\
               </div>\
             </div>\
             </div>\
