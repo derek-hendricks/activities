@@ -14,7 +14,7 @@ import NewActivityComponent from './components/new_activity';
 import ImageComponent from './components/images';
 import ActivitySearchComponent from './components/activity_search';
 import FeaturedActivityComponent from './components/featured_activity';
-
+import FooterComponent from './components/footer';
 
 var ViewModel = function () {
 	var self = this;
@@ -41,8 +41,10 @@ var _components = [
   NewActivityComponent,
   ImageComponent,
   ActivitySearchComponent,
-  FeaturedActivityComponent
+  FeaturedActivityComponent,
+  FooterComponent
 ];
+console.log('FooterComponent', FooterComponent);
 
 for (var i = 0; i < _components.length; i++) {
   registerComponent(_components[i]);

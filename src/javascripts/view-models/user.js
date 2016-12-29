@@ -16,6 +16,7 @@ const ViewModel = function(channel) {
 
 	channel.subscribe('users.delete', function(data) {
 		var model = data.model || self.userCollection().models[0];
+		if (!model) return;
 		self.removeUsers({model: model}, data.callback);
 	});
 

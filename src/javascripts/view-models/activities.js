@@ -23,13 +23,15 @@ const ViewModel = function(channel) {
   }, self);
 
   self.getActivity = function(attr, value) {
-    return self.activities().find(function(activity) {
-      return activity[attr].toLowerCase() === value.toLowerCase();
-    });
+		var index = self.activities().findIndex(function(_activity){
+			return String(_activity[attr]).toLowerCase() === String(value).toLowerCase();
+		});
+		return {index: index, activity: self.activities()[index]};
   };
 
   self.channel.subscribe('activity.search', function(data) {
-    var activity = self.getActivity(data.attr, data.value), suggestions = [], index;
+    var activity = (self.getActivity(data.attr, data.value)).activity,
+		  suggestions = [], index;
     if (!activity) {
       for (var i = 0; i < self.activities().length; i++) {
         index = self.activities()[i].activity.toLowerCase().indexOf(data.value.toLowerCase());
@@ -70,8 +72,9 @@ const ViewModel = function(channel) {
     self.activities.unshift((self.activities()).splice(index, 1)[0]);
   });
 
-  self.activityRemoved = function(model) {
-    var index = self.activities().indexOf(_.findWhere(self.activities(), {_id: model.id}));
+  self.activityRemoved = function(model, id, index) {
+		var model = model ? model : self.getActivityModel({id: id});
+    var index = index ? index : self.activities().indexOf(_.findWhere(self.activities(), {_id: model.id}));
     self.activities.splice(index, 1);
     self.activitiesCollection().remove(model);
   };
@@ -89,7 +92,41 @@ const ViewModel = function(channel) {
     self.activitiesCollection().add(data.model);
   });
 
-  self.deleteAll = function() {
+	self.channel.subscribe('delete.all', function(data) {
+    var queue = d3.queue();
+    queue.defer(function(callback) {
+      self.channel.publish('users.delete', {
+        callback: function(err) {
+          callback(err);
+        }
+      });
+    });
+		queue.defer(function(callback) {
+      var activity = self.activitiesCollection().models[0];
+			var query = {all: true};
+			activity.destroy({
+				data: {
+          col: 'activities',
+          query: query
+        },
+        processData: true,
+        success: function(models, response) {
+          self.activities([]);
+          self.activitiesCollection().reset();
+          callback()
+        },
+        error: function(err) {
+          return callback(err);
+        }
+      });
+		});
+		queue.await(function(err) {
+			self.channel.publish('feature.image', {});
+      data.callback({err: err});
+    });
+	});
+
+  self.deleteActivities = function(activities) {
     var queue = d3.queue();
     queue.defer(function(callback) {
       self.channel.publish('users.delete', {
@@ -99,14 +136,16 @@ const ViewModel = function(channel) {
       });
     });
     queue.defer(function(callback) {
-      var activities = self.activitiesCollection().models;
+			var activity_index;
       var activity_ids = activities.map(function(activity) {
         return activity.id
       });
       var query = {
-        '_id': {
-          '$in': activity_ids
-        }
+        activities: {
+					'_id': {
+						'$in': activity_ids
+					}
+			  }
       };
       activities[0].destroy({
         data: {
@@ -115,8 +154,10 @@ const ViewModel = function(channel) {
         },
         processData: true,
         success: function(models, response) {
-          self.activities([]);
-          self.activitiesCollection().reset();
+					for(var i = 0; i < activity_ids.length; i++) {
+						activity_index = (self.getActivity('_id', activity_ids[i])).index;
+						self.activityRemoved(null, activity_ids[i], activity_index);
+					}
           callback()
         },
         error: function(err) {

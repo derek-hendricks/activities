@@ -32,9 +32,6 @@ html
           .row.list-toolbar
             .col-md-4.activity-list-count
               p(data-bind='text: activities().length + (activities().length > 1 ? " Activities" : " Activity")')
-            .col-md-4
-            .col-md-4.activity-list-delete
-              a.delete-activities(data-bind="click: deleteAll") delete all
           div(class="row activity-rows" data-bind='foreach: activityRows')
             .row(data-bind='foreach: $data', class="data-row")
               .col-xs-3(class='activity-col')
@@ -48,7 +45,12 @@ html
                       .activity-list-img-container
                         img(data-bind="attr: {src: $data.img}", data-toggle='modal', data-target='#activityModal').img-responsive
 
+
+
       div(data-bind='with: activity')
         <activity-modal params="user_model: user_model, user_activities: user_activities, channel: channel, model: model"></activity-modal>
+
+      div(data-bind='with: activities')
+        <page-footer params='channel: channel, activities: activities, activityRows: activityRows'></page-footer>
 
     script(src='./bundle.js')

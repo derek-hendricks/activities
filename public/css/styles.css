@@ -1,3 +1,6 @@
+body {
+  overflow-x: hidden;
+}
 a:hover {
   cursor: pointer;
 }
@@ -97,9 +100,6 @@ activity-modal .setselected {
   color: deepskyblue;
   font-weight: bold;
 }
-.delete-activities {
-  margin-left: -55px;
-}
 .delete-activities:hover {
   color: deepskyblue;
   cursor: pointer;
@@ -165,7 +165,7 @@ new-activity .left {
 }
 .activities-container {
   margin-top: 20px;
-  margin-bottom: 20px;
+  margin-bottom: 40px;
 }
 .list-toolbar {
   position: absolute;
@@ -265,6 +265,28 @@ featured-activity .featured-image-container img {
   height: auto !important;
   width: auto\9;
   -ms-interpolation-mode: bicubic;
+}
+page-footer .navbar-fixed-bottom {
+  position: initial !important;
+}
+page-footer .settings {
+  margin: 10px 0 20px 25px;
+}
+page-footer #settings > div:nth-child(1) > ul li + li {
+  margin-top: 5px;
+}
+page-footer .settings a.activeSetting {
+  color: #fff;
+}
+page-footer .nav navbar-nav a {
+  font-size: 16px;
+}
+page-footer .active a, page-footer .active a:hover, page-footer .active a:focus {
+  background-color: #222 !important;
+}
+page-footer .activity-settings-pagination .col-xs-12 {
+  margin-left: -15px;
+  margin-top: 15px;
 }
 @media screen and (max-width: 1250px) and (min-width: 768px) {
   .activity-search {

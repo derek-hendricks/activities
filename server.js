@@ -42,8 +42,9 @@ const flickerApi = (search_options, callback) => {
 };
 
 var saveActivityImgUrls = (activity, callback) => {
-  var image_set, search_options = {safe_search: 1, sort: 'relevance', content_type: 1, text: activity.text},
-  err_msg = {message: 'Could not find results for ' + activity.text};
+  var search_options = {safe_search: 1, sort: 'relevance', content_type: 1, text: activity.text},
+    err_msg = {message: 'Could not find results for ' + activity.text},
+    image_set;
   flickerApi(search_options, (err, urls) => {
     if (err) return callback(err);
     if (((urls = urls || []) ? urls.length : 0) < 1) {
@@ -212,7 +213,9 @@ router.delete('/users/:id', (req, res, next) => {
 
 router.delete(['/activities/:id', '/images/:id'], (req, res, next) => {
   var col = req.body.col, query;
-  if (query = req.body.query) {
+  if (req.body.query.all) {
+    query = {};
+  } else if (req.body.query.activities) {
     query['_id']['$in'] = query['_id']['$in'].map((id) => { return ObjectId(id) });
   } else {
     query = {'_id': ObjectId(req.params.id)};
