@@ -8,7 +8,6 @@ const ActivitySearchComponent = {
     self.channel = params.channel;
     self.search = ko.observable();
     self.suggestions = ko.observableArray([]);
-    self.selected_suggestion = ko.observable();
     self.message = ko.observable();
 
     self.search.subscribe(function(text) {
@@ -41,6 +40,7 @@ const ActivitySearchComponent = {
       self.message('');
       self.search('');
       self.suggestions([]);
+      self.channel.publish('feature.activity.set', {activity: data.activity});
     }
 
    self.search.subscribe(function(value) {
