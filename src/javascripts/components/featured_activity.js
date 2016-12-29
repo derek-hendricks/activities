@@ -17,10 +17,10 @@ const FeaturedActivity = {
       self.activityTitle(_activities[0].activity);
     });
 
-    self.channel.subscribe('feature.image', function(model) {
-      self.activityImg(model.get('img'));
-      self.activityID(model.id);
-      self.activityTitle(model.get('activity'));
+    self.channel.subscribe('feature.image', function(_activity) {
+      self.activityImg(_activity.img);
+      self.activityID(_activity._id);
+      self.activityTitle(_activity.activity);
     });
   },
 

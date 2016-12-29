@@ -32,15 +32,30 @@ const ViewModel = function (channel) {
 	};
 
 	self.channel.subscribe('activity.search', function(data) {
-    var activity = self.getActivity(data.attr, data.value);
-		var model = self.getActivityModel({activity: data.value});
-		if (!model) {
-			return data.callback({err: 'Could not find ' + data.value});
+    var activity = self.getActivity(data.attr, data.value), suggestions = [], index;
+		if (!activity) {
+			for(var i = 0; i < self.activities().length; i++) {
+        index = self.activities()[i].activity.toLowerCase().indexOf(data.value.toLowerCase());
+        if (index > -1) {
+          suggestions.push({activity: self.activities()[i], name: self.activities()[i].activity, index: index, length: data.value.length});
+				}
+			}
+		  function indexSort(a, b) {
+				if (a.index < b.index) return -1;
+				if (a.index > b.index) return 1;
+				return 0;
+		  }
+			function lenSort(a, b) {
+				if (a.length <= b.length && a.index >= b.index) return 1;
+				if (a.length >= b.length && a.index <= b.index) return -1;
+				return 0;
+		  }
+      suggestions.sort(indexSort).sort(lenSort);
+			return data.callback({err: 'Could not find ' + data.value, suggestions: suggestions, activity: null});
 		}
 		var index = self.activities.indexOf(activity);
 		self.activities.unshift((self.activities()).splice(index, 1)[0]);
-		self.channel.publish('feature.image', model);
-		data.callback(null);
+		data.callback({err: null, suggestions: suggestions, activity: activity});
 	});
 
 	self.getActivityModel = function(query) {
