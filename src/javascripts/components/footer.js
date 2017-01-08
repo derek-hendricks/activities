@@ -74,9 +74,9 @@ const FooterComponent = {
     }
 
     self.activitiesInfo = function() {
+      activityPages(6, 24);
       var setting = Object.assign(self.activity_settings(), {active: true});
       self.activity_settings(setting);
-      activityPages(6, 24);
       mEventReset();
       return true;
     }

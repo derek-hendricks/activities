@@ -10,10 +10,12 @@ const ViewModel = function(channel) {
 
   self.activityRows = ko.computed(function() {
     var rows = [], current = [], featured, activities;
-    if (self.activities()) {
+    if (self.activities().length > 1) {
       self.activities.sort(utils.prioritySort);
       featured = _.findIndex(self.activities(), {feature: 'true'});
-      self.activities.splice(0, 0, self.activities.splice(featured, 1)[0]);
+      if (featured > 0) {
+        self.activities.splice(0, 0, self.activities.splice(featured, 1)[0]);
+      }
       activities = self.activities().slice();
       activities.shift();
       rows.push(current);
@@ -186,4 +188,3 @@ const ViewModel = function(channel) {
 };
 
 module.exports = ViewModel;
-
