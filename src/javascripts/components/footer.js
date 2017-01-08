@@ -4,13 +4,14 @@ import _ from 'underscore';
 const FooterComponent = {
   name: 'page-footer',
   viewModel: function (params) {
-    var self = this, click = {count: 0, all: 0, id: null};
+    var self = this, click = {count: 0, all: 0, id: null}, items = [];
     self.channel = params.channel;
     self.activities = ko.observableArray([]);
     self.activityPages = ko.observableArray([]);
     self.page_index = ko.observable(0);
     self.activity_settings = ko.observable({active: false, manage: false, stats: false, delete: false});
     self.activity_move = ko.observable({});
+    self.items = ko.observableArray([]);
 
     params.activities.subscribe(function(activities) {
       if (!activities) return;
@@ -50,15 +51,16 @@ const FooterComponent = {
 
     var activityPages = function(cols, page_num) {
       var rows = [], current = [], pages = [], ref;
+      self.items(toDraggables(self.activities().slice()));
       rows.push(current);
-      for (var i = 0, l = self.activities().length; i < l; i++)  {
+      for (var i = 0, l = self.items().length; i < l; i++)  {
         ref = i + 1;
-        current.push(self.activities()[i]);
+        current.push(self.items()[i]);
         if (((ref) % cols) === 0 && ((ref) % page_num) !== 0) {
           current = [];
           rows.push(current);
         }
-        if (((ref) % page_num) === 0 && i !== self.activities().length - 1) {
+        if (((ref) % page_num) === 0 && i !== self.items().length - 1) {
             pages.push(rows);
             rows = [];
             current = [];
@@ -171,6 +173,38 @@ const FooterComponent = {
       }
     }
 
+    function toDraggables(values) {
+      return ko.utils.arrayMap(values, function (value) {
+        return {
+          value: value,
+          dragging: ko.observable(false),
+          isSelected: ko.observable(false)
+        };
+      });
+    }
+
+    self.dragStart = function (item) {
+      item.dragging(true);
+    };
+
+    self.dragEnd = function (item) {
+      var ac_x, ac_y;
+      item.dragging(false);
+      if (self.activity_move()._id && self.activity_move()._id !== item.value._id) {
+        ac_x = {_id: self.activity_move()._id, priority: item.value.priority, feature: item.value.feature};
+        ac_y = {_id: item.value._id, priority: self.activity_move().priority, feature: self.activity_move().feature};
+        self.channel.publish('activities.modified', {activities: [ac_x, ac_y]});
+        moveActivity(ac_x, ac_y);
+        mEventReset('all');
+      }
+    };
+
+    self.reorder = function (event, dragData, zoneData) {
+      if (dragData !== zoneData.item) {
+        self.activity_move(zoneData.item.value);
+      }
+    };
+
   },
   template: '\
       <nav class="navbar navbar-inverse navbar-fixed-bottom">\
@@ -212,22 +246,24 @@ const FooterComponent = {
               <div data-bind="visible: activity_settings().manage">\
                 <div class="row activity-rows" data-bind=\'foreach: activityPages()[page_index()]\'>\
                   <div class="row" data-bind=\'foreach: $data\'>\
-                    <div class="col-xs-1 m-activity-display" data-bind="click: !$parents[1].activity_move()._id ? null : function(event){$parents[1].toggleMoveActivity($data);}, css: {activitySelected: $parents[1].activity_move()._id === $data._id, activityMove: $parents[1].activity_move()._id}">\
-                      <div class="row">\
-                        <div class="col-xs-9 title-setting">\
-                          <p data-bind="text: $data.activity"></p>\
+                    <div class="col-xs-1 m-activity-display" data-bind="click: !$parents[1].activity_move()._id ? null : function(event){$parents[1].toggleMoveActivity($data.value);}, css: {dragging: dragging, activitySelected: $parents[1].activity_move()._id === $data.value._id, activityMove: $parents[1].activity_move()._id}, dragZone: { name: \'sortable\', dragStart: $parents[1].dragStart, dragEnd: $parents[1].dragEnd }, dragEvents: { accepts: \'sortable\', dragOver: $parents[1].reorder, data: { items: $parents[1].items(), item: $data } }">\
+                      \
+                        <div class="row">\
+                          <div class="col-xs-9 title-setting">\
+                            <p data-bind="text: $data.value.activity"></p>\
+                          </div>\
+                          <div class="col-xs-3 delete-activity-setting">\
+                            <button data-bind="css: {deleteActive: $parents[1].activity_settings().delete_one}" type="button" class="close" aria-label="Close">\
+                              <span data-bind="click: function(event){$parents[1].removeActivity($data.value, event);}, event: {contextmenu: $parents[1].removeActivity}, clickBubble: false" aria-hidden="true">×</span>\
+                            </button>\
+                          </div>\
                         </div>\
-                        <div class="col-xs-3 delete-activity-setting">\
-                          <button data-bind="css: {deleteActive: $parents[1].activity_settings().delete_one}" type="button" class="close" aria-label="Close">\
-                            <span data-bind="click: function(event){$parents[1].removeActivity($data, event);}, event: {contextmenu: $parents[1].removeActivity}, clickBubble: false" aria-hidden="true">×</span>\
-                          </button>\
+                        <div class="row update-activity-setting">\
+                          <div class="col-xs-2">\
+                            <span data-bind="click: function(event){$parents[1].toggleMoveActivity($data.value);}, clickBubble: false, css: {glyphiconMove: $parents[1].activity_move()._id, glyphiconSelected: $parents[1].activity_move()._id === $data.value._id}" class="glyphicon glyphicon-move"></span>\
+                          </div>\
                         </div>\
-                      </div>\
-                      <div class="row update-activity-setting">\
-                        <div class="col-xs-2">\
-                          <span data-bind="click: function(event){$parents[1].toggleMoveActivity($data);}, clickBubble: false, css: {glyphiconMove: $parents[1].activity_move()._id, glyphiconSelected: $parents[1].activity_move()._id === $data._id}" class="glyphicon glyphicon-move"></span>\
-                        </div>\
-                      </div>\
+                      \
                     </div>\
                   </div>\
                 </div>\
@@ -243,11 +279,13 @@ const FooterComponent = {
             </div>\
           </div>\
           \
-          \
         </div>\
       </nav>\
   '
 }
 
 module.exports = FooterComponent;
+
+
+
 

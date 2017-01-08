@@ -340,6 +340,9 @@ page-footer .m-activity-display {
   -moz-box-shadow: 14px 5px 9px -6px rgba(0,0,0,0.28);
   box-shadow: 14px 5px 9px -6px rgba(0,0,0,0.28);
 }
+page-footer .m-activity-display:hover {
+  cursor: move;
+}
 page-footer .m-activity-display.activitySelected {
   background-image: url("../images/activity-selected.png");
 }
@@ -426,6 +429,11 @@ page-footer .activity-pages a.pageSelected:hover {
 page-footer .pageSelected {
   color: #fff !important;
 }
+page-footer .dragging {
+  opacity: 0.5;
+  filter: "alpha(opacity=50)";
+}
+
 @media screen and (max-width: 1250px) and (min-width: 768px) {
   .activity-search {
     float: right;

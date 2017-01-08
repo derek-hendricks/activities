@@ -1,6 +1,8 @@
 import Backbone from 'backbone';
 import ko from 'knockout';
 import Postal from 'postal';
+// import 'knockout-dragdrop/lib/knockout.dragdrop';
+import './utils/knockout.dragdrop';
 
 import Router from './router';
 
@@ -50,18 +52,3 @@ for (var i = 0; i < _components.length; i++) {
 }
 
 ko.applyBindings(new ViewModel(), document.getElementById('activities'));
-
-
-function allowDrop(ev) {
-    ev.preventDefault();
-}
-
-function drag(ev) {
-    ev.dataTransfer.setData("text", ev.target.id);
-}
-
-function drop(ev) {
-    ev.preventDefault();
-    var data = ev.dataTransfer.getData("text");
-    ev.target.appendChild(document.getElementById(data));
-}

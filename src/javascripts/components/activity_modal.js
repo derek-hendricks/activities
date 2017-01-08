@@ -227,4 +227,3 @@ const ActivityComponent = {
 }
 
 module.exports = ActivityComponent;
-// data-bind="click: closeModal"
