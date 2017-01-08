@@ -35,7 +35,7 @@ const newActivityComponent = {
 
       function createActivity(callback) {
         activity_data = {
-          activity: self.activity(), feature: false, organizer_id: self.email() || 'mail@activities.ca', participants: self.participants(), priority: new Date(), description: self.description(), img: '/clipboard.png', start_date: self.start_date() && new Date(self.start_date()).toISOString(), created_at: new Date()
+          activity: self.activity(), feature: false, organizer_id: self.email() || 'mail@activities.ca', participants: self.participants(), priority: new Date(), description: self.description(), img: '/images/activity-selected.png', start_date: self.start_date() && new Date(self.start_date()).toISOString(), created_at: new Date()
         };
         self.channel.publish('activity.create', {activity: activity_data, callback: function(err, model) {
           if (err) return callback(err);
