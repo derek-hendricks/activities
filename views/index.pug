@@ -34,7 +34,7 @@ html
               p(data-bind='text: activities().length + (activities().length > 1 ? " Activities" : " Activity")')
           div(class="row activity-rows" data-bind='foreach: activityRows')
             .row(data-bind='foreach: $data', class="data-row")
-              .col-xs-3(class='activity-col')
+              .col-xs-3(class='activity-col', data-bind="attr: {id: $data._id}")
                 .row.title
                   .col-xs-12.activity-title
                     a(data-bind="attr: {href: '#activities/' + $data._id}")

@@ -23,7 +23,6 @@ var ViewModel = function (activitiesViewModel, channel) {
 			});
 		}
 	});
-
 	var getUser = function(id) {
 		self.channel.publish('fetch.user', {query: {_id: id}, callback: function(err, _user_model) {
 			self.user_model(_user_model);
@@ -36,7 +35,7 @@ var ViewModel = function (activitiesViewModel, channel) {
 		activity_ids = self.user_model().get('activities').slice();
     current = activity_ids.indexOf(self.model().id);
 		activity_ids.unshift((activity_ids).splice(current, 1)[0]);
-		for (var i = 0; i < activity_ids.length; i++) {
+		for (var i = 0, l = activity_ids.length; i < l; i++)  {
 			user_activity = self.activitiesViewModel.getActivityModel({_id: activity_ids[i]})
 			if (user_activity) related_activities.push(user_activity);
 		}
@@ -45,7 +44,9 @@ var ViewModel = function (activitiesViewModel, channel) {
 
   self.channel.subscribe('activity.create', function(data) {
 		var activityModel = new ActivityModel();
-		activityModel.save(data.activity, { wait: true, success: function(model, response) {
+		activityModel.save(data.activity, {
+			wait: true,
+			success: function(model, response) {
 			data.callback(null, model);
 		}, error: function(model, response) {
 			data.callback(response);
@@ -53,12 +54,13 @@ var ViewModel = function (activitiesViewModel, channel) {
 	});
 
 	self.channel.subscribe('activity.update', function(data) {
-		data.model.save(null, {
+		var model = data.model || self.activitiesViewModel.getActivityModel({_id: data._id});
+		if (!model) return data.callback('Could not find activity: ' + data._id);
+		model.save(null, {
 			data: {query: data.query, col: 'activities'},
 			processData: true,
-			success: function(model, response) {
+			success: function(_model, response) {
 				model.set(data.attributes);
-				self.channel.publish('activity_collection.updated', {model: model});
 				data.callback(null, model);
 			}, error: function(err) {
 				data.callback(err);
@@ -67,13 +69,13 @@ var ViewModel = function (activitiesViewModel, channel) {
 	});
 
 	self.channel.subscribe('activity.remove', function(data) {
-		self.activitiesViewModel.activityRemoved(data.model);
-		data.model.destroy({data: {col: 'activities'},
+		var model = data.model || self.activitiesViewModel.getActivityModel({_id: data._id});
+		self.activitiesViewModel.activityRemoved(model, model.id);
+		model.destroy({data: {col: 'activities'},
 			processData: true,
 			success: function(model, response) {
-				if (!data.user_model) return data.callback();
 				self.channel.publish('remove.user.activity', {
-					user_model: data.user_model, activity_id: data.model.id, callback: data.callback
+					_id: data.organizer_id, user_model: data.user_model || null, activity_id: model.id, callback: data.callback
 				});
 			}, error: function(err) {
 			  data.callback(err);

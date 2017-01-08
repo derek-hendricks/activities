@@ -48,8 +48,8 @@ const ViewModel = function(channel) {
 			wait: true,
 			success: function(model, response) {
 				return callback(null);
-			}, error: function(response) {
-				return callback(response);
+			}, error: function(err) {
+				return callback(err);
 			}
 		});
 	};
@@ -59,6 +59,7 @@ const ViewModel = function(channel) {
 			var activities, user;
 			if (err) return data.callback(err);
 			user = getUser(data.query);
+
 			if (user) {
 				activities = user.get('activities');
 				activities.push(data.activity)
@@ -70,14 +71,15 @@ const ViewModel = function(channel) {
 	});
 
   channel.subscribe('remove.user.activity', function(data) {
-		var activities = data.user_model.get('activities');
-		var index = activities.indexOf(data.activity_id);
+		var activities, index, update, model;
+		model = data.user_model || getUser({_id: data._id});
+		activities = model.get('activities');
+		index = activities.indexOf(data.activity_id);
 		activities.splice(index, 1);
-		data.user_model.set({activities: activities});
-		var update = {'$pull': {'activities': data.activity_id}};
-		self.updateUser({_id: data.user_model.id}, update, null, function(err, result) {
-			if (err) return data.callback(err);
-			data.callback()
+		model.set({activities: activities});
+		update = {'$pull': {'activities': data.activity_id}};
+		self.updateUser({_id: model.id}, update, null, function(err) {
+			if (data.callback) data.callback(err);
 		});
 	});
 

@@ -5,7 +5,7 @@ const newActivityComponent = {
   name: 'new-activity',
   viewModel: function (params) {
     var self = this;
-    var channel = params.channel;
+    self.channel = params.channel;
 
     self.email = ko.observable();
     self.activity = ko.observable();
@@ -15,19 +15,19 @@ const newActivityComponent = {
 
     self.newActivity = function() {
       if (!self.activity()) return;
-      var activity_data = null;
-      var queue = d3.queue(1);
+      var activity_data, queue = d3.queue(1);
 
       queue.defer(createActivity);
       queue.defer(createUser);
       queue.await(function(err) {
+        // TODO: success and error notification
       });
 
       function createUser(callback) {
         var query = {_id: activity_data.organizer_id};
         var update = {$addToSet: {'activities': activity_data._id}, $set: {'organizer': true}};
         var upsert = {upsert: true};
-        channel.publish('create.update.user', {
+        self.channel.publish('create.update.user', {
           query: query, update: update, upsert: upsert, activity: activity_data._id,
           callback: function(err, _model) { return callback(err) }
         });
@@ -35,10 +35,9 @@ const newActivityComponent = {
 
       function createActivity(callback) {
         activity_data = {
-          activity: self.activity(), organizer_id: self.email() || 'mail@activities.ca', participants: self.participants(),
-          description: self.description(), img: '/clipboard.png', start_date: self.start_date() && new Date(self.start_date()).toISOString(), created_at: new Date()
+          activity: self.activity(), feature: false, organizer_id: self.email() || 'mail@activities.ca', participants: self.participants(), priority: new Date(), description: self.description(), img: '/clipboard.png', start_date: self.start_date() && new Date(self.start_date()).toISOString(), created_at: new Date()
         };
-        channel.publish('activity.create', {activity: activity_data, callback: function(err, model) {
+        self.channel.publish('activity.create', {activity: activity_data, callback: function(err, model) {
           if (err) return callback(err);
           activity_data._id = model.id;
           updateActivitiesViewModel(model);
@@ -49,7 +48,7 @@ const newActivityComponent = {
       var updateActivitiesViewModel = function(model) {
         self.email(''); self.activity('');
         self.description(''); self.participants(''); self.start_date('');
-        channel.publish('activity.added', {model: model});
+        self.channel.publish('activity.added', {model: model});
       };
   };
 },

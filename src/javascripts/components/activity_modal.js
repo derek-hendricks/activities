@@ -70,17 +70,20 @@ const ActivityComponent = {
         model: self.activity_model(), user_model: user_model,
         callback: function(err) { if (err) return console.log(err) }
       });
+      self.closeModal(null, null, 'activities');
     };
 
     self.saveChanges = function() {
+      var user_activities, attributes, query;
       self.edit_mode(!self.edit_mode());
-      var attributes = {activity: self.activity_name(), img: self.image(), description: self.description(), participants: self.participants()};
+      attributes = {activity: self.activity_name(), img: self.image(), description: self.description(), participants: self.participants()};
       if (self.start_date() && self.start_date().indexOf('-') > -1) attributes.start_date = self.start_date();
-      var query = {$set: attributes};
+      query = {$set: attributes};
       self.channel.publish('activity.update', {model: self.activity_model(), query: query, attributes: attributes, callback: function(err, model) {
         if (err) return;
+        self.channel.publish('activity_collection.updated', {model: model});
         if (self.activity_model()._previousAttributes.activity !== attributes.activity) {
-          var user_activities = self.user_activities().slice();
+          user_activities = self.user_activities().slice();
           self.user_activities([]);
           self.user_activities(user_activities);
         }
@@ -113,6 +116,11 @@ const ActivityComponent = {
       self.user_activities.unshift((self.user_activities()).splice(self.user_activities.indexOf(model), 1)[0]);
     };
 
+    self.closeModal = function(data, event, id) {
+      window.location.href = '#' + (id === undefined ? self.activity_model().id : id);
+      return true;
+    }
+
     self.viewUserProfile = function() {
       console.log('view user profile');
     };
@@ -129,7 +137,7 @@ const ActivityComponent = {
                 <input autofocus class="form-control" data-bind="value: activity_name, visible: edit_mode"/>\
               </div>\
               <div class="col-md-6">\
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>\
+                <button type="button" class="close" data-bind="click: closeModal" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>\
               </div>\
             </div>\
           </div>\
@@ -201,10 +209,10 @@ const ActivityComponent = {
           <div class="modal-footer">\
             <div class="row">\
               <div class="col-xs-4 remove-activity">\
-                <button data-bind="click: removeActivity" type="button" class="btn btn-default" data-dismiss="modal">Remove Activity</button>\
+                <button data-bind="click: removeActivity" data-dismiss="modal" type="button" class="btn btn-default">Remove Activity</button>\
               </div>\
               <div class="col-xs-8">\
-                <button data-bind="visible: !edit_mode()" type="button" class="btn btn-default" data-dismiss="modal">Close</button>\
+                <button data-bind="click: closeModal, visible: !edit_mode()" data-dismiss="modal" type="button" class="btn btn-default">Close</button>\
                 <button data-bind="click: toggleEditActivity, visible: !edit_mode()" type="button" class="btn btn-primary">Edit Activity</button>\
                 \
                 <button data-bind="click: toggleEditActivity, visible: edit_mode" type="button" class="btn btn-default">Cancel</button>\
@@ -219,3 +227,4 @@ const ActivityComponent = {
 }
 
 module.exports = ActivityComponent;
+// data-bind="click: closeModal"

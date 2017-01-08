@@ -33,7 +33,7 @@ const flickerApi = (search_options, callback) => {
     if (err) return callback(err);
     var photos = result.photos.photo, url, urls = [];
     if (!photos) return callback(true);
-    for (var i = 0; i < photos.length; i++) {
+    for (var i = 0, l = photos.length; i < l; i++) {
       url = 'https://farm'+photos[i].farm+'.staticflickr.com/'+photos[i].server+'/'+photos[i].id+'_'+photos[i].secret+'.jpg';
       urls.push(url);
     }
@@ -108,7 +108,7 @@ app.get('/', (req, res) => {
 });
 
 router.get('/activities', (req, res, next) => {
-  db.collection('activities').find().sort({created_at: -1}).toArray((err, results) => {
+  db.collection('activities').find().toArray((err, results) => {
     if (err) return next(err);
     res.json({activities: results});
   });
@@ -212,13 +212,13 @@ router.delete('/users/:id', (req, res, next) => {
 });
 
 router.delete(['/activities/:id', '/images/:id'], (req, res, next) => {
-  var col = req.body.col, query;
-  if (req.body.query.all) {
-    query = {};
-  } else if (req.body.query.activities) {
-    query['_id']['$in'] = query['_id']['$in'].map((id) => { return ObjectId(id) });
-  } else {
+  var col = req.body.col, query = req.body.query;
+  if (!query) {
     query = {'_id': ObjectId(req.params.id)};
+  } else if (query.all) {
+    query = {};
+  } else {
+    query['_id']['$in'] = query['_id']['$in'].map((id) => { return ObjectId(id) });
   }
   db.collection(col).remove(query, (err, result) => {
     if (err) return next(err);

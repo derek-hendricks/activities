@@ -22,6 +22,7 @@ const FeaturedActivity = {
       self.activityID(_activity._id);
       self.activityTitle(_activity.activity);
     });
+
   },
 
   template: '\

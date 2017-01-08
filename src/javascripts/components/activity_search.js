@@ -12,27 +12,25 @@ const ActivitySearchComponent = {
 
     self.search.subscribe(function(text) {
       var suggestions, s_length;
-      if (text.length >= 2) {
-        self.channel.publish('activity.search', {
-          attr: 'activity', value: text,
-          callback: function(res) {
-           if (res.err) {
-             if (res.suggestions.length < 1 && self.suggestions().length < 1) {
-               self.message(text);
-               return;
-             }
-            suggestions = res.suggestions.concat(self.suggestions());
-            suggestions = _.uniq(suggestions, function(suggestion, key, name) {
-              return suggestion.name;
-            });
-            self.suggestions(suggestions);
+      self.channel.publish('activity.search', {
+        attr: 'activity', value: text,
+        callback: function(res) {
+          if (res.activity) {
             self.message('');
             return;
-           }
-          self.setFeature(res);
           }
-        });
-      }
+          if (res.suggestions.length < 1 && self.suggestions().length < 1) return;
+          suggestions = _.uniq(res.suggestions, function(suggestion, key, name) { return suggestion.name });
+          for (var i = 0, l = suggestions.length; i < l; i++) {
+            if (suggestions[i] && suggestions[i].name.toLowerCase().indexOf(text.toLowerCase()) === -1) {
+              suggestions.splice(i, 1);
+            }
+          }
+          if (suggestions.length < 1) return self.message(res.err);
+          self.suggestions(suggestions);
+          self.message('');
+        }
+      });
     });
 
     self.setFeature = function(data, event) {
@@ -40,6 +38,7 @@ const ActivitySearchComponent = {
       self.message('');
       self.search('');
       self.suggestions([]);
+      data.activity.feature = 'true';
       self.channel.publish('feature.activity.set', {activity: data.activity});
     }
 

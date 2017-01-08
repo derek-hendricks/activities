@@ -11,7 +11,7 @@ const ViewModel = function (channel) {
 		var rows = [], current = [], urls;
 		if ((((urls = image.urls || []) ? urls.length : 0) < 1)) return rows;
 		rows.push(current);
-		for (var i = 0; i < image.urls.length; i++) {
+		for (var i = 0, l = image.urls.length; i < l; i++)  {
 			current.push(image.urls[i]);
 			if ((i + 1) % cols === 0 && i !== image.urls.length - 1) {
 				current = [];
@@ -37,7 +37,7 @@ const ViewModel = function (channel) {
 	});
 
 	var createImage = function(text, data, callback) {
-		var model = new ImageModel(), _urls, expire_date;
+		var model = new ImageModel(), _urls;
 		model.save({id: text, save: data}, { success: function(model, response, options) {
 			if (response.message && callback) return callback(response.message);
 			if (((_urls = model.get('urls') || []) ? _urls.length : 0) < 1)  {

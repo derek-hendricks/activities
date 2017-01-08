@@ -44,10 +44,24 @@ var _components = [
   FeaturedActivityComponent,
   FooterComponent
 ];
-console.log('FooterComponent', FooterComponent);
 
 for (var i = 0; i < _components.length; i++) {
   registerComponent(_components[i]);
 }
 
 ko.applyBindings(new ViewModel(), document.getElementById('activities'));
+
+
+function allowDrop(ev) {
+    ev.preventDefault();
+}
+
+function drag(ev) {
+    ev.dataTransfer.setData("text", ev.target.id);
+}
+
+function drop(ev) {
+    ev.preventDefault();
+    var data = ev.dataTransfer.getData("text");
+    ev.target.appendChild(document.getElementById(data));
+}
