@@ -83,13 +83,13 @@ const FooterComponent = {
 
     self.manageActivities = function() {
       if (self.activityPages().length < 1) return;
-      var setting = Object.assign(self.activity_settings(), {manage: true});
+      var setting = Object.assign(self.activity_settings(), {manage: true, stats: false});
       self.activity_settings(setting);
       return true;
     }
 
     self.viewActivityStats = function() {
-      var setting = Object.assign(self.activity_settings(), {stats: true});
+      var setting = Object.assign(self.activity_settings(), {stats: true, manage: false});
       self.activity_settings(setting);
       return true;
     }
