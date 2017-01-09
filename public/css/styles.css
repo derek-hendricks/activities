@@ -187,9 +187,12 @@ new-activity .new-form-1 {
 new-activity .left {
   margin-left: -20px;
 }
+.activity-list-count {
+  margin-bottom: -20px;
+}
 .activities-container {
-  margin-top: 20px;
-  margin-bottom: 40px;
+  margin-top: -70px;
+  margin-bottom: 60px;
 }
 .activities-display {
   width: inherit;
