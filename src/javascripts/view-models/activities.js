@@ -47,24 +47,21 @@ const ViewModel = function(channel) {
   };
 
   self.channel.subscribe('activity.search', function(data) {
-    var activity = (self.getActivity(data.attr, data.value)).activity,
-      suggestions = [], index;
-    if (!activity) {
-      for (var i = 1, l = self.activities().length; i < l; i++) {
-        index = self.activities()[i].activity.toLowerCase().indexOf(data.value.toLowerCase());
-        if (index > -1) {
-          suggestions.push({
-            activity: self.activities()[i],
-            name: self.activities()[i].activity,
-            index: index,
-            length: data.value.length
-          });
-        }
+    var search, suggestions = [], index, input;
+    input = data.value.toLowerCase();
+    for (var i = 1, l = self.activities().length; i < l; i++) {
+      index = self.activities()[i].activity.toLowerCase().indexOf(input);
+      if (index > -1) {
+        suggestions.push({
+          activity: self.activities()[i],
+          name: self.activities()[i].activity,
+          index: index,
+          length: data.value.length
+        });
       }
-      suggestions.sort(utils.indexSort).sort(utils.lenSort);
-      return data.callback({err: data.value, suggestions: suggestions, activity: null});
     }
-    data.callback({err: null, suggestions: [], activity: activity});
+    suggestions.sort(utils.indexSort).sort(utils.lenSort);
+    data.callback({err: suggestions[0] ? null : data.value, suggestions: suggestions});
   });
 
   self.channel.subscribe('feature.activity.set', function(data) {
