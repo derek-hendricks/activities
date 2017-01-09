@@ -221,7 +221,7 @@ const FooterComponent = {
             </a>\
           </div>\
           <ul class="nav navbar-nav">\
-            <li class="activities-activate" data-bind="css: {active: activity_settings().active}">\
+            <li class="activate-settings" data-bind="css: {active: activity_settings().active}">\
               <a data-bind="click: activitiesInfo" href="/#settings">Activities</a>\
             </li>\
             <li><a>Users</a></li>\
