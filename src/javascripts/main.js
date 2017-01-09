@@ -1,7 +1,6 @@
 import Backbone from 'backbone';
 import ko from 'knockout';
 import Postal from 'postal';
-// import 'knockout-dragdrop/lib/knockout.dragdrop';
 import './utils/knockout.dragdrop';
 
 import Router from './router';

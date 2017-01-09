@@ -285,6 +285,9 @@ page-footer .settings .setting-headers a {
   display: inline;
   margin-left: 40;
 }
+page-footer .settings .setting-headers a:focus {
+  text-decoration: none;
+}
 page-footer .settings .setting-headers a:not(.activeSetting):hover {
   cursor: pointer;
   color: rgba(255, 255, 255, 0.8);

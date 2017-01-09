@@ -9,7 +9,7 @@ const FooterComponent = {
     self.activities = ko.observableArray([]);
     self.activityPages = ko.observableArray([]);
     self.page_index = ko.observable(0);
-    self.activity_settings = ko.observable({active: false, manage: false, stats: false, delete: false});
+    self.activity_settings = ko.observable({});
     self.activity_move = ko.observable({});
     self.items = ko.observableArray([]);
 
@@ -39,7 +39,8 @@ const FooterComponent = {
           resetClick();
           break;
         case 'settings':
-          self.activity_settings(Object.assign(self.activity_settings(), {active: false, manage: false, stats: false}));
+          self.activity_settings({});
+          self.activity_move({});
           break;
         default:
           click = {count: 0, all: 0};
@@ -197,7 +198,7 @@ const FooterComponent = {
 
     self.dragStart = function (item) {
       item.dragging(true);
-      Object.assign(self.activity_move(), {_id: item.value._id});
+      self.activity_move({_id: item.value._id});
     };
 
     self.dragEnd = function (item) {
