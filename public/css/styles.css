@@ -1,18 +1,19 @@
-body {
+html, body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased !important;
   text-rendering: geometricPrecision !important;
+  height: 100%;
 }
-::-webkit-scrollbar {
-  -webkit-appearance: none;
-  width: 7px;
+#activities {
+  min-height: 100%;
 }
-::-webkit-scrollbar-thumb {
-  border-radius: 4px;
-  background-color: rgba(0,0,0,.5);
-  box-shadow: 0 0 1px rgba(255,255,255,.5);
-  -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
-  -moz-box-shadow: 0 0 1px rgba(255,255,255,.5);
+#activities .container.wrap {
+  overflow: auto;
+  padding-bottom: 150px;
+}
+  ::-webkit-scrollbar {
+    width: 0;
+    background: transparent;
 }
 a:hover {
   cursor: pointer;
@@ -35,6 +36,17 @@ activity-modal .description {
 activity-modal .user-activities {
   overflow: auto;
   max-height: 60px;
+}
+activity-modal .user-activities::-webkit-scrollbar {
+  width: 6px !important;
+  background: transparent;
+}
+activity-modal .user-activities::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0,0,0,.5);
+  box-shadow: 0 0 1px rgba(255,255,255,.5);
+  -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+  -moz-box-shadow: 0 0 1px rgba(255,255,255,.5);
 }
 activity-modal .user-activities:hover {
   color: deepskyblue;
@@ -178,10 +190,6 @@ new-activity .left {
 .activities-container {
   margin-top: 20px;
   margin-bottom: 40px;
-}
-.list-toolbar {
-  position: absolute;
-  width: 95%;
 }
 .activities-display {
   width: inherit;
