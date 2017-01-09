@@ -1,5 +1,18 @@
 body {
   overflow-x: hidden;
+  -webkit-font-smoothing: antialiased !important;
+  text-rendering: geometricPrecision !important;
+}
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 7px;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background-color: rgba(0,0,0,.5);
+  box-shadow: 0 0 1px rgba(255,255,255,.5);
+  -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+  -moz-box-shadow: 0 0 1px rgba(255,255,255,.5);
 }
 a:hover {
   cursor: pointer;
@@ -60,7 +73,6 @@ activity-modal .image-col-select:not(.setselected):hover {
   cursor: pointer;
   color: #fff;
   text-shadow: #000 0px 0px 1px, #000 0px 0px 1px, #000 0px 0px 1px, #000 0px 0px 1px, #000 0px 0px 1px, #000 0px 0px 1px;
-  -webkit-font-smoothing: antialiased;
 }
 activity-modal .image-cols img {
   width: 90px;
@@ -183,16 +195,6 @@ new-activity .left {
 .activity-list-count {
   text-align: left;
 }
-::-webkit-scrollbar {
-  -webkit-appearance: none;
-  width: 7px;
-}
-::-webkit-scrollbar-thumb {
-  border-radius: 4px;
-  background-color: rgba(0,0,0,.5);
-  box-shadow: 0 0 1px rgba(255,255,255,.5);
-  -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
-}
 images .message {
   text-align: left;
 }
@@ -272,6 +274,9 @@ page-footer .navbar-fixed-bottom {
 page-footer .container.settings {
   margin: 0px 0 40px 0px;
 }
+page-footer .activities-activate a:active {
+  color: #9d9d9d !important;
+}
 page-footer .settings .setting-headers {
   text-align: center;
 }
@@ -311,6 +316,15 @@ page-footer .settings .setting-headers button:active {
 }
 page-footer .settings .setting-headers button.removeAll {
   color: #a94442 !important;
+  font-weight: 500;
+  text-shadow: 1px 2px #000;
+  -moz-text-shadow: 1px 2px #000;
+  -webkit-text-shadow: 1px 2px #000;
+}
+page-footer .settings .setting-headers button.removeAll:hover {
+  text-shadow: 1px 0px #383838;
+  -moz-text-shadow: 1px 2px #383838;
+  -webkit-text-shadow: 1px 2px #383838;
 }
 page-footer .settings .activeSetting {
   color: #fff !important;
@@ -400,8 +414,11 @@ page-footer .delete-activity-setting .close:focus {
   text-decoration: none;
   outline: none;
 }
-page-footer .delete-activity-setting .close.deleteActive:focus {
+page-footer .delete-activity-setting .close.deleteActive {
   color: #a94442;
+  text-shadow: 0px 1px #fff;
+  -moz-text-shadow: 0px 1px #fff;
+  -webkit-text-shadow: 0px 1px #fff;
 }
 page-footer .activity-settings-pagination .col-xs-12 {
   margin-left: -15px;
@@ -414,7 +431,7 @@ page-footer .activity-settings-pagination .col-xs-12 a {
   display: inline;
 }
 page-footer .activity-settings-pagination .col-xs-12 span {
-   color: #9d9d9d;
+  color: #9d9d9d;
   line-height: 20px;
 }
 page-footer .activity-pages a:not(.pageSelected):hover {
@@ -429,9 +446,11 @@ page-footer .activity-pages a.pageSelected:hover {
 page-footer .pageSelected {
   color: #fff !important;
 }
-page-footer .dragging {
-  opacity: 0.5;
-  filter: "alpha(opacity=50)";
+page-footer .m-activity-display.dragging {
+  background-image: url("../images/activated-hover.png");
+}
+page-footer .m-activity-display.dragging .title-setting p, page-footer .dragging .update-activity-setting .glyphicon-move {
+  color: #b2cce5 !important;
 }
 
 @media screen and (max-width: 1250px) and (min-width: 768px) {

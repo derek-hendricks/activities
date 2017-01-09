@@ -575,8 +575,6 @@
                         var dropRejected = false;
                         function drag(event) {
                             draggable.drag(event);
-                            var setting = document.getElementsByClassName('m-activity-display dragging')[0];
-                            setting.style.boxShadow = 'none';
                             var draggableDropRejected = draggable.dropRejected();
                             if (draggableDropRejected !== dropRejected) {
                                 toggleClass(overlay, 'drop-rejected', draggableDropRejected);

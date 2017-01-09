@@ -31,11 +31,15 @@ const FooterComponent = {
           break;
         case 'delete':
           click.all = 0;
+          self.activity_settings(Object.assign(self.activity_settings(), {delete: false}));
           self.activity_move({});
           break;
         case 'all':
           self.activity_move({});
           resetClick();
+          break;
+        case 'settings':
+          self.activity_settings(Object.assign(self.activity_settings(), {active: false, manage: false, stats: false}));
           break;
         default:
           click = {count: 0, all: 0};
@@ -76,23 +80,27 @@ const FooterComponent = {
     }
 
     self.activitiesInfo = function() {
-      activityPages(6, 24);
-      var setting = Object.assign(self.activity_settings(), {active: true});
-      self.activity_settings(setting);
-      mEventReset();
-      return true;
+      var active = !!!self.activity_settings().active;
+      self.activity_settings(Object.assign(self.activity_settings(), {active: active}));
+      if (active) {
+        activityPages(6, 24);
+        return true;
+      } else {
+        mEventReset('settings');
+      }
     }
 
     self.manageActivities = function() {
-      if (self.activityPages().length < 1) return;
-      var setting = Object.assign(self.activity_settings(), {manage: true, stats: false});
-      self.activity_settings(setting);
+      var manage = !!!self.activity_settings().manage;
+      self.activity_settings(Object.assign(self.activity_settings(), {manage: manage, stats: false}));
+      if (!manage) return mEventReset('all');
       return true;
     }
 
     self.viewActivityStats = function() {
-      var setting = Object.assign(self.activity_settings(), {stats: true, manage: false});
-      self.activity_settings(setting);
+      var stats = !!!self.activity_settings().stats;
+      self.activity_settings(Object.assign(self.activity_settings(), {stats: stats, manage: false}));
+      if (!stats) return mEventReset('all');
       return true;
     }
 
@@ -127,14 +135,14 @@ const FooterComponent = {
       mEventReset('delete');
       if (click._id !== data._id) {
         click = Object.assign(click, {count: 1, _id: data._id});
-        self.activity_settings(Object.assign(self.activity_settings(), {delete_one: true}));
+        self.activity_settings(Object.assign(self.activity_settings(), {delete_one: data._id}));
         return;
       }
       click = Object.assign(click, {count: count});
       if (click.count < 2) return;
       self.channel.publish('activity.remove', data);
       mEventReset('all');
-    };
+  };
 
     self.removeAll = function(data, event) {
       if (event.type === 'contextmenu') {
@@ -183,26 +191,24 @@ const FooterComponent = {
       });
     }
 
+    self.reorder = function (event, dragData, zoneData) {
+      self.activity_move(zoneData.item.value);
+    };
+
     self.dragStart = function (item) {
       item.dragging(true);
+      Object.assign(self.activity_move(), {_id: item.value._id});
     };
 
     self.dragEnd = function (item) {
       var ac_x, ac_y;
       item.dragging(false);
-      if (self.activity_move()._id && self.activity_move()._id !== item.value._id) {
-        ac_x = {_id: self.activity_move()._id, priority: item.value.priority, feature: item.value.feature};
-        ac_y = {_id: item.value._id, priority: self.activity_move().priority, feature: self.activity_move().feature};
-        self.channel.publish('activities.modified', {activities: [ac_x, ac_y]});
-        moveActivity(ac_x, ac_y);
-        mEventReset('all');
-      }
-    };
-
-    self.reorder = function (event, dragData, zoneData) {
-      if (dragData !== zoneData.item) {
-        self.activity_move(zoneData.item.value);
-      }
+      if (self.activity_move()._id === item.value._id) return mEventReset('all');
+      ac_x = {_id: self.activity_move()._id, priority: item.value.priority, feature: item.value.feature};
+      ac_y = {_id: item.value._id, priority: self.activity_move().priority, feature: self.activity_move().feature};
+      self.channel.publish('activities.modified', {activities: [ac_x, ac_y]});
+      moveActivity(ac_x, ac_y);
+      mEventReset('all');
     };
 
   },
@@ -215,7 +221,7 @@ const FooterComponent = {
             </a>\
           </div>\
           <ul class="nav navbar-nav">\
-            <li data-bind="css: {active: activity_settings().active}">\
+            <li class="activities-activate" data-bind="css: {active: activity_settings().active}">\
               <a data-bind="click: activitiesInfo" href="/#settings">Activities</a>\
             </li>\
             <li><a>Users</a></li>\
@@ -243,7 +249,7 @@ const FooterComponent = {
         <div class="container activity-settings" id="activity-settings">\
           <div class="row">\
             <div class="col-md-10 activity-settings-col">\
-              <div data-bind="visible: activity_settings().manage">\
+              <div data-bind="visible: activity_settings().active && activity_settings().manage">\
                 <div class="row activity-rows" data-bind=\'foreach: activityPages()[page_index()]\'>\
                   <div class="row" data-bind=\'foreach: $data\'>\
                     <div class="col-xs-1 m-activity-display" data-bind="click: !$parents[1].activity_move()._id ? null : function(event){$parents[1].toggleMoveActivity($data.value);}, css: {dragging: dragging, activitySelected: $parents[1].activity_move()._id === $data.value._id, activityMove: $parents[1].activity_move()._id}, dragZone: { name: \'sortable\', dragStart: $parents[1].dragStart, dragEnd: $parents[1].dragEnd }, dragEvents: { accepts: \'sortable\', dragOver: $parents[1].reorder, data: { items: $parents[1].items(), item: $data } }">\
@@ -253,7 +259,7 @@ const FooterComponent = {
                             <p data-bind="text: $data.value.activity"></p>\
                           </div>\
                           <div class="col-xs-3 delete-activity-setting">\
-                            <button data-bind="css: {deleteActive: $parents[1].activity_settings().delete_one}" type="button" class="close" aria-label="Close">\
+                            <button data-bind="css: {deleteActive: $parents[1].activity_settings().delete_one == $data.value._id}" type="button" class="close" aria-label="Close">\
                               <span data-bind="click: function(event){$parents[1].removeActivity($data.value, event);}, event: {contextmenu: $parents[1].removeActivity}, clickBubble: false" aria-hidden="true">×</span>\
                             </button>\
                           </div>\
