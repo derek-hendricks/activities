@@ -197,7 +197,7 @@ const ActivitiesManage = {
       i_x = self.activity_move().sort[1] * page_data.cols + self.activity_move().sort[2];
       i_y = row_i * page_data.cols + col_i;
       start = Math.min(i_x, i_y);
-      end = i_y > i_x ? Math.max(i_x, i_y) + 1 : self.activities().length;
+      end = i_y > i_x ? Math.max(i_x, i_y) + 1 : i_x;
       activities = self.activities().slice(start, end);
 
       if (i_y > i_x) {
@@ -223,6 +223,7 @@ const ActivitiesManage = {
           previous_feature: activities[i].feature,
           feature: feature
         };
+
       }
       mEventReset('all');
       self.channel.publish('activities.modified', {activities: activities});
