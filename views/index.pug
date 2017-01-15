@@ -30,9 +30,12 @@ html
       div(data-bind='with: activities').container.activities-container
         div(data-bind='visible: activities().length', style='display: none').activities-display
           .row.list-toolbar
-            .col-md-4.activity-list-count
+            .col-md-6.pull-left.activity-list-count
               p(data-bind='text: activities().length + (activities().length > 1 ? " Activities" : " Activity")')
-          div(class="row activity-rows" data-bind='foreach: activityRows')
+            .col-md-6.pull-right
+              div(data-bind="foreach: activityPages", class="pages")
+                a(data-bind="click: function(index, data, event){$parent.setPage($index, data, event); return true;}, text: $index() + 1, css: {pageSelected: $index() === $parent.page_index()}")
+          div(class="row activity-rows" data-bind='foreach: activityPages()[page_index()]')
             .row(data-bind='foreach: $data', class="data-row")
               .col-xs-3(class='activity-col', data-bind="attr: {id: $data._id}")
                 .row.title
@@ -52,7 +55,7 @@ html
 
 
       div(data-bind='with: activities')
-        <page-footer params='channel: channel, activities: activities, activityRows: activityRows'></page-footer>
+        <page-footer params='channel: channel, activities: activities'></page-footer>
 
     script(src='./bundle.js')
 

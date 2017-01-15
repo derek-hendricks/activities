@@ -192,7 +192,7 @@ new-activity .left {
 }
 .activities-container {
   margin-top: -70px;
-  margin-bottom: 60px;
+  margin-bottom: 100px;
 }
 .activities-display {
   width: inherit;
@@ -205,6 +205,20 @@ new-activity .left {
 }
 .activity-list-count {
   text-align: left;
+}
+.activities-container .pages {
+  float: right !important;
+  padding-right: inherit;
+}
+.activities-container .pages a {
+  margin-right: 8px;
+}
+.activities-container .pages a:last {
+  margin-right: initial;
+  color: red;
+}
+.activities-container .pages .pageSelected {
+  font-weight: bold;
 }
 images .message {
   text-align: left;
@@ -292,7 +306,10 @@ page-footer .container.settings {
   margin: 0px 0 40px 0px;
 }
 page-footer li:not(.active).activate-settings a {
-  color: #9d9d9d !important;
+  color: #9d9d9d;
+}
+page-footer li:not(.active).activate-settings a:hover {
+  color: #fff;
 }
 page-footer .settings .setting-headers {
   text-align: center;
@@ -355,13 +372,19 @@ page-footer .nav navbar-nav a {
 page-footer .active a, page-footer .active a:hover, page-footer .active a:focus {
   background-color: #222 !important;
 }
-page-footer .activity-settings-col {
+activities-manage .manage-settings-col {
   float: none;
   margin-left: auto;
   margin-right: auto;
   margin-bottom: 40;
 }
-page-footer .m-activity-display {
+activities-manage .manage-settings {
+  display: none;
+}
+activities-manage .manage-settings.activitiesManage {
+  display: initial;
+}
+activities-manage .m-activity-display {
   line-height: 20px;
   margin: 1;
   padding: 7;
@@ -374,83 +397,83 @@ page-footer .m-activity-display {
   -moz-box-shadow: 14px 5px 9px -6px rgba(0,0,0,0.28);
   box-shadow: 14px 5px 9px -6px rgba(0,0,0,0.28);
 }
-page-footer .m-activity-display:hover {
+activities-manage .m-activity-display:hover {
   cursor: move;
 }
-page-footer .m-activity-display.activitySelected {
+activities-manage .m-activity-display.activitySelected {
   background-image: url("../images/activity-selected.png");
 }
-page-footer .m-activity-display.activitySelected .title-setting p {
+activities-manage .m-activity-display.activitySelected .title-setting p {
   color: #222;
 }
-page-footer .m-activity-display.activityMove:not(.activitySelected):hover {
+activities-manage .m-activity-display.activityMove:not(.activitySelected):hover {
   background-image: url("../images/activated-hover.png");
   cursor: pointer;
 }
-page-footer .m-activity-display p {
+activities-manage .m-activity-display p {
   color: #9d9d9d;
 }
-page-footer .title-setting p {
+activities-manage .title-setting p {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-page-footer .delete-activity-setting {
+activities-manage .delete-activity-setting {
   text-align: right;
 }
-page-footer .delete-activity-setting .close {
+activities-manage .delete-activity-setting .close {
   margin-top: -5;
   font-size: 24px;
 }
-page-footer .update-activity-setting {
+activities-manage .update-activity-setting {
   margin-top: 10px;
   margin-bottom: 5px;
 }
-page-footer .update-activity-setting .col-xs-2 {
+activities-manage .update-activity-setting .col-xs-2 {
   margin-top: -2px;
 }
-page-footer .update-activity-setting .glyphicon-move {
+activities-manage .update-activity-setting .glyphicon-move {
   color: #9d9d9d;
   font-size: 21px;
 }
-page-footer .update-activity-setting .glyphicon-move.glyphiconSelected {
+activities-manage .update-activity-setting .glyphicon-move.glyphiconSelected {
   color: rebeccapurple;
 }
-page-footer .update-activity-setting .glyphicon-move.glyphiconSelected:hover {
+activities-manage .update-activity-setting .glyphicon-move.glyphiconSelected:hover {
   color: initial;
   cursor: pointer;
 }
-page-footer .update-activity-setting .glyphicon-move:not(.glyphiconSelected):hover {
+activities-manage .update-activity-setting .glyphicon-move:not(.glyphiconSelected):hover {
   color: #fff;
   cursor: pointer;
 }
-page-footer .update-activity-setting .glyphicon-move.glyphiconMove:not(.glyphiconSelected) {
+activities-manage .update-activity-setting .glyphicon-move.glyphiconMove:not(.glyphiconSelected) {
   color: #b2cce5;
 }
-page-footer .update-activity-setting .glyphicon-move.glyphiconMove:not(.glyphiconSelected):hover {
+activities-manage .update-activity-setting .glyphicon-move.glyphiconMove:not(.glyphiconSelected):hover {
   cursor: pointer;
 }
-page-footer .delete-activity-setting .close:focus {
+activities-manage .delete-activity-setting .close:focus {
   text-decoration: none;
   outline: none;
 }
-page-footer .delete-activity-setting .close.deleteActive {
+activities-manage .delete-activity-setting .close.deleteActive {
   color: #a94442;
   text-shadow: 0px 1px #fff;
   -moz-text-shadow: 0px 1px #fff;
   -webkit-text-shadow: 0px 1px #fff;
 }
-page-footer .activity-settings-pagination .col-xs-12 {
+activities-manage .activity-settings-pagination .col-xs-12 {
   margin-left: -15px;
   margin-top: 15px;
 }
-page-footer .activity-settings-pagination .col-xs-12 a {
+activities-manage .activity-settings-pagination .col-xs-12 a {
   color: #9d9d9d;
   line-height: 20px;
   margin-left: 8px;
   display: inline;
 }
-page-footer .activity-settings-pagination .col-xs-12 span {
+activities-manage .activity-settings-pagination .col-xs-12 span {
   color: #9d9d9d;
   line-height: 20px;
 }
@@ -466,11 +489,34 @@ page-footer .activity-pages a.pageSelected:hover {
 page-footer .pageSelected {
   color: #fff !important;
 }
-page-footer .m-activity-display.dragging {
+activities-manage .m-activity-display.dragging {
   background-image: url("../images/activated-hover.png");
 }
-page-footer .m-activity-display.dragging .title-setting p, page-footer .dragging .update-activity-setting .glyphicon-move {
+activities-manage .m-activity-display.dragging .title-setting p, activities-manage .dragging .update-activity-setting .glyphicon-move {
   color: #b2cce5 !important;
+}
+activities-manage .manage-settings .activity-rows .row.m-activity-row .sort-area {
+  position: absolute;
+  z-index: 999;
+  opacity: .2;
+  width: 26px !important;
+  height: 74px;
+  top: 0;
+  right: -13;
+  width: 25px;
+  border-radius: 4px;
+}
+activities-manage .manage-settings .activity-rows .row.m-activity-row .sortSelected {
+  background: red !important;
+}
+activities-manage .manage-settings .activity-rows .row.m-activity-row .sort-area.i:not(.first) {
+  display: none;
+}
+activities-manage .manage-settings .activity-rows .row.m-activity-row .sort-area.first {
+  left: -13;
+}
+activities-manage .manage-settings .activity-rows .row.m-activity-row .sort-area.hideSort {
+  display: none;
 }
 
 @media screen and (max-width: 1250px) and (min-width: 768px) {

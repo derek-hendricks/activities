@@ -6,29 +6,41 @@ const ViewModel = function(channel) {
   var self = this;
   self.activitiesCollection = ko.observable();
   self.activities = ko.observableArray([]);
+  self.page_index = ko.observable(0);
   self.channel = channel;
 
-  self.activityRows = ko.computed(function() {
-    var rows = [], current = [], featured, activities;
-    if (self.activities().length > 1) {
-      self.activities.sort(utils.prioritySort);
-      featured = _.findIndex(self.activities(), {feature: 'true'});
-      if (featured > 0) {
-        self.activities.splice(0, 0, self.activities.splice(featured, 1)[0]);
+  self.activityPages = ko.computed(function() {
+    var cols = 4, page_num = 20, pages = [], rows = [], current = [], featured, activities, ref;
+    if (self.activities().length < 1) return rows;
+    self.activities.sort(utils.prioritySort);
+    featured = _.findIndex(self.activities(), {feature: 'true'});
+    if (featured > 0) {
+      self.activities.splice(0, 0, self.activities.splice(featured, 1)[0]);
+    }
+    activities = self.activities().slice();
+    activities.shift();
+    rows.push(current);
+    for (var i = 0, l = activities.length; i < l; i++) {
+      ref = i + 1;
+      current.push(activities[i]);
+      if ((ref % cols) === 0 && (ref % page_num) !== 0) {
+        current = [];
+        rows.push(current);
       }
-      activities = self.activities().slice();
-      activities.shift();
-      rows.push(current);
-      for (var i = 0, l = activities.length; i < l; i++) {
-        current.push(activities[i]);
-        if (((i + 1) % 4) === 0) {
-          current = [];
-          rows.push(current);
-        }
+      if ((ref % page_num) === 0 && i !== activities.length - 1) {
+        pages.push(rows);
+        rows = [];
+        current = [];
+        rows.push(current);
       }
     }
-    return rows;
+    if (rows.length) pages.push(rows);
+    return pages;
   }, self);
+
+  self.setPage = function(index, data, event) {
+    self.page_index(index());
+  }
 
   self.getActivity = function(attr, value) {
     var index = self.activities().findIndex(function(_activity) {
@@ -131,9 +143,7 @@ const ViewModel = function(channel) {
     });
     queue.await(function(err) {
       self.channel.publish('feature.image', {});
-      data.callback({
-        err: err
-      });
+      if (data.callback) data.callback({ err: err });
     });
   });
 

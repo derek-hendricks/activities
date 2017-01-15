@@ -16,9 +16,10 @@ import ImageComponent from './components/images';
 import ActivitySearchComponent from './components/activity_search';
 import FeaturedActivityComponent from './components/featured_activity';
 import FooterComponent from './components/footer';
+import ActivitiesMngComponent from './components/activities_manage';
 
 var ViewModel = function () {
-	var self = this;
+	var self = this, registerComponent;
 	self.channel = Postal.channel();
 	self.user = new UserViewModel(self.channel);
 	self.activities = new ActivitiesViewModel(self.channel);
@@ -43,10 +44,11 @@ var _components = [
   ImageComponent,
   ActivitySearchComponent,
   FeaturedActivityComponent,
-  FooterComponent
+  FooterComponent,
+  ActivitiesMngComponent
 ];
 
-for (var i = 0; i < _components.length; i++) {
+for (var i = 0, l = _components.length; i < l; i++)  {
   registerComponent(_components[i]);
 }
 
