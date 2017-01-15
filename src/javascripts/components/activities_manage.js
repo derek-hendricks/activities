@@ -193,9 +193,9 @@ const ActivitiesManage = {
     };
 
     sortActivities = function(item, row_i, col_i) {
-      var i_y, i_x, activities, start, end, moved, ref, previous, priority, feature;
-      i_x = self.activity_move().sort[1] * page_data.cols + self.activity_move().sort[2];
-      i_y = row_i * page_data.cols + col_i;
+      var i_y, i_x, activities, start, end, ref, previous, priority, feature;
+      i_x = self.page_index() * page_data.num + self.activity_move().sort[1] * page_data.cols + self.activity_move().sort[2];
+      i_y = self.page_index() * page_data.num + row_i * page_data.cols + col_i;
       start = Math.min(i_x, i_y);
       end = i_y > i_x ? Math.max(i_x, i_y) + 1 : i_x;
       activities = self.activities().slice(start, end);
