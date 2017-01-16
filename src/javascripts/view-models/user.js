@@ -4,8 +4,7 @@ import UserModel from '../models/user';
 import UserCollection from '../collections/user';
 
 const ViewModel = function(channel) {
-	var self = this;
-	self.userCollection = ko.observable();
+	var self = this, collection;
 	self.users = ko.observableArray([]);
 	self.first_name = ko.observable();
 	self.last_name = ko.observable();
@@ -14,14 +13,19 @@ const ViewModel = function(channel) {
 	self.organizer = ko.observable(false);
 	self.participant = ko.observable(true);
 
+  channel.subscribe('users.load', function(data) {
+    self.users(data.response.users);
+    collection = data.collection;
+   });
+
 	channel.subscribe('users.delete', function(data) {
-		var model = data.model || self.userCollection().models[0];
+		var model = data.model || collection.models[0];
 		if (!model) return;
 		self.removeUsers({model: model}, data.callback);
 	});
 
 	var getUser = function(query, callback) {
-		return self.userCollection().find(query);
+    if (collection) return collection.find(query);
 	};
 
 	channel.subscribe('fetch.user', function(data) {
@@ -34,7 +38,6 @@ const ViewModel = function(channel) {
 		var model = new UserModel(query);
 		model.fetch({success: function(model, response) {
 			if (model.id) return callback(null, model);
-			callback(model);
 		}, error: function(err) {
 			callback(err);
 		}});
@@ -59,12 +62,11 @@ const ViewModel = function(channel) {
 			var activities, user;
 			if (err) return data.callback(err);
 			user = getUser(data.query);
-
 			if (user) {
 				activities = user.get('activities');
 				activities.push(data.activity)
 				user.set({activities: activities});
-				self.userCollection().add(user, {merge: true});
+				collection.add(user, {merge: true});
 			}
 			data.callback(err, result);
 		});
@@ -89,7 +91,7 @@ const ViewModel = function(channel) {
 		data.model.destroy({data: {col: 'users', query: query},
 			processData: true,
 			success: function(models, response) {
-				self.userCollection().reset();
+				collection.reset();
 				self.users([]);
 				callback()
 			}, error: function(err) {

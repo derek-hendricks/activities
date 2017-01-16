@@ -9,6 +9,7 @@ import ActivitiesViewModel from './view-models/activities';
 import ActivityViewModel from './view-models/activity';
 import UserViewModel from './view-models/user';
 import ImageViewModel from './view-models/images';
+import CategoriesViewModel from './view-models/categories';
 
 import ActivityComponent from './components/activity_modal';
 import NewActivityComponent from './components/new_activity';
@@ -17,16 +18,19 @@ import ActivitySearchComponent from './components/activity_search';
 import FeaturedActivityComponent from './components/featured_activity';
 import FooterComponent from './components/footer';
 import ActivitiesMngComponent from './components/activities_manage';
+import CategoriesComponent from './components/categories';
+
 
 var ViewModel = function () {
 	var self = this, registerComponent;
 	self.channel = Postal.channel();
 	self.user = new UserViewModel(self.channel);
 	self.activities = new ActivitiesViewModel(self.channel);
-	self.images = new ImageViewModel(self.channel);
 	self.activity = new ActivityViewModel(self.activities, self.channel);
+  self.categories = new CategoriesViewModel(self.channel);
+  self.images = new ImageViewModel(self.channel);
 
-	new Router({channel: self.channel, activityViewModel: self.activity, activitiesViewModel: self.activities, userViewModel: self.user});
+	new Router({channel: self.channel});
 
 	Backbone.history.start();
 };
@@ -45,11 +49,14 @@ var _components = [
   ActivitySearchComponent,
   FeaturedActivityComponent,
   FooterComponent,
-  ActivitiesMngComponent
+  ActivitiesMngComponent,
+  CategoriesComponent
 ];
 
 for (var i = 0, l = _components.length; i < l; i++)  {
   registerComponent(_components[i]);
 }
+
+// ko.options.deferUpdates = true;
 
 ko.applyBindings(new ViewModel(), document.getElementById('activities'));

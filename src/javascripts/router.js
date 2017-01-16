@@ -2,20 +2,20 @@ import Backbone from 'backbone';
 import _ from 'underscore';
 import ActivityCollection from './collections/activity';
 import UserCollection from './collections/user';
+import CategoryCollection from './collections/category';
 import ActivityModel from './models/activity';
 import UserModel from './models/user';
 
-var self;
+var self, channel;
 
-const fetchCollection = function(Collection, viewModel, viewCollection, values) {
+const fetchCollection = function(Collection, value, channel) {
   var collection = new Collection();
   collection.fetch({
     success: function(_collection, response) {
-      viewModel[values](response[values]);
-      viewModel[viewCollection](collection);
+      channel.publish(value, {response: response, collection: collection});
     },
-    error: function(response) {
-      console.log(response);
+    error: function(err) {
+      channel.publish(value, {err: err});
     }
   });
 };
@@ -32,22 +32,19 @@ const getModel = function(Model, id, callback) {
 var AppRouter = Backbone.Router.extend({
   initialize: function(options) {
     self = this;
-    self.channel = options.channel;
-    self.activitiesViewModel = options.activitiesViewModel;
-    self.activityViewModel = options.activityViewModel;
-    self.userViewModel = options.userViewModel;
+    channel = options.channel;
 
-    fetchCollection(ActivityCollection, self.activitiesViewModel, 'activitiesCollection', 'activities');
-    fetchCollection(UserCollection, self.userViewModel, 'userCollection', 'users');
+    fetchCollection(ActivityCollection, 'activities.load', channel);
+    fetchCollection(UserCollection, 'users.load', channel);
+    fetchCollection(CategoryCollection, 'categories.load', channel);
   },
-
 
   routes: {
     'activities/:id': 'getActivity'
   },
 
   getActivity: function(activity_id) {
-    self.channel.publish('activity.show', {
+    channel.publish('activity.show', {
       id: activity_id,
       getActivityModel: function(callback) {
         getModel(ActivityModel, activity_id, callback);

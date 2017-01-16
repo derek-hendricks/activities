@@ -303,7 +303,7 @@ page-footer .navbar-fixed-bottom {
   position: initial !important;
 }
 page-footer .container.settings {
-  margin: 0px 0 40px 0px;
+  margin: 5px 0 10px 0px;
 }
 page-footer li:not(.active).activate-settings a {
   color: #9d9d9d;
@@ -312,12 +312,12 @@ page-footer li:not(.active).activate-settings a:hover {
   color: #fff;
 }
 page-footer .settings .setting-headers {
-  text-align: center;
+  margin-left: 25px;
 }
 page-footer .settings .setting-headers a {
   color: #9d9d9d;
   display: inline;
-  margin-left: 40;
+  margin-left: 25;
 }
 page-footer .settings .setting-headers a:focus {
   text-decoration: none;
@@ -336,7 +336,7 @@ page-footer .settings .setting-headers button.close {
   font-weight: normal;
   opacity: inherit;
   text-shadow: none;
-  margin-left: 40;
+  margin-left: 25;
   color: #9d9d9d;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
@@ -352,11 +352,14 @@ page-footer .settings .setting-headers button:active {
   -webkit-text-shadow: 0px 1px #c77270;
 }
 page-footer .settings .setting-headers button.removeAll {
-  color: #a94442 !important;
+  color: #843534;
   font-weight: 500;
-  text-shadow: 1px 2px #000;
-  -moz-text-shadow: 1px 2px #000;
-  -webkit-text-shadow: 1px 2px #000;
+  text-shadow: 1px 1px #191919;
+  -moz-text-shadow: 1px 1px #191919;
+  -webkit-text-shadow: 1px 1px #191919;
+}
+page-footer .settings .setting-headers button.removeAll.confirm {
+  color: #a94442;
 }
 page-footer .settings .setting-headers button.removeAll:hover {
   text-shadow: 1px 0px #383838;
@@ -372,26 +375,23 @@ page-footer .nav navbar-nav a {
 page-footer .active a, page-footer .active a:hover, page-footer .active a:focus {
   background-color: #222 !important;
 }
-activities-manage .manage-settings-col {
-  float: none;
-  margin-left: auto;
-  margin-right: auto;
-  margin-bottom: 40;
-}
 activities-manage .manage-settings {
   display: none;
 }
 activities-manage .manage-settings.activitiesManage {
   display: initial;
 }
+activities-manage .manage-settings.activitiesManage > .row {
+  margin-bottom: 40;
+}
 activities-manage .m-activity-display {
   line-height: 20px;
   margin: 1;
   padding: 7;
-  width: 160;
-  height: 74;
-  max-width: 160;
-  max-height: 74;
+  width: 120;
+  height: 68;
+  max-width: 120;
+  max-height: 68;
   background-image: url("../images/activity.png");
   -webkit-box-shadow: 14px 5px 9px -6px rgba(0,0,0,0.28);
   -moz-box-shadow: 14px 5px 9px -6px rgba(0,0,0,0.28);
@@ -417,6 +417,7 @@ activities-manage .title-setting p {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  width: 120%;
 }
 activities-manage .delete-activity-setting {
   text-align: right;
@@ -432,26 +433,33 @@ activities-manage .update-activity-setting {
 activities-manage .update-activity-setting .col-xs-2 {
   margin-top: -2px;
 }
-activities-manage .update-activity-setting .glyphicon-move {
+activities-manage .glyphicon-move {
   color: #9d9d9d;
-  font-size: 21px;
+  font-size: 16px;
+  top: -3px;
 }
-activities-manage .update-activity-setting .glyphicon-move.glyphiconSelected {
+activities-manage .glyphicon-move.glyphiconSelected {
   color: rebeccapurple;
 }
-activities-manage .update-activity-setting .glyphicon-move.glyphiconSelected:hover {
+activities-manage .glyphicon-move.glyphiconSelected:hover {
   color: initial;
   cursor: pointer;
 }
-activities-manage .update-activity-setting .glyphicon-move:not(.glyphiconSelected):hover {
+activities-manage .glyphicon-move:not(.glyphiconSelected):hover {
   color: #fff;
   cursor: pointer;
 }
-activities-manage .update-activity-setting .glyphicon-move.glyphiconMove:not(.glyphiconSelected) {
+activities-manage .glyphicon-move.glyphiconMove:not(.glyphiconSelected) {
   color: #b2cce5;
 }
-activities-manage .update-activity-setting .glyphicon-move.glyphiconMove:not(.glyphiconSelected):hover {
+activities-manage .glyphicon-move.glyphiconMove:not(.glyphiconSelected):hover {
   cursor: pointer;
+}
+activities-manage .glyphicon-move.deleteConfirm {
+  color: #843534;
+  text-shadow: 1px 1px #191919;
+  -moz-text-shadow: 1px 1px #191919;
+  -webkit-text-shadow: 1px 1px #191919;
 }
 activities-manage .delete-activity-setting .close:focus {
   text-decoration: none;
@@ -500,7 +508,7 @@ activities-manage .manage-settings .activity-rows .row.m-activity-row .sort-area
   z-index: 999;
   opacity: .2;
   width: 26px !important;
-  height: 74px;
+  height: 68px;
   top: 0;
   right: -13;
   width: 25px;
@@ -518,7 +526,21 @@ activities-manage .manage-settings .activity-rows .row.m-activity-row .sort-area
 activities-manage .manage-settings .activity-rows .row.m-activity-row .sort-area.hideSort {
   display: none;
 }
-
+categories .category-container {
+  margin-left: 30;
+}
+categories .category-title p {
+  font-size: 14px;
+  line-height: 1.42857143;
+  color: #9d9d9d;
+}
+categories .category-new p {
+  color: #9d9d9d;
+  font-size: 13;
+}
+categories .category-new .glyphicon-plus {
+  font-size: 11;
+}
 @media screen and (max-width: 1250px) and (min-width: 768px) {
   .activity-search {
     float: right;

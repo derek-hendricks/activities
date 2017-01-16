@@ -6,8 +6,8 @@ const ActivitySearchComponent = {
   viewModel: function (params) {
     var self = this;
     self.channel = params.channel;
-    self.search = ko.observable();
-    self.suggestions = ko.observableArray([]);
+    self.search = ko.observable().extend({deferred: true});
+    self.suggestions = ko.observableArray([]).extend({deferred: true});
     self.message = ko.observable();
 
     self.search.subscribe(function(text) {

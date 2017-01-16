@@ -21,11 +21,3 @@ module.exports = {
     extensions: ['', '.js', '.es6']
   }
 }
-
-    // preLoaders: [
-    //   {
-    //     test: /\.js$/,
-    //     exclude: /node_modules/,
-    //     loader: 'jshint-loader'
-    //   }
-    // ],

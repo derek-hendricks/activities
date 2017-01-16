@@ -7,9 +7,9 @@ const ImageComponent = {
     var self = this, image_columns = params.columns;
     self.text = ko.observable();
     self.channel = params.channel;
-    self.imageCols = ko.observableArray([]);
-    self.imageData = ko.observable({index: 0, text: self.text(), sets: 0});
-    self.images = ko.observableArray([]);
+    self.imageCols = ko.observableArray([]).extend({deferred: true});
+    self.imageData = ko.observable({index: 0, text: self.text(), sets: 0}).extend({deferred: true});
+    self.images = ko.observableArray([]).extend({deferred: true});
 
     self.channel.subscribe('reset.images', function(data) {
       self.text(data.text);

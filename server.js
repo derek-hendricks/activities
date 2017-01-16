@@ -128,6 +128,20 @@ router.get('/images', (req, res, next) => {
   });
 });
 
+router.get('/categories', (req, res, next) => {
+  db.collection('categories').find().toArray((err, results) => {
+    if (err) return next(err);
+    res.json({categories: results});
+  });
+});
+
+router.get('/categories/:id', (req, res, next) => {
+  db.collection('categories').findOne({_id: req.params.id}, (err, result) => {
+    if (err) return next(err);
+    res.json(result);
+  });
+});
+
 router.get('/images/:id', (req, res, next) => {
   db.collection('images').findOne({text: req.params.id}, (err, image) => {
     if (err) return next(err);
@@ -167,6 +181,14 @@ router.put('/activities/:id', (req, res, next) => {
   });
 });
 
+router.put('/categories/:id', (req, res, next) => {
+  var query = {_id: ObjectId(req.params.id)};
+  db.collection('categories').update(query, req.body.query, (err, result) => {
+    if (err) return next(err);
+    res.json(result);
+  });
+});
+
 router.put('/images/:id', (req, res, next) => {
   if (!req.body.urls) return updateImage(req.body);
   if (flickr) saveActivityImgUrls(req.body, function(err, message, image_set) {
@@ -190,6 +212,13 @@ router.post('/images', (req, res, next) => {
   });
 });
 
+router.post('/categories', (req, res, next) => {
+  db.collection('categories').save(req.body, (err, result) => {
+    if (err) return next(err);
+    return res.json({});
+  });
+});
+
 router.post('/activities', (req, res, next) => {
   db.collection('activities').save(req.body, (err, result) => {
     if (err) return next(err);
@@ -206,6 +235,13 @@ router.get('/activities/:id', (req, res, next) => {
 
 router.delete('/users/:id', (req, res, next) => {
   db.collection('users').remove(req.body.query, (err, result) => {
+    if (err) return next(err);
+    res.json({});
+  });
+});
+
+router.delete('/categories/:id', (req, res, next) => {
+  db.collection('categories').remove(req.body.query, (err, result) => {
     if (err) return next(err);
     res.json({});
   });

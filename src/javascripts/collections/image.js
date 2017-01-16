@@ -2,7 +2,7 @@ import Backbone from 'backbone';
 import _ from 'underscore';
 import Image from '../models/images';
 
-var ImageCollection = Backbone.Collection.extend({
+const ImageCollection = Backbone.Collection.extend({
   initialize: function () {
     self = this;
   },

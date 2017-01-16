@@ -9,7 +9,7 @@ const ActivityComponent = {
     self.channel = params.channel;
     self.image_columns = 5;
 
-    self.activity_model = ko.observable();
+    self.activity_model = ko.observable().extend({deferred: true});
     self.activity_name = ko.observable();
     self.description = ko.observable();
     self.activity_organizer = ko.observable();
@@ -18,10 +18,10 @@ const ActivityComponent = {
     self.image = ko.observable();
 
     self.organizer_email = ko.observable();
-    self.user_activities = ko.observableArray([]);
+    self.user_activities = ko.observableArray([]).extend({deferred: true});
 
-    self.search = ko.observable();
-    self.image_progress = ko.observable();
+    self.search = ko.observable().extend({deferred: true});
+    self.image_progress = ko.observable().extend({deferred: true});
     self.edit_mode = ko.observable(false);
 
     params.model.subscribe(function(model) {
@@ -51,7 +51,8 @@ const ActivityComponent = {
       self.description(model.get('description'));
       self.participants(model.get('participants'));
       self.image(model.get('img'));
-      model.get('start_date') && self.start_date(moment(model.get('start_date')).format('MMMM DD, YYYY'));
+      if (!model.get('start_date')) return self.start_date('');
+      self.start_date(moment(model.get('start_date')).format('MMMM DD, YYYY'));
     };
 
     self.getUserInfo = function(model) {
@@ -121,9 +122,6 @@ const ActivityComponent = {
       return true;
     }
 
-    self.viewUserProfile = function() {
-      console.log('view user profile');
-    };
   },
 
   template: '\
@@ -156,9 +154,7 @@ const ActivityComponent = {
               <div class="row">\
                 <div class="col-md-4"><p>Organizer:</p></div>\
                 <div class="col-md-8">\
-                  <a data-bind="click: viewUserProfile">\
-                    <p data-bind="text: organizer_email"></p>\
-                  </a>\
+                  <p data-bind="text: organizer_email"></p>\
                 </div>\
               </div>\
               <div class="row">\

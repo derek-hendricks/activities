@@ -3,11 +3,16 @@ import _ from 'underscore';
 import utils from '../utils';
 
 const ViewModel = function(channel) {
-  var self = this;
-  self.activitiesCollection = ko.observable();
+  var self = this, collection, activityModel;
   self.activities = ko.observableArray([]);
   self.page_index = ko.observable(0);
   self.channel = channel;
+
+  self.channel.subscribe('activities.load', function(data) {
+    self.activities(data.response.activities);
+    collection = data.collection;
+    activityModel = collection;
+  });
 
   self.activityPages = ko.computed(function() {
     var cols = 4, page_num = 20, pages = [], rows = [], current = [], featured, activities, ref;
@@ -36,7 +41,7 @@ const ViewModel = function(channel) {
     }
     if (rows.length) pages.push(rows);
     return pages;
-  }, self);
+  }, self).extend({deferred: true});
 
   self.setPage = function(index, data, event) {
     self.page_index(index());
@@ -53,8 +58,8 @@ const ViewModel = function(channel) {
   };
 
   self.getActivityModel = function(query) {
-    if (self.activitiesCollection()) {
-      return self.activitiesCollection().find(query);
+    if (collection) {
+      return collection.find(query);
     }
   };
 
@@ -90,12 +95,12 @@ const ViewModel = function(channel) {
     model = model ? model : self.getActivityModel({id: id});
     index = index ? index : self.activities().indexOf(_.findWhere(self.activities(), {_id: model.id}));
     self.activities.splice(index, 1);
-    self.activitiesCollection().remove(model);
+    collection.remove(model);
   };
 
   self.channel.subscribe('activity_collection.updated', function(data) {
     var index;
-    self.activitiesCollection().add(data.model, {merge: true});
+    collection.add(data.model, {merge: true});
     index = self.activities().indexOf(_.findWhere(self.activities(), {_id: data.model.id}));
     self.activities.splice(index, 1, data.model.attributes);
   });
@@ -113,7 +118,7 @@ const ViewModel = function(channel) {
 
   self.channel.subscribe('activity.added', function(data) {
     self.activities.push(data.model.attributes);
-    self.activitiesCollection().add(data.model);
+    collection.add(data.model);
   });
 
   self.channel.subscribe('delete.all', function(data) {
@@ -126,14 +131,14 @@ const ViewModel = function(channel) {
       });
     });
     queue.defer(function(callback) {
-      var activity = self.activitiesCollection().models[0];
-      var query = { all: true };
+      var activity = collection.models[0];
+      var query = {all: true};
       activity.destroy({
         data: { col: 'activities', query: query },
         processData: true,
         success: function(models, response) {
           self.activities([]);
-          self.activitiesCollection().reset();
+          collection.reset();
           callback()
         },
         error: function(err) {

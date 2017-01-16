@@ -1,7 +1,7 @@
 import Backbone from 'backbone';
 import Activity from '../models/activity';
 
-var ActivityCollection = Backbone.Collection.extend({
+const ActivityCollection = Backbone.Collection.extend({
   initialize: function () {
     self = this;
   },

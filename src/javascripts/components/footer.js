@@ -7,7 +7,7 @@ const FooterComponent = {
     var self = this;
     self.channel = params.channel;
     self.activities = ko.observableArray([]);
-    self.activity_settings = ko.observable({});
+    self.activity_settings = ko.observable({}).extend({deferred: true});
 
     params.activities.subscribe(function(activities) {
       if (!activities) return;
@@ -37,10 +37,15 @@ const FooterComponent = {
       return true;
     }
 
+    self.channel.subscribe('activities.manage.nav.settings', function(data) {
+      self.activity_settings(Object.assign(self.activity_settings(), data));
+    });
+
+    // TODO: move to activities_manage component
     self.removeAll = function(data, event) {
       self.channel.publish('activities.manage.remove.all', {event: event, callback: function(data) {
-      self.activity_settings(Object.assign(self.activity_settings(), {delete: data.delete}));
-    }});
+        self.activity_settings(Object.assign(self.activity_settings(), data));
+      }});
     }
 
   },
@@ -70,8 +75,17 @@ const FooterComponent = {
             <div class="col-md-12 setting-headers" data-bind="visible: activity_settings().active">\
               <a href="/#settings" data-bind="click: manageActivities, css: {activeSetting: activity_settings().manage}">Manage Activities</a>\
               <a data-bind="click: viewActivityStats, css: {activeSetting: activity_settings().stats}">View Stats</a>\
-              <button data-bind="click: removeAll, event: {contextmenu: removeAll}, contextmenuBubble: false, css: {removeAll: activity_settings().delete}" class="close" type="button">\
-                <span>Delete All</span>\
+              <button\
+                data-bind="click: removeAll,\
+                event: {contextmenu: removeAll},\
+                contextmenuBubble: false,\
+                css: {\
+                  removeAll: activity_settings().delete,\
+                  confirm: activity_settings().delete_confirm > 1\
+                  \
+                }"\
+                class="close" type="button">\
+                  <span>Delete All</span>\
               </button>\
             </div>\
           </div>\

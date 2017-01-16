@@ -8,11 +8,11 @@ const ActivitiesManage = {
       sortActivities, activityPages, mEventReset, resetClick, updateActivities;
     self.channel = params.channel;
     self.activities = ko.observableArray([]);
-    self.activityPages = ko.observableArray([]);
+    self.activityPages = ko.observableArray([]).extend({deferred: true});
     self.page_index = ko.observable(0);
-    self.activity_settings = ko.observable({});
-    self.activity_move = ko.observable({});
-    self.items = ko.observableArray([]);
+    self.activity_settings = ko.observable({}).extend({deferred: true});
+    self.activity_move = ko.observable({}).extend({deferred: true});
+    self.items = ko.observableArray([]).extend({deferred: true});
 
     params.activities.subscribe(function(activities) {
       if (!activities) return;
@@ -73,8 +73,8 @@ const ActivitiesManage = {
           self.activity_move({});
           break;
         case 'delete':
-          click.all = 0;
-          self.activity_settings(Object.assign(self.activity_settings(), {delete: false}));
+          click.count = 0;
+          self.activity_settings(Object.assign(self.activity_settings(), {delete_one: false}));
           self.activity_move({});
           break;
         case 'all':
@@ -94,7 +94,8 @@ const ActivitiesManage = {
 
     resetClick = function() {
       click = {count: 0, all: 0};
-      self.activity_settings(Object.assign(self.activity_settings(), {delete: false, delete_one: false}));
+      self.channel.publish('activities.manage.nav.settings', {delete: false, delete_confirm: 0});
+      self.activity_settings(Object.assign(self.activity_settings(), {delete_one: false}));
     }
 
     self.setPage = function(index, data, event) {
@@ -141,17 +142,19 @@ const ActivitiesManage = {
       mEventReset('all');
   };
 
-  // TODO: move delete all to activities_manage component
   self.channel.subscribe('activities.manage.remove.all', function(data) {
-      if (data.event.type === 'contextmenu') return mEventReset('all');
-      ++click.all;
-      mEventReset('click');
-      data.callback({delete: true});
-      if (click.all > 2) {
-        self.channel.publish('delete.all', {});
-        data.callback({delete: false});
-        mEventReset('all');
-      }
+    if (data.event.type === 'contextmenu') {
+      data.callback({delete: false, delete_confirm: 0});
+      return mEventReset('all');
+    }
+    ++click.all;
+    mEventReset('delete');
+    data.callback({delete: true, delete_confirm: click.all});
+    if (click.all > 2) {
+      self.channel.publish('delete.all', {});
+      data.callback({delete: false, delete_confirm: 0});
+      mEventReset('all');
+    }
   });
 
     self.toggleMoveActivity = function(data) {
@@ -193,28 +196,28 @@ const ActivitiesManage = {
     };
 
     sortActivities = function(item, row_i, col_i) {
-      var i_y, i_x, activities, start, end, ref, previous, priority, feature;
+      var i_y, i_x, activities, start, end, ref, moved, priority, feature;
       i_x = self.page_index() * page_data.num + self.activity_move().sort[1] * page_data.cols + self.activity_move().sort[2];
       i_y = self.page_index() * page_data.num + row_i * page_data.cols + col_i;
       start = Math.min(i_x, i_y);
-      end = i_y > i_x ? Math.max(i_x, i_y) + 1 : i_x;
+      end = i_y > i_x ? i_y + 1 : i_x;
       activities = self.activities().slice(start, end);
 
       if (i_y > i_x) {
         activities.unshift(activities.splice(activities.length - 1, 1)[0]);
-        previous = activities[0];
+        moved = activities[0];
       } else {
         activities.push(activities.splice(0, 1)[0]);
-        previous = activities[activities.length - 1];
+        moved = activities[activities.length - 1];
       }
 
       for (var i = 0, l = activities.length; i < l; i++) {
         if (i_y > i_x) {
-          priority = (ref = activities[i + 1]) ? ref.priority : previous.priority;
-          feature = (ref = activities[i + 1]) ? ref.feature : previous.feature;
+          priority = (ref = activities[i + 1]) ? ref.priority : moved.priority;
+          feature = (ref = activities[i + 1]) ? ref.feature : moved.feature;
         } else {
-          priority = (ref = activities[i - 1]) ? ref.previous_priority : previous.priority;
-          feature = (ref = activities[i - 1]) ? ref.previous_feature : previous.feature;
+          priority = (ref = activities[i - 1]) ? ref.previous_priority : moved.priority;
+          feature = (ref = activities[i - 1]) ? ref.previous_feature : moved.feature;
         }
         activities[i < 0 ? 0 : i] = {
           _id: activities[i]._id,
@@ -223,7 +226,6 @@ const ActivitiesManage = {
           previous_feature: activities[i].feature,
           feature: feature
         };
-
       }
       mEventReset('all');
       self.channel.publish('activities.modified', {activities: activities});
@@ -247,8 +249,11 @@ const ActivitiesManage = {
     <div class="container manage-settings" data-bind="css: {activitiesManage: activity_settings().manage && activity_settings().active}">\
       \
       <div class="row">\
-        <div class="col-md-10 manage-settings-col">\
-          <div>\
+        <div class="col-md-4">\
+          <categories params="channel: channel, activity_settings: activity_settings"></categories>\
+        </div>\
+        <div class="col-md-8 manage-settings-col">\
+          \
             <div class="row activity-rows" data-bind=\'foreach: activityPages()[page_index()]\'>\
               <div class="row m-activity-row" data-bind=\'foreach: $data\'>\
                 <div class="col-xs-1 m-activity-display"\
@@ -303,8 +308,11 @@ const ActivitiesManage = {
                         <span\
                           data-bind="click: function(event){$parents[1].toggleMoveActivity($data.value);},\
                           clickBubble: false,\
-                          css: {glyphiconMove: $parents[1].activity_move()._id,\
-                          glyphiconSelected: $parents[1].activity_move()._id === $data.value._id}"\
+                          css: {\
+                            glyphiconMove: $parents[1].activity_move()._id,\
+                            glyphiconSelected: $parents[1].activity_move()._id === $data.value._id,\
+                            deleteConfirm: $parents[1].activity_settings().delete_confirm > 1\
+                          }"\
                           class="glyphicon glyphicon-move"\
                         ></span>\
                       </div>\
@@ -325,7 +333,7 @@ const ActivitiesManage = {
                 </span>\
               </div>\
             </div>\
-          </div>\
+          \
         </div>\
       </div>\
   '

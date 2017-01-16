@@ -2,7 +2,7 @@ import Backbone from 'backbone';
 import _ from 'underscore';
 import User from '../models/user';
 
-var UserCollection = Backbone.Collection.extend({
+const UserCollection = Backbone.Collection.extend({
   initialize: function () {
     self = this;
   },
