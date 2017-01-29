@@ -243,7 +243,6 @@ const ActivitiesManage = {
           });
           updateActivities([ac_x, ac_y]);
           mEventReset("all");
-          break;
       }
     };
 

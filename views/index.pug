@@ -14,7 +14,7 @@ html
         div(class='container-fluid')
           div(class='navbar-header')
             a(class='navbar-brand' href='/')
-              img(alt='Brand' height='20' width='20' src='./clipboard.png')
+              img(alt='Brand' height='20' width='20' ExpiresByType image/gif "access plus 1 month" src='./clipboard.png')
             a(class='navbar-brand' href='/') Activities
           div(data-bind='with: activities')
             <activity-search params='channel: channel'></activity-search>
@@ -33,7 +33,7 @@ html
             .col-md-6.pull-left.activity-list-count
               p(data-bind='text: activities().length + (activities().length > 1 ? " Activities" : " Activity")')
             .col-md-6.pull-right
-              div(data-bind="foreach: activityPages", class="pages")
+              div(data-bind="visible: activityPages().length > 1, foreach: activityPages", class="pages")
                 a(data-bind="click: function(index, data, event){$parent.setPage($index, data, event); return true;}, text: $index() + 1, css: {pageSelected: $index() === $parent.page_index()}")
           div(class="row activity-rows" data-bind='foreach: activityPages()[page_index()]')
             .row(data-bind='foreach: $data', class="data-row")

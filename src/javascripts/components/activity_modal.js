@@ -155,94 +155,153 @@ const ActivityComponent = {
           <div class="modal-header">
             <div class="row">
               <div class="col-md-6">
-                <h4 class="modal-title" data-bind="text: activity_name, visible: !edit_mode()" id="activityModalLabel"></h4>
+                <h4
+                  class="modal-title"
+                  data-bind="text: activity_name, visible: !edit_mode()"
+                  id="activityModalLabel">
+                </h4>
                 <input autofocus class="form-control" data-bind="value: activity_name, visible: edit_mode"/>
               </div>
               <div class="col-md-6">
-                <button type="button" class="close" data-bind="click: closeModal" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <button
+                  type="button"
+                  class="close"
+                  data-bind="click: closeModal"
+                  data-dismiss="modal"
+                  aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
               </div>
             </div>
           </div>
           <div class="modal-body">
             <div class="row">
               <div class="col-xs-7">
-              <div class="row">
-                <div class="col-md-4">
-                  <p>Activity Date:</p>
-                </div>
-                <div class="col-md-8">
-                  <p data-bind="text: start_date, visible: !edit_mode()"></p>
-                  <input class="form-control modal-input-1-date" data-bind="value: start_date, visible: edit_mode" type="date"/>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-4"><p>Organizer:</p></div>
-                <div class="col-md-8">
-                  <p data-bind="text: organizer_email"></p>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-4">
-                  <p>Participants:</p>
-                </div>
-                <div class="col-md-8">
-                  <p data-bind="text: participants, visible: !edit_mode()"></p>
-                  <input class="form-control modal-input-1-date" data-bind="value: participants, visible: edit_mode"/>
-                </div>
-              </div>
-              <div class="row">
-                <div class="col-md-4"><p>Details:</p></div>
-                <div class="col-md-8">
-                  <div class="description" data-bind="text: description, visible: !edit_mode()"></div>
-                  <div class="form-group">
-                    <textarea class="form-control" rows="3" data-bind="value: description, visible: edit_mode" type="text" placeholder="Details"></textarea>
+                <div class="row">
+                  <div class="col-md-4">
+                    <p>Activity Date:</p>
+                  </div>
+                  <div class="col-md-8">
+                    <p data-bind="text: start_date, visible: !edit_mode()"></p>
+                    <input
+                      class="form-control
+                      modal-input-1-date"
+                      data-bind="value: start_date, visible: edit_mode"
+                      type="date"
+                      />
                   </div>
                 </div>
-              </div>
-              <div class="row">
-                <div class="col-md-4">
-                  <p data-bind="visible: user_activities().length > 0">Organizer's Activities:</p>
+                <div class="row">
+                  <div class="col-md-4">
+                    <p>Organizer:</p>
+                  </div>
+                  <div class="col-md-8">
+                    <p data-bind="text: organizer_email"></p>
+                  </div>
                 </div>
-                <div class="col-md-8">
-                  <div class="user-activities">
-                    <div data-bind="foreach: user_activities">
-                      <a data-bind="click: $parent.changeUserActivity, text: get('activity')"></a><br/>
+                <div class="row">
+                  <div class="col-md-4">
+                    <p>Participants:</p>
+                  </div>
+                  <div class="col-md-8">
+                    <p data-bind="text: participants, visible: !edit_mode()"></p>
+                    <input
+                      class="form-control modal-input-1-date"
+                      data-bind="value: participants, visible: edit_mode"
+                    />
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">
+                    <p>Details:</p>
+                  </div>
+                  <div class="col-md-8">
+                    <div class="description" data-bind="text: description, visible: !edit_mode()"></div>
+                    <div class="form-group">
+                      <textarea
+                        class="form-control"
+                        rows="3"
+                        data-bind="value: description, visible: edit_mode"
+                        type="text"
+                        placeholder="Details">
+                      </textarea>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4">
+                    <p data-bind="visible: user_activities().length > 0">Organizer's Activities:</p>
+                  </div>
+                  <div class="col-md-8">
+                    <div class="user-activities">
+                      <div data-bind="foreach: user_activities">
+                        <a data-bind="click: $parent.changeUserActivity, text: get('activity')"></a>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="col-xs-3">
-              <div class="row">
-                <div class="col-xs-12 activity-img-container">
-                  <img class="activity-img" data-bind="attr: {src: image}">
-                </div>
-                <div class="col-xs-12">
-                  <image-search params="channel: channel"></image-search>
+              <div class="col-xs-3">
+                <div class="row">
+                  <div class="col-xs-12 activity-img-container">
+                    <img class="activity-img" data-bind="attr: {src: image}">
+                  </div>
+                  <div class="col-xs-12">
+                    <image-search params="channel: channel"></image-search>
+                  </div>
                 </div>
               </div>
             </div>
-            </div>
-            <image-search-results params="channel: channel, columns: image_columns, image: image"></image-search-results>
+            <image-search-results
+              params="channel: channel, columns: image_columns, image: image">
+            </image-search-results>
           </div>
           <div class="modal-footer">
             <div class="row">
               <div class="col-xs-4 remove-activity">
-                <button data-bind="click: removeActivity" data-dismiss="modal" type="button" class="btn btn-default">Remove Activity</button>
+                <button
+                  data-bind="click: removeActivity"
+                  data-dismiss="modal"
+                  type="button"
+                  class="btn btn-default">
+                Remove Activity
+                </button>
               </div>
               <div class="col-xs-8">
-                <button data-bind="click: closeModal, visible: !edit_mode()" data-dismiss="modal" type="button" class="btn btn-default">Close</button>
-                <button data-bind="click: toggleEditActivity, visible: !edit_mode()" type="button" class="btn btn-primary">Edit Activity</button>
-
-                <button data-bind="click: toggleEditActivity, visible: edit_mode" type="button" class="btn btn-default">Cancel</button>
-                <button data-bind="click: saveChanges, visible: edit_mode" type="button" class="btn btn-primary">Save Changes</button>
+                <button
+                  data-bind="click: closeModal,
+                  visible: !edit_mode()"
+                  data-dismiss="modal"
+                  type="button"
+                  class="btn btn-default">
+                Close
+                </button>
+                <button
+                  data-bind="click: toggleEditActivity, visible: !edit_mode()"
+                  type="button"
+                  class="btn btn-primary">
+                Edit Activity
+                </button>
+                <button
+                  data-bind="click: toggleEditActivity, visible: edit_mode"
+                  type="button"
+                  class="btn btn-default">
+                Cancel
+                </button>
+                <button
+                  data-bind="click: saveChanges,
+                  visible: edit_mode"
+                  type="button"
+                  class="btn btn-primary">
+                Save Changes
+                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  `
+`
 }
 
 module.exports = ActivityComponent;
