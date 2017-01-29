@@ -138,16 +138,9 @@ app.use(compression());
 app.use(favicon(`${__dirname}/public/images/favicon.ico`));
 app.use("/api", router);
 
-app.use(express.static(path.join(__dirname, "dist"), {
-  maxAge: 400000000
-}));
+app.use(express.static(path.join(__dirname, "dist")));
 
-app.use(express.static(path.join(__dirname, "public"), {
-  maxAge: 400000000
-}));
-app.use(express.static(path.join(__dirname, "public/css/bootstrap.css"), {
-  maxAge: 400000000
-}));
+app.use(express.static(path.join(__dirname, "/public"), { maxage: 700000000 }));
 
 app.get("/", (req, res) => {
   res.render("index", {

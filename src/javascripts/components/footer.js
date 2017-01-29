@@ -65,7 +65,13 @@ const FooterComponent = {
         <div class="container-fluid">
           <div class="navbar-header">
             <a class="navbar-brand" href="/">
-              <img alt='Brand' height='20' width='20' src='./clipboard.png'/>
+              <img
+                ExpiresByType image/gif "access plus 1 month"
+                alt="Brand"
+                height="20"
+                width="20"
+                src="./clipboard.png"
+              />
             </a>
           </div>
           <ul class="nav navbar-nav">
@@ -79,12 +85,20 @@ const FooterComponent = {
             <li><a>Contact</a></li>
           </ul>
         </div>
-
         <div class="container settings">
           <div id="settings" class="row">
             <div class="col-md-12 setting-headers" data-bind="visible: activity_settings().active">
-              <a href="/#settings" data-bind="click: manageActivities, css: {activeSetting: activity_settings().manage}">Manage Activities</a>
-              <a data-bind="click: viewActivityStats, css: {activeSetting: activity_settings().stats}">View Stats</a>
+              <a
+                href="/#settings"
+                data-bind="click: manageActivities,
+                css: {activeSetting: activity_settings().manage}">
+                  Manage Activities
+              </a>
+              <a
+                data-bind="click: viewActivityStats,
+                css: {activeSetting: activity_settings().stats}">
+                  View Stats
+              </a>
               <button
                 data-bind="click: removeAll,
                 event: {contextmenu: removeAll},
@@ -99,9 +113,12 @@ const FooterComponent = {
             </div>
           </div>
         </div>
-
         <div class="container activity-settings" id="activity-settings">
-          <activities-manage params="channel: channel, activities: activities, activity_settings: activity_settings"></activities-manage>
+          <activities-manage
+            params="channel: channel,
+            activities: activities,
+            activity_settings: activity_settings">
+          </activities-manage>
         </div>
 
         </div>

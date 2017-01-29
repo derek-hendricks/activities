@@ -1,6 +1,7 @@
 import ko from "knockout";
 import _ from "underscore";
 import utils from "../utils";
+import Queue from "../utils/d3-queue.min.js";
 
 const ViewModel = function (channel) {
   const self = this;
@@ -146,7 +147,7 @@ const ViewModel = function (channel) {
 
   self.channel.subscribe("delete.all", data => {
     let queue, activity, query
-    queue = d3.queue();
+    queue = Queue();
     queue.defer(callback => {
       self.channel.publish("users.delete", {
         callback(err) {
@@ -184,7 +185,7 @@ const ViewModel = function (channel) {
   });
 
   self.channel.subscribe("activities.delete.selected", data => {
-    let queue = d3.queue();
+    let queue = Queue();
     queue.defer(callback => {
       self.channel.publish("users.delete", {
         callback(err) {

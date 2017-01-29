@@ -1,5 +1,6 @@
 import ko from "knockout";
 import _ from "underscore";
+import Queue from "../utils/d3-queue.min.js";
 
 const ActivitiesManage = {
   name: "activities-manage",
@@ -136,9 +137,8 @@ const ActivitiesManage = {
     }
 
     updateActivities = activities => {
-      let attributes;
-      let query;
-      let queue = d3.queue(1);
+      let attributes, query;
+      let queue = Queue(1);
       for (let i = 0, l = activities.length; i < l; i++) {
         (((_i, _activities) => {
           queue.defer(updateActivity, _activities[_i]);
@@ -308,11 +308,14 @@ const ActivitiesManage = {
     }
 
     self.dragEnd = (item, row_i, col_i) => {
-      let ac_x;
-      let ac_y;
+      let ac_x, ac_y;
       item.dragging(false);
-      if (self.activity_move().sort) return sortActivities(item, row_i, col_i);
-      if (self.activity_move()._id === item.value._id) return mEventReset("all");
+      if (self.activity_move().sort) {
+        return sortActivities(item, row_i, col_i);
+      }
+      if (self.activity_move()._id === item.value._id) {
+        return mEventReset("all");
+      }
       ac_x = {
         _id: self.activity_move()._id,
         priority: item.value.priority,

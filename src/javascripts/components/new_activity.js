@@ -1,5 +1,6 @@
 import ko from "knockout";
 import _ from "underscore";
+import Queue from "../utils/d3-queue.min.js";
 
 const newActivityComponent = {
   name: "new-activity",
@@ -26,7 +27,7 @@ const newActivityComponent = {
 
     self.newActivity = () => {
       if (!self.activity()) return;
-      queue = d3.queue(1);
+      queue = Queue(1);
 
       queue.defer(createActivity);
       queue.defer(createUser);
