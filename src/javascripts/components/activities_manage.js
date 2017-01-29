@@ -201,6 +201,7 @@ const ActivitiesManage = {
       i_y = self.page_index() * page_data.num + row_i * page_data.cols + col_i;
       start = Math.min(i_x, i_y);
       end = i_y > i_x ? i_y + 1 : i_x;
+      if (start === end) return mEventReset('all');
       activities = self.activities().slice(start, end);
 
       if (i_y > i_x) {
@@ -219,7 +220,8 @@ const ActivitiesManage = {
           priority = (ref = activities[i - 1]) ? ref.previous_priority : moved.priority;
           feature = (ref = activities[i - 1]) ? ref.previous_feature : moved.feature;
         }
-        activities[i < 0 ? 0 : i] = {
+
+        activities[i] = {
           _id: activities[i]._id,
           previous_priority: activities[i].priority,
           priority: priority,
