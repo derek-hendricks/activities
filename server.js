@@ -1,3 +1,4 @@
+'use strict'
 const bodyParser = require('body-parser'),
   express = require('express'),
   path = require('path'),
@@ -12,17 +13,17 @@ const bodyParser = require('body-parser'),
   Flickr = require('flickrapi');
 
 if (process.env.NODE_ENV != "production") {
-  env = require("node-env-file");
+  let env = require("node-env-file");
   env(`${__dirname}/.env`);
 }
 
-var app = express()
-var router = express.Router();
-var port = process.env.PORT || 5000;
-var db;
-var flickr;
+let app = express()
+let router = express.Router();
+let port = process.env.PORT || 5000;
+let db;
+let flickr;
 
-var parseQuery = (query) => {
+let parseQuery = (query) => {
   return parser.parse(query).mapValues((field, stringId) => {
     if (field.indexOf("_id") > 1) {
       return ObjectId(stringId);
@@ -31,14 +32,17 @@ var parseQuery = (query) => {
   });
 };
 
-var flickerApi = (search_options, callback) => {
+let flickerApi = (search_options, callback) => {
+  let photos, urls = [], url;
   flickr.photos.search(search_options, (err, result) => {
-    if (err) return callback(err);
-    var photos = result.photos.photo;
-    var url;
-    var urls = [];
-    if (!photos) return callback(true);
-    for (var i = 0, l = photos.length; i < l; i++) {
+    if (err) {
+      return callback(err);
+    }
+    photos = result.photos.photo;
+    if (!photos) {
+      return callback(true);
+    }
+    for (let i = 0, l = photos.length; i < l; i++) {
       url = `https://farm${photos[i].farm}.staticflickr.com/${photos[i].server}/${photos[i].id}_${photos[i].secret}.jpg`;
       urls.push(url);
     }
@@ -46,19 +50,21 @@ var flickerApi = (search_options, callback) => {
   });
 };
 
-var saveActivityImgUrls = (activity, callback) => {
-  var search_options = {
+let saveActivityImgUrls = (activity, callback) => {
+  let search_options, err_msg, image_set;
+  search_options = {
     safe_search: 1,
     sort: "relevance",
     content_type: 1,
     text: activity.text
   };
-  var err_msg = {
+  err_msg = {
     message: `Could not find results for ${activity.text}`
   };
-  var image_set;
   flickerApi(search_options, (err, urls) => {
-    if (err) return callback(err);
+    if (err) {
+      return callback(err);
+    }
     if (((urls = urls || []) ? urls.length : 0) < 1) {
       return callback(null, err_msg, null);
     }
@@ -66,7 +72,9 @@ var saveActivityImgUrls = (activity, callback) => {
       urls,
       text: activity.text
     };
-    if (!activity.save) return callback(null, null, image_set);
+    if (!activity.save) {
+      return callback(null, null, image_set);
+    }
     image_set.expireAt = moment().add(5, "days").toISOString();
     db.collection("images").save(image_set, (err, result, options) => {
       callback(err, null, image_set);
@@ -102,7 +110,7 @@ MongoClient.connect(
     db = database;
     app.listen(port, () => {
       console.log(`listening on ${port}`);
-      var flickrOptions = {
+      let flickrOptions = {
         api_key: process.env.FLICKR_KEY,
         secret: process.env.FLICKR_SECRET,
         progress: true
@@ -117,17 +125,26 @@ MongoClient.connect(
 app.set("view cache", true);
 app.set("view engine", "pug");
 app.set("x-powered-by", false);
+
 app.use(bodyParser.urlencoded({
   extended: true
 }));
+
 app.use(bodyParser.json({
   type: "application/json"
 }));
+
 app.use(compression());
 app.use(favicon(`${__dirname}/public/images/favicon.ico`));
 app.use("/api", router);
-app.use(express.static(path.join(__dirname, "dist"), { maxAge: 400000000 }));
-app.use(express.static(path.join(__dirname, "public"), { maxAge: 400000000 }));
+
+app.use(express.static(path.join(__dirname, "dist"), {
+  maxAge: 400000000
+}));
+
+app.use(express.static(path.join(__dirname, "public/css/bootstrap.css"), {
+  maxAge: 900000000
+}));
 
 app.get("/", (req, res) => {
   res.render("index", {
@@ -211,7 +228,7 @@ router.post("/users", (req, res, next) => {
 });
 
 router.put("/users/:id", (req, res, next) => {
-  var query = {
+  let query = {
     _id: req.params.id
   };
   db.collection("users").update(query, req.body.query, (err, result) => {
@@ -221,8 +238,8 @@ router.put("/users/:id", (req, res, next) => {
 });
 
 router.put("/activities/:id", (req, res, next) => {
-  var col = req.body.col;
-  var query = {
+  let col = req.body.col;
+  let query = {
     _id: ObjectId(req.params.id)
   };
   db.collection(col).update(query, req.body.query, (err, result) => {
@@ -232,7 +249,7 @@ router.put("/activities/:id", (req, res, next) => {
 });
 
 router.put("/categories/:id", (req, res, next) => {
-  var query = {
+  let query = {
     _id: ObjectId(req.params.id)
   };
   db.collection("categories").update(query, req.body.query, (err, result) => {
@@ -250,7 +267,7 @@ router.put("/images/:id", (req, res, next) => {
       message
     });
     updateImage(image_set);
-    var updateImage = update_query => {
+    let updateImage = update_query => {
       db.collection(database).update({
         _id: ObjectId(req.params.id)
       }, update_query, (err, result) => {
@@ -313,8 +330,8 @@ router.delete("/categories/:id", (req, res, next) => {
 });
 
 router.delete(["/activities/:id", "/images/:id"], (req, res, next) => {
-  var col = req.body.col;
-  var query = req.body.query;
+  let col = req.body.col;
+  let query = req.body.query;
   if (!query) {
     query = {
       "_id": ObjectId(req.params.id)
