@@ -142,8 +142,11 @@ app.use(express.static(path.join(__dirname, "dist"), {
   maxAge: 400000000
 }));
 
+app.use(express.static(path.join(__dirname, "public"), {
+  maxAge: 400000000
+}));
 app.use(express.static(path.join(__dirname, "public/css/bootstrap.css"), {
-  maxAge: 900000000
+  maxAge: 400000000
 }));
 
 app.get("/", (req, res) => {
