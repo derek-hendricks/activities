@@ -69,6 +69,7 @@ activity-modal .activity-img {
 }
 activity-modal .search-input input {
   width: 170px;
+  margin-top: 2px;
 }
 activity-modal textarea {
   z-index: 10;

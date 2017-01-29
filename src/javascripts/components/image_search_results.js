@@ -141,7 +141,7 @@ const ImageSearchResultsComponent = {
         </div>
       </div>
       </div>
-      <div class="row">
+      <div data-bind="visible: images() && images().length >= 1" class="row">
       <div class="col-xs-4 previous-image">
         <img data-bind="click: previousImageSet"  src="./arrow.png"/>
       </div>

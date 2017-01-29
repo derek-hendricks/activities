@@ -163,8 +163,6 @@ router.get("/users/:id", (req, res, next) => {
 });
 
 router.post("/users", (req, res, next) => {
-  console.log('req.body.query, req.body.update, {upsert: !!req.body.upsert}');
-  console.log(req.body.query, req.body.update, {upsert: !!req.body.upsert});
   db.collection("users").update(req.body.query, req.body.update, {upsert: !!req.body.upsert}, (err, result) => {
     if (err) return next(err);
     res.json(result);
