@@ -1,21 +1,23 @@
-import ko from 'knockout';
-import _ from 'underscore';
-import utils from '../utils';
+import ko from "knockout";
+import _ from "underscore";
+import utils from "../utils";
 
 const ViewModel = function(channel) {
-  var self = this, collection, model, categories;
+  const self = this;
+  let collection;
+  let model;
+  let categories;
   self.channel = channel;
 
-  self.channel.subscribe('categories.load', function(data) {
+  self.channel.subscribe("categories.load", data => {
     categories = data.response.categories;
     collection = data.collection;
     model = collection.model;
   });
 
-  self.channel.subscribe('get.categories', function(data){
-    data.callback({categories: categories});
+  self.channel.subscribe("get.categories", data => {
+    data.callback({categories});
   });
-
 };
 
 module.exports = ViewModel;

@@ -1,5 +1,5 @@
 .env
-npm-debug.log
+npm-debug.log.*
 node_modules
 .vscode/
 resources
@@ -8,3 +8,4 @@ archived
 data
 Rakefile
 spec
+jsconfig.json

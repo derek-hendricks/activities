@@ -5,6 +5,7 @@ import UserCollection from '../collections/user';
 
 const ViewModel = function(channel) {
 	var self = this, collection;
+  self.channel = channel;
 	self.users = ko.observableArray([]);
 	self.first_name = ko.observable();
 	self.last_name = ko.observable();
@@ -13,12 +14,12 @@ const ViewModel = function(channel) {
 	self.organizer = ko.observable(false);
 	self.participant = ko.observable(true);
 
-  channel.subscribe('users.load', function(data) {
+  self.channel.subscribe('users.load', function(data) {
     self.users(data.response.users);
     collection = data.collection;
    });
 
-	channel.subscribe('users.delete', function(data) {
+	self.channel.subscribe('users.delete', function(data) {
 		var model = data.model || collection.models[0];
 		if (!model) return;
 		self.removeUsers({model: model}, data.callback);
@@ -28,7 +29,7 @@ const ViewModel = function(channel) {
     if (collection) return collection.find(query);
 	};
 
-	channel.subscribe('fetch.user', function(data) {
+	self.channel.subscribe('fetch.user', function(data) {
 		var user = getUser(data.query);
 		if (user) return data.callback(null, user);
 		fetchUser(data.query, data.callback);
@@ -43,9 +44,9 @@ const ViewModel = function(channel) {
 		}});
 	};
 
-	self.updateUser = function(query, update, upsert, callback) {
+	let updateUser = (query, update, upsert, callback) => {
 		var model = new UserModel();
-		model.save(null, {
+    model.save(null, {
 			data: {update: update, query: query, upsert: upsert},
 			processData: true,
 			wait: true,
@@ -57,10 +58,12 @@ const ViewModel = function(channel) {
 		});
 	};
 
-	channel.subscribe('create.update.user', function(data) {
-    self.updateUser(data.query, data.update, data.upsert, function(err, result) {
+	self.channel.subscribe('create.update.user', function(data) {
+    updateUser(data.query, data.update, data.upsert, function(err, result) {
 			var activities, user;
-			if (err) return data.callback(err);
+			if (err) {
+        return data.callback(err);
+      }
 			user = getUser(data.query);
 			if (user) {
 				activities = user.get('activities');
@@ -72,7 +75,7 @@ const ViewModel = function(channel) {
 		});
 	});
 
-  channel.subscribe('remove.user.activity', function(data) {
+  self.channel.subscribe('remove.user.activity', function(data) {
 		var activities, index, update, model;
 		model = data.user_model || getUser({_id: data._id});
 		activities = model.get('activities');

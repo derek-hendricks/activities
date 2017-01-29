@@ -1,62 +1,62 @@
-import Backbone from 'backbone';
-import ko from 'knockout';
-import Postal from 'postal';
-import './utils/knockout.dragdrop';
+import Backbone from "backbone";
+import ko from "knockout";
+import Postal from "postal";
+import "./utils/knockout.dragdrop";
 
-import Router from './router';
+import Router from "./router";
 
-import ActivitiesViewModel from './view-models/activities';
-import ActivityViewModel from './view-models/activity';
-import UserViewModel from './view-models/user';
-import ImageViewModel from './view-models/images';
-import CategoriesViewModel from './view-models/categories';
+import ActivitiesViewModel from "./view-models/activities";
+import ActivityViewModel from "./view-models/activity";
+import UserViewModel from "./view-models/user";
+import ImageViewModel from "./view-models/images";
+import CategoriesViewModel from "./view-models/categories";
 
-import ActivityComponent from './components/activity_modal';
-import NewActivityComponent from './components/new_activity';
-import ImageComponent from './components/images';
-import ActivitySearchComponent from './components/activity_search';
-import FeaturedActivityComponent from './components/featured_activity';
-import FooterComponent from './components/footer';
-import ActivitiesMngComponent from './components/activities_manage';
-import CategoriesComponent from './components/categories';
+import ActivityComponent from "./components/activity_modal";
+import NewActivityComponent from "./components/new_activity";
+import ImageSearchResultsComponent from "./components/image_search_results";
+import ActivitySearchComponent from "./components/activity_search";
+import FeaturedActivityComponent from "./components/featured_activity";
+import FooterComponent from "./components/footer";
+import ActivitiesMngComponent from "./components/activities_manage";
+import CategoriesComponent from "./components/categories";
+import ImageSearch from "./components/image_search";
 
 
-var ViewModel = function () {
-	var self = this, registerComponent;
-	self.channel = Postal.channel();
-	self.user = new UserViewModel(self.channel);
-	self.activities = new ActivitiesViewModel(self.channel);
-	self.activity = new ActivityViewModel(self.activities, self.channel);
+const ViewModel = function () {
+  const self = this;
+  self.channel = Postal.channel();
+  self.user = new UserViewModel(self.channel);
+  self.activities = new ActivitiesViewModel(self.channel);
+  self.activity = new ActivityViewModel(self.activities, self.channel);
   self.categories = new CategoriesViewModel(self.channel);
   self.images = new ImageViewModel(self.channel);
 
-	new Router({channel: self.channel});
+  new Router({channel: self.channel});
 
-	Backbone.history.start();
+  Backbone.history.start();
 };
 
-var registerComponent = function(component) {
+let registerComponent = component => {
   ko.components.register(component.name, {
     viewModel: component.viewModel,
     template: component.template
   });
-}
+};
 
-var _components = [
+let _components = [
   ActivityComponent,
   NewActivityComponent,
-  ImageComponent,
+  ImageSearchResultsComponent,
   ActivitySearchComponent,
   FeaturedActivityComponent,
   FooterComponent,
   ActivitiesMngComponent,
-  CategoriesComponent
+  CategoriesComponent,
+  ImageSearch
 ];
 
-for (var i = 0, l = _components.length; i < l; i++)  {
+for (let i = 0, l = _components.length; i < l; i++)  {
   registerComponent(_components[i]);
 }
 
-// ko.options.deferUpdates = true;
-
-ko.applyBindings(new ViewModel(), document.getElementById('activities'));
+ko.applyBindings(new ViewModel(), document.getElementById("activities"));

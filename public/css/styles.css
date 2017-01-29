@@ -29,7 +29,7 @@ activity-modal .modal-input-1-date {
   margin-bottom: 5px;
 }
 activity-modal .description {
-  overflow-y: scroll;
+  /*overflow-y: scroll;*/
   overflow-x: hidden;
   max-height: 100px;
 }
@@ -37,11 +37,11 @@ activity-modal .user-activities {
   overflow: auto;
   max-height: 60px;
 }
-activity-modal .user-activities::-webkit-scrollbar {
+activity-modal .user-activities::-webkit-scrollbar, activity-modal .description::-webkit-scrollbar {
   width: 6px !important;
   background: transparent;
 }
-activity-modal .user-activities::-webkit-scrollbar-thumb, activity-search .activity-search-suggestions::-webkit-scrollbar-thumb {
+activity-modal .user-activities::-webkit-scrollbar-thumb, activity-search .activity-search-suggestions::-webkit-scrollbar-thumb, activity-modal .description::-webkit-scrollbar-thumb {
   border-radius: 4px;
   background-color: rgba(0,0,0,.5);
   box-shadow: 0 0 1px rgba(255,255,255,.5);
@@ -68,8 +68,13 @@ activity-modal .activity-img {
   -ms-interpolation-mode: bicubic;
 }
 activity-modal .search-input input {
-  width: 200px;
-  margin-bottom: 2px;
+  width: 170px;
+}
+activity-modal textarea {
+  z-index: 10;
+  position: relative;
+  max-width: 432px;
+  max-height: 290px;
 }
 activity-modal .image-cols {
   text-align: center;
@@ -95,7 +100,7 @@ activity-modal .image-cols img:hover {
   cursor: pointer;
 }
 activity-modal .modal-footer {
-  margin-top: -15px;
+  margin-top: 15px;
 }
 activity-modal .previous-image {
   text-align: left;
@@ -574,3 +579,5 @@ categories .category-new .glyphicon-plus {
     margin-left: -30px;
   }
 }
+
+

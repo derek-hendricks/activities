@@ -6,10 +6,10 @@ import CategoryCollection from './collections/category';
 import ActivityModel from './models/activity';
 import UserModel from './models/user';
 
-var self, channel;
+let self, channel;
 
-const fetchCollection = function(Collection, value, channel) {
-  var collection = new Collection();
+let fetchCollection = (Collection, value, channel) => {
+  let collection = new Collection();
   collection.fetch({
     success: function(_collection, response) {
       channel.publish(value, {response: response, collection: collection});
@@ -20,8 +20,8 @@ const fetchCollection = function(Collection, value, channel) {
   });
 };
 
-const getModel = function(Model, id, callback) {
-  var model = new Model({_id: id});
+let getModel = (Model, id, callback) => {
+  let model = new Model({_id: id});
   model.fetch({success: function(_model, response) {
     callback(null, _model);
   }, error: function(err) {
@@ -29,7 +29,7 @@ const getModel = function(Model, id, callback) {
   }});
 };
 
-var AppRouter = Backbone.Router.extend({
+const AppRouter = Backbone.Router.extend({
   initialize: function(options) {
     self = this;
     channel = options.channel;
