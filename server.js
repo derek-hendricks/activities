@@ -2,7 +2,6 @@
 const bodyParser = require('body-parser'),
   express = require('express'),
   path = require('path'),
-  cache = require('express-redis-cache')(),
   compression = require('compression'),
   moment = require('moment'),
   methodOverride = require('method-override'),
@@ -21,7 +20,6 @@ if (process.env.NODE_ENV != "production") {
 let app = express()
 let router = express.Router();
 let port = process.env.PORT || 5000;
-let cache_expire = 100000000;
 let db;
 let flickr;
 
@@ -154,7 +152,7 @@ app.get("/", (req, res) => {
   });
 });
 
-router.get("/activities", cache.route({expire: cache_expire}), (req, res, next) => {
+router.get("/activities", (req, res, next) => {
   db.collection("activities").find().toArray((err, results) => {
     if (err) return next(err);
     res.json({
@@ -163,7 +161,7 @@ router.get("/activities", cache.route({expire: cache_expire}), (req, res, next) 
   });
 });
 
-router.get("/users", cache.route({expire: cache_expire}), (req, res, next) => {
+router.get("/users", (req, res, next) => {
   db.collection("users").find().toArray((err, results) => {
     if (err) return next(err);
     res.json({
@@ -172,7 +170,7 @@ router.get("/users", cache.route({expire: cache_expire}), (req, res, next) => {
   });
 });
 
-router.get("/images", cache.route({expire: cache_expire}), (req, res, next) => {
+router.get("/images", (req, res, next) => {
   db.collection("images").find().toArray((err, results) => {
     if (err) return next(err);
     res.json({
@@ -181,7 +179,7 @@ router.get("/images", cache.route({expire: cache_expire}), (req, res, next) => {
   });
 });
 
-router.get("/categories", cache.route({expire: cache_expire}), (req, res, next) => {
+router.get("/categories", (req, res, next) => {
   db.collection("categories").find().toArray((err, results) => {
     if (err) return next(err);
     res.json({
@@ -199,7 +197,7 @@ router.get("/categories/:id", (req, res, next) => {
   });
 });
 
-router.get("/images/:id", cache.route({expire: 300000000}), (req, res, next) => {
+router.get("/images/:id", (req, res, next) => {
   db.collection("images").findOne({
     text: req.params.id
   }, (err, image) => {
