@@ -22,7 +22,6 @@ const ActivitySearchComponent = {
     };
 
     params.activities.subscribe(function(_activities) {
-      console.log('search', activities);
       if (_activities.length) activities = _activities;
     })
 
@@ -46,15 +45,16 @@ const ActivitySearchComponent = {
 
     self.search.subscribe(text => {
       activitiesSearch(text, (err, suggestions) => {
-          self.SearchResult.err("");
-          if (err) {
-            if (params.error_message) {
-              self.SearchResult.err(`Can't find <br/> ${err}`);
-              return self.suggestions([]);
-            }
+        self.SearchResult.err("");
+        if (err) {
+          if (params.error_message) {
+            self.SearchResult.err(`Can't find <br/> ${err}`);
+            self.suggestions([]);
           }
-          suggestions = _.uniq(suggestions, (suggestion, key, name) => suggestion.name);
-          self.suggestions(suggestions);
+          return;
+        }
+        suggestions = _.uniq(suggestions, (suggestion, key, name) => suggestion.name);
+        self.suggestions(suggestions);
       });
     });
 

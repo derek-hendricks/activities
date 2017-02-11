@@ -717,8 +717,7 @@ categories .category-name .category-cn {
 }
 
 categories .category-name .category-cn.categorySelected {
-  background-image: none;
-  background: #DEDEDD;
+  background-image: url(../images/categorySelected.png);
 }
 
 categories .category-name .category-cn.categorySelected a {
@@ -764,7 +763,7 @@ categories .add-category .glyphicon-plus {
   font-size: 14px;
   font-weight: 900;
   top: -1;
-  color: #9d9d9d;
+  /*color: #9d9d9d;*/
 }
 
 categories .add-activity .glyphicon-plus {
@@ -773,15 +772,14 @@ categories .add-activity .glyphicon-plus {
   top: -1;
 }
 
-categories .add-category:hover,
-categories .add-activity:hover {
+categories .add-category:hover {
   color: #fff;
   cursor: pointer;
   text-decoration: none;
+  background: #9d9d9d;
 }
 
-categories .add-category:focus,
-categories .add-activity:focus {
+categories .add-category:focus {
   border: none;
   -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(0, 0, 0, .9);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px rgba(0, 0, 0, .9);

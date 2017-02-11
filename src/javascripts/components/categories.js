@@ -70,8 +70,8 @@ const Categories = {
 
     function paramsActivitiesDiff(activities, category_activities) {
       let params_activities = _.difference(
-        self.activityData.activities,
-        self.activityData.category_activities()
+        activities,
+        category_activities
       );
       self.activityData.params_activities(params_activities);
     }
