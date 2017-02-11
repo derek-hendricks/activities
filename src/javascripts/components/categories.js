@@ -76,7 +76,7 @@ const Categories = {
         }
       },
       query = {
-        id: self.name()
+        _id: self.name()
       },
       attr = {
         _id: self.name(),
