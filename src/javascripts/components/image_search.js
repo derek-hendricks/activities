@@ -5,15 +5,19 @@ const ImageSearchComponent = {
   name: "image-search",
   viewModel: function (params) {
     const self = this;
-    let input = 3;
-    let ms = 1000;
-    let search = true;
 
     self.channel = params.channel;
 
-    self.searchInput = ko.observable().extend({
-      deferred: true
-    });
+    self.searchInput = ko.observable();
+
+    self.delayedInputValue = ko.pureComputed(self.searchInput)
+      .extend({
+        rateLimit: {
+          method: "notifyWhenChangesStop",
+          timeout: 400
+        }
+      });
+
     self.image_progress = ko.observable().extend({
       deferred: true
     });
@@ -22,24 +26,19 @@ const ImageSearchComponent = {
       reset();
     });
 
-    let reset = () => {
+    function reset() {
       search = true;
       self.searchInput("");
       self.image_progress("");
     };
 
-    let fetch = (_text, _ms, _save) => {
+    function fetchImages() {
       self.channel.publish("image.search", {
         text: self.searchInput(),
-        save: _save,
+        save: true,
         callback(err, data, callback) {
-          if ((_text || data.text) !== self.searchInput()) {
-            setDelay(self.searchInput(), 500, true);
-          }
-          search = true;
           if (err) {
-            self.image_progress(err.message);
-            return;
+            return self.image_progress(err.message);
           }
           self.image_progress("");
           callback();
@@ -47,25 +46,9 @@ const ImageSearchComponent = {
       });
     };
 
-    function setDelay(_text, _ms, _save) {
-      new Promise((resolve, reject) => {
-        setTimeout(resolve, _ms || ms);
-      }).then(() => {
-        fetch(_text, _ms, _save);
-      });
-    }
-
-    self.searchInput.subscribe((data) => {
+    self.delayedInputValue.subscribe((data) => {
       self.image_progress(`Searching for ${self.searchInput()}`);
-      switch (data) {
-        case data.length < input:
-          break;
-        default:
-          if (search) {
-            search = !search;
-            setDelay(null, null, false);
-          }
-      }
+      fetchImages();
     });
 
   },
