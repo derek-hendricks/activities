@@ -22,6 +22,7 @@ const ActivitySearchComponent = {
     };
 
     params.activities.subscribe(function(_activities) {
+      console.log('search', activities);
       if (_activities.length) activities = _activities;
     })
 

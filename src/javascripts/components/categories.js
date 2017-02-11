@@ -19,14 +19,15 @@ const Categories = {
       category_activities: ko.observableArray([]).extend({
         deferred: true
       }),
-      params_activities: ko.observableArray([]).extend({
-        deferred: true
-      })
+      params_activities: ko.observableArray([])
     };
 
     params.activities.subscribe((activities) => {
       if (activities) {
         self.activityData.activities = activities;
+        if (self.active_category()) {
+          self.displayActivities({_id: self.active_category()});
+        }
       }
     });
 
@@ -48,18 +49,13 @@ const Categories = {
       const category_activities = self.activityData.activities.filter(
         (activity) => {
           return activity.category_id === data._id;
-        }),
-        params_activities = _.difference(
-          self.activityData.activities,
-          category_activities
-        );
+        });
       self.activityData.category_activities(category_activities);
-      self.activityData.params_activities(params_activities);
+      paramsActivitiesDiff(self.activityData.activities, category_activities);
       self.active_category(data._id);
     };
 
     self.onActivitySelect = (data) => {
-      self.activityData.category_activities.push(data.activity);
       const update = {
         $set: {
           category_id: self.active_category()
@@ -69,7 +65,27 @@ const Categories = {
         _id: data.activity._id,
         update
       });
+      updateActivity(data.activity, self.active_category());
     };
+
+    function paramsActivitiesDiff(activities, category_activities) {
+      let params_activities = _.difference(
+        self.activityData.activities,
+        self.activityData.category_activities()
+      );
+      self.activityData.params_activities(params_activities);
+    }
+
+    function updateActivity(activity, ca_id) {
+      activity.category_id = ca_id;
+      self.activityData.category_activities.push(activity);
+      for (let i = 0, l = self.activityData.activities.length; i < l; i++) {
+        if (Object.is(self.activityData.activities[i]._id, activity._id)) {
+          self.activityData.activities[i].category_id = ca_id;
+          paramsActivitiesDiff(self.activityData.activities, self.activityData.category_activities());
+        }
+      }
+    }
 
     self.newCategory = () => {
       const update = {
@@ -94,13 +110,13 @@ const Categories = {
       });
       self.categories.unshift(attr);
       self.active_category(attr._id);
+      self.activityData.category_activities([]);
       self.name("");
     };
   },
 
   template: `
     <div class="category-container">
-
       <div class="row category-settings">
         <div class="col-md-6 category-title">
           <p><strong>Categories</strong></p>
@@ -109,19 +125,16 @@ const Categories = {
           <p><strong><span data-bind="text: active_category"></span></strong></p>
         </div>
       </div>
-
       <div class="row">
         <div class="col-md-6 category-name">
           <div data-bind="foreach: categories">
-             <div class="category-cn" data-bind="css: {categorySelected: $data._id === $parent.active_category()}">
-                <a data-bind="
-                  text: $data._id,
-                  click: $parent.displayActivities">
-                </a>
-              </div>
+            <div class="category-cn"
+              data-bind= "css: {categorySelected: $data._id === $parent.active_category()},
+              click: $parent.displayActivities">
+                <a data-bind="text: $data._id"></a>
+            </div>
           </div>
         </div>
-
         <div class="col-md-5 category-activities">
           <div class="row">
             <div data-bind="with: activityData" class="col-md-12">
@@ -138,7 +151,6 @@ const Categories = {
           </div>
         </div>
       </div>
-
       <div class="row category-new">
         <div class="row">
           <div class="col-md-5">

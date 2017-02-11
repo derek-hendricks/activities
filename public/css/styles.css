@@ -717,8 +717,8 @@ categories .category-name .category-cn {
 }
 
 categories .category-name .category-cn.categorySelected {
- background-image: none;
- background: #DEDEDD;
+  background-image: none;
+  background: #DEDEDD;
 }
 
 categories .category-name .category-cn.categorySelected a {
@@ -814,14 +814,15 @@ categories .category-activities div.row {
 }
 
 categories .category-activities .category {
-  border-radius: 4px;
   background: #DEDEDD;
+  border-radius: 4px;
+  padding: 8px;
+  margin: 0 0 2px 0;
 }
 
 categories .category-activities .category p {
-  padding: 5px;
   color: #222;
-  margin-bottom: 2px;
+  margin-bottom: 0px;
 }
 
 categories button.add-activity {
@@ -838,7 +839,7 @@ categories activity-search input {
   border: none !important;
   color: #f2f2f2 !important;
   position: absolute;
-  margin-left: 20;
+  margin-left: 28;
 }
 
 categories activity-search .activity-search-suggestions {
@@ -850,7 +851,7 @@ categories activity-search .activity-search-suggestions {
   border-radius: 4px;
   padding: 5px;
   margin-top: 1px;
-  margin-left: 20px;
+  margin-left: 28px;
   max-height: 80px;
   overflow-y: auto;
 }
@@ -859,7 +860,7 @@ categories activity-search .activity-search-suggestions>div {
   border-radius: 4px;
   display: inline-block;
   background: #DEDEDD;
-  margin-right: -3px;
+  margin-right: -2.5px;
   margin-bottom: 1px;
 }
 
