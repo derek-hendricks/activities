@@ -5,7 +5,7 @@ import queue from "../utils/d3-queue.min.js";
 
 const ViewModel = function (channel) {
   const self = this;
-  let collection;
+  let collection, modelIndex;
   self.channel = channel;
   self.activities = ko.observableArray([]);
   self.page_index = ko.observable(0).extend({
@@ -72,12 +72,9 @@ const ViewModel = function (channel) {
     self.activities.unshift((self.activities()).splice(index, 1)[0]);
   });
 
-  self.activityRemoved = (model = self.getActivityModel({id}), id, index) => {
-    if (!index) {
-      self.activities().indexOf(_.findWhere(self.activities(), {
-        _id: model.id
-      }));
-    }
+  modelIndex = (model) => self.activities().indexOf(_.findWhere(self.activities(), {_id: model.id}));
+
+  self.activityRemoved = (id, model = self.getActivityModel({id}), index = modelIndex(model)) => {
     self.activities.splice(index, 1);
     collection.remove(model);
   };
@@ -95,7 +92,7 @@ const ViewModel = function (channel) {
   self.channel.subscribe("activities.modified", (data) => {
     let activity_data, activity,
       activities = self.activities.slice();
-    for (let i = 0, l = data.activities.length; i < l; i += 1) {
+    for (let i = 0, len = data.activities.length; i < len; i += 1) {
       activity_data = self.getActivity("_id", data.activities[i]._id);
       activity = Object.assign(activity_data.activity, data.activities[i]);
       activities.splice(activity_data.index, 1, activity);
@@ -173,9 +170,9 @@ const ViewModel = function (channel) {
         },
         processData: true,
         success() {
-          for (let i = 0, l = activity_ids.length; i < l; i += 1) {
+          for (let i = 0, len = activity_ids.length; i < len; i += 1) {
             let activity_index = (self.getActivity("_id", activity_ids[i])).index;
-            self.activityRemoved(null, activity_ids[i], activity_index);
+            self.activityRemoved(activity_ids[i], null, activity_index);
           }
           callback();
         },

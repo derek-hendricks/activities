@@ -73,12 +73,12 @@ const ViewModel = function (activitiesViewModel, channel) {
   });
 
   self.channel.subscribe("activity.update", data => {
+    if (!data.hasOwnProperty('callback')) data.callback = function() {};
     let model = data.model || self.activitiesViewModel.getActivityModel({
       _id: data._id
     });
     if (!model) {
-      if (data.callback) data.callback(`Could not find activity: ${data._id}`);
-      return;
+      return data.callback(`Could not find activity: ${data._id}`);
     }
     model.save(null, {
       data: {
@@ -88,10 +88,10 @@ const ViewModel = function (activitiesViewModel, channel) {
       processData: true,
       success(_model, response) {
         model.set(data.attributes);
-        if (data.callback) data.callback(null, model);
+        return data.callback(null, model);
       },
       error(err) {
-        if (data.callback) data.callback(err);
+        return data.callback(err);
       }
     });
   });
@@ -100,7 +100,7 @@ const ViewModel = function (activitiesViewModel, channel) {
     let model = data.model || self.activitiesViewModel.getActivityModel({
       _id: data._id
     });
-    self.activitiesViewModel.activityRemoved(model, model.id);
+    self.activitiesViewModel.activityRemoved(model.id, model);
     model.destroy({
       data: {
         col: "activities"
