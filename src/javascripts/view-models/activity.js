@@ -77,21 +77,21 @@ const ViewModel = function (activitiesViewModel, channel) {
       _id: data._id
     });
     if (!model) {
-      data.callback(`Could not find activity: ${data._id}`);
+      if (data.callback) data.callback(`Could not find activity: ${data._id}`);
       return;
     }
     model.save(null, {
       data: {
-        query: data.query,
+        update: data.update,
         col: "activities"
       },
       processData: true,
       success(_model, response) {
         model.set(data.attributes);
-        data.callback(null, model);
+        if (data.callback) data.callback(null, model);
       },
       error(err) {
-        data.callback(err);
+        if (data.callback) data.callback(err);
       }
     });
   });
@@ -123,4 +123,4 @@ const ViewModel = function (activitiesViewModel, channel) {
   });
 };
 
-module.exports = ViewModel;
+export default ViewModel;

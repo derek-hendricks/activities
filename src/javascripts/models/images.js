@@ -11,4 +11,4 @@ const ImageModel = Backbone.Model.extend({
   }
 });
 
-module.exports = ImageModel;
+export default ImageModel;

@@ -1,11 +1,11 @@
 import Backbone from 'backbone';
-import Activity from '../models/activity';
+import model from '../models/activity';
 
-const ActivityCollection = Backbone.Collection.extend({
+const Activities = Backbone.Collection.extend({
   initialize: function () {
     self = this;
   },
-  model: Activity,
+  model: model,
   url: '/api/activities',
   parse: function (response) {
     return _.map(response.activities, function (value, key) {
@@ -14,6 +14,7 @@ const ActivityCollection = Backbone.Collection.extend({
   }
 });
 
-module.exports = ActivityCollection;
+export default Activities;
+
 
 

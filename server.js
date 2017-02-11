@@ -13,18 +13,16 @@ const bodyParser = require('body-parser'),
   Flickr = require('flickrapi');
 
 if (process.env.NODE_ENV != "production") {
-  let env = require("node-env-file");
+  const env = require("node-env-file");
   env(`${__dirname}/.env`);
 }
 
-let app = express()
-let router = express.Router();
-let port = process.env.PORT || 5000;
-let db;
-let flickr;
+const app = express()
+const router = express.Router();
+const port = process.env.PORT || 5000;
+let db, flickr;
 
-
-let parseQuery = (query) => {
+function parseQuery(query) {
   return parser.parse(query).mapValues((field, stringId) => {
     if (field.indexOf("_id") > 1) {
       return ObjectId(stringId);
@@ -33,14 +31,13 @@ let parseQuery = (query) => {
   });
 };
 
-let flickerApi = (search_options, callback) => {
-  let photos, urls = [],
-    url;
+function flickerApi(search_options, callback) {
+  let url, urls = [];
   flickr.photos.search(search_options, (err, result) => {
     if (err) {
       return callback(err);
     }
-    photos = result.photos.photo;
+    const photos = result.photos.photo;
     if (!photos) {
       return callback(true);
     }
@@ -52,15 +49,14 @@ let flickerApi = (search_options, callback) => {
   });
 };
 
-let saveActivityImgUrls = (activity, callback) => {
-  let search_options, err_msg, image_set;
-  search_options = {
+function saveActivityImgUrls(activity, callback) {
+  const search_options = {
     safe_search: 1,
     sort: "relevance",
     content_type: 1,
     text: activity.text
   };
-  err_msg = {
+  const err_msg = {
     message: `Could not find results for ${activity.text}`
   };
   flickerApi(search_options, (err, urls) => {
@@ -70,14 +66,14 @@ let saveActivityImgUrls = (activity, callback) => {
     if (((urls = urls || []) ? urls.length : 0) < 1) {
       return callback(null, err_msg, null);
     }
-    image_set = {
+    let image_set = {
       urls,
       text: activity.text
     };
     if (!activity.save) {
       return callback(null, null, image_set);
     }
-    image_set.expireAt = moment().add(5, "days").toISOString();
+    image_set.expireAt = new Date(moment().add(14, "days").format('MMMM D, YYYY hh:mm:ss').toString());
     db.collection("images").save(image_set, (err, result, options) => {
       callback(err, null, image_set);
     });
@@ -110,9 +106,24 @@ MongoClient.connect(
   (err, database) => {
     if (err) return console.log(err);
     db = database;
+    db.collection("images").createIndex({
+      text: 1
+    }, {
+      unique: true
+    });
+    db.collection("activities").createIndex({
+      activity: 1
+    }, {
+      unique: true
+    });
+    db.collection("images").createIndex({
+      "createdAt": 1
+    }, {
+      expireAfterSeconds: 0
+    });
     app.listen(port, () => {
       console.log(`listening on ${port}`);
-      let flickrOptions = {
+      const flickrOptions = {
         api_key: process.env.FLICKR_KEY,
         secret: process.env.FLICKR_SECRET,
         progress: true
@@ -242,7 +253,7 @@ router.put("/activities/:id", (req, res, next) => {
   let query = {
     _id: ObjectId(req.params.id)
   };
-  db.collection(col).update(query, req.body.query, (err, result) => {
+  db.collection(col).update(query, req.body.update, (err, result) => {
     if (err) return next(err);
     res.json(result);
   });
@@ -252,50 +263,34 @@ router.put("/categories/:id", (req, res, next) => {
   let query = {
     _id: ObjectId(req.params.id)
   };
-  db.collection("categories").update(query, req.body.query, (err, result) => {
+  db.collection("categories").update(query, req.body.update, (err, result) => {
     if (err) return next(err);
     res.json(result);
   });
 });
 
-router.put("/images/:id", (req, res, next) => {
-  if (!req.body.urls) return updateImage(req.body);
-  if (flickr) saveActivityImgUrls(req.body, (err, message, image_set) => {
-    if (err) return next(err);
-    if (message) return res.json({
-      image_set,
-      message
-    });
-    updateImage(image_set);
-    let updateImage = update_query => {
-      db.collection(database).update({
-        _id: ObjectId(req.params.id)
-      }, update_query, (err, result) => {
-        if (err) return next(err);
-        res.json({});
-      });
-    };
-  });
-});
-
 router.post("/images", (req, res, next) => {
-  if (flickr) saveActivityImgUrls({
+  saveActivityImgUrls({
     text: req.body.id,
     save: req.body.save
   }, (err, message, image_set) => {
     if (err) return next(err);
-    if (message) return res.json({
-      image_set,
-      message
-    });
+    if (message) {
+      return res.json({
+        image_set,
+        message
+      });
+    }
     res.json(image_set);
   });
 });
 
 router.post("/categories", (req, res, next) => {
-  db.collection("categories").save(req.body, (err, result) => {
+  db.collection("categories").update(req.body.query, req.body.update, {
+    upsert: !!req.body.upsert
+  }, (err, result) => {
     if (err) return next(err);
-    return res.json({});
+    res.json(result);
   });
 });
 
@@ -333,15 +328,11 @@ router.delete(["/activities/:id", "/images/:id"], (req, res, next) => {
   let col = req.body.col;
   let query = req.body.query;
   if (!query) {
-    query = {
-      "_id": ObjectId(req.params.id)
-    };
+    query = {"_id": ObjectId(req.params.id)};
   } else if (query.all) {
     query = {};
   } else {
-    query["_id"]["$in"] = query["_id"]["$in"].map((id) => {
-      return ObjectId(id)
-    });
+    query["_id"]["$in"] = query["_id"]["$in"].map((id) => { return ObjectId(id) });
   }
   db.collection(col).remove(query, (err, result) => {
     if (err) return next(err);

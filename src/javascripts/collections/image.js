@@ -1,5 +1,4 @@
 import Backbone from 'backbone';
-import _ from 'underscore';
 import Image from '../models/images';
 
 const ImageCollection = Backbone.Collection.extend({
@@ -14,4 +13,5 @@ const ImageCollection = Backbone.Collection.extend({
     });
   }
 });
-module.exports = ImageCollection;
+
+export default ImageCollection;

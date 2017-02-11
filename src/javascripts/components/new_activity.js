@@ -66,10 +66,10 @@ const newActivityComponent = {
       };
       update = {
         $addToSet: {
-          "activities": activity_data._id
+          activities: activity_data._id
         },
         $set: {
-          "organizer": true
+          organizer: true
         }
       };
       upsert = {
@@ -86,7 +86,7 @@ const newActivityComponent = {
       });
     }
 
-    let updateActivitiesViewModel = (model) => {
+    function updateActivitiesViewModel(model) {
       self.email("");
       self.activity("");
       self.description("");
@@ -136,4 +136,4 @@ const newActivityComponent = {
 `
 }
 
-module.exports = newActivityComponent;
+export default newActivityComponent;

@@ -153,4 +153,4 @@ const ImageSearchResultsComponent = {
   `
 }
 
-module.exports = ImageSearchResultsComponent;
+export default ImageSearchResultsComponent;

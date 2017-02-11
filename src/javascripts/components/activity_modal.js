@@ -104,7 +104,7 @@ const ActivityComponent = {
     self.saveChanges = () => {
       let user_activities;
       let attributes;
-      let query;
+      let update;
       self.edit_mode(!self.edit_mode());
       attributes = {
         activity: self.activity_name(),
@@ -115,12 +115,12 @@ const ActivityComponent = {
       if (self.start_date() && self.start_date().includes("-")) {
         attributes.start_date = self.start_date();
       }
-      query = {
+      update = {
         $set: attributes
       };
       self.channel.publish("activity.update", {
         model: self.activity_model(),
-        query,
+        update,
         attributes,
         callback(err, model) {
           if (err) return;
@@ -304,4 +304,4 @@ const ActivityComponent = {
 `
 }
 
-module.exports = ActivityComponent;
+export default ActivityComponent;

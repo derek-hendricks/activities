@@ -1,5 +1,3 @@
-import _ from 'underscore';
-
 const Utils = {
   formatDate: function (date) {
     var d = new Date(date), month = '' + (d.getMonth() + 1);
@@ -28,6 +26,6 @@ const Utils = {
   }
 };
 
-module.exports = Utils;
+export default Utils;
 
 

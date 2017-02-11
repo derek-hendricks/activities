@@ -1,14 +1,36 @@
 import ko from "knockout";
 import _ from "underscore";
+import utils from "../utils";
 import ImageModel from "../models/images";
 
 const ViewModel = function (channel) {
   const self = this;
-  let model;
+  let model, imageKeyModel, image_keys;
   self.imageCollection = ko.observable();
   self.images = ko.observableArray([]);
 
-  let imageRows = (image, cols) => {
+  channel.subscribe("ImageKeys.load", (data) => {
+    image_keys = data.response.image_keys;
+    imageKeyModel = data.collection.model;
+  });
+
+  channel.subscribe("image.search.suggestions", (data) => {
+    let search, suggestions = [], index;
+    let input = data.text.toLowerCase();
+    for (let i = 1, l = image_keys.length; i < l; i++) {
+      index = image_keys[i].text.toLowerCase().indexOf(input);
+      if (index > -1) {
+        suggestions.push({
+          text: image_keys[i].text,
+          index
+        });
+      }
+    }
+    suggestions.sort(utils.indexSort);
+    data.callback({suggestions: suggestions, text: data.text});
+  });
+
+  function imageRows(image, cols) {
     let rows = [], current = [], urls;
     if ((((urls = image.urls || []) ? urls.length : 0) < 1)) {
       return rows;
@@ -24,7 +46,7 @@ const ViewModel = function (channel) {
     return rows;
   };
 
-  let fetchImage = (params, callback) => {
+  function fetchImage(params, callback) {
     model = new ImageModel(params);
     model.fetch({
       success(model, result) {
@@ -44,7 +66,7 @@ const ViewModel = function (channel) {
     createImage(data.text, true, data.callback);
   });
 
-  let createImage = (text, data, callback) => {
+  function createImage(text, data, callback) {
     let model = new ImageModel(), _urls;
     model.save({
       id: text,
@@ -101,6 +123,7 @@ const ViewModel = function (channel) {
       return self.imageCollection().find(query);
     }
   };
+
 };
 
-module.exports = ViewModel;
+export default ViewModel;

@@ -14,6 +14,6 @@ const CategoryCollection = Backbone.Collection.extend({
   }
 });
 
-module.exports = CategoryCollection;
+export default CategoryCollection;
 
 

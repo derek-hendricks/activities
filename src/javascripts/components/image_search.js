@@ -80,4 +80,4 @@ const ImageSearchComponent = {
 `
 }
 
-module.exports = ImageSearchComponent;
+export default ImageSearchComponent;

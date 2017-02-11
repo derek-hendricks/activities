@@ -5,4 +5,4 @@ const ActivityModel = Backbone.Model.extend({
   urlRoot: '/api/activities',
 });
 
-module.exports = ActivityModel;
+export default ActivityModel;

@@ -16,7 +16,10 @@ html
               img(alt='Brand' height='20' width='20' src='./clipboard.png')
             a(class='navbar-brand' href='/') Activities
           div(data-bind='with: activities')
-            <activity-search params='channel: channel'></activity-search>
+            div.row
+              div.col-md-6
+              div.col-md-4.activity-search
+                <activity-search params="channel: channel, activities: activities, error_message: true, placeholder: 'Search', onActivitySelect: onActivitySelect"></activity-search>
 
       .container.wrap
         .row

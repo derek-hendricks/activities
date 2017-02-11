@@ -1,5 +1,4 @@
 import Backbone from 'backbone';
-import _ from 'underscore';
 import User from '../models/user';
 
 const UserCollection = Backbone.Collection.extend({
@@ -14,4 +13,5 @@ const UserCollection = Backbone.Collection.extend({
     });
   }
 });
-module.exports = UserCollection;
+
+export default UserCollection;

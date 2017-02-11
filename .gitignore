@@ -9,3 +9,4 @@ data
 Rakefile
 spec
 jsconfig.json
+.eslintrc.js

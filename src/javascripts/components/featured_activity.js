@@ -43,4 +43,4 @@ const FeaturedActivity = {
   `
 }
 
-module.exports = FeaturedActivity;
+export default FeaturedActivity;

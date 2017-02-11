@@ -8,8 +8,8 @@ const ActivitiesManage = {
     const self = this;
 
     let page_data = {
-      cols: 6,
-      num: 24
+      cols: 5,
+      num: 20
     };
     let items = [];
     let click = {
@@ -134,11 +134,10 @@ const ActivitiesManage = {
 
     self.setPage = (index, data, event) => {
       self.page_index(index());
-    }
+    };
 
     updateActivities = activities => {
-      let attributes, query;
-      let queue = Queue(1);
+      const queue = Queue(1);
       for (let i = 0, l = activities.length; i < l; i++) {
         (((_i, _activities) => {
           queue.defer(updateActivity, _activities[_i]);
@@ -149,17 +148,17 @@ const ActivitiesManage = {
       });
 
       function updateActivity(activity, callback) {
-        attributes = {
+        const attributes = {
           priority: activity.priority,
           feature: activity.feature
         };
-        query = {
+        const update = {
           $set: attributes
         };
         self.channel.publish("activity.update", {
           _id: activity._id,
           attributes,
-          query,
+          update,
           callback(err, model) {
             callback(err);
           }
@@ -217,8 +216,6 @@ const ActivitiesManage = {
     });
 
     self.toggleMoveActivity = data => {
-      let ac_x;
-      let ac_y;
       switch (self.activity_move()._id) {
         case data._id:
           mEventReset();
@@ -228,12 +225,12 @@ const ActivitiesManage = {
           self.activity_move(data);
           break;
         default:
-          ac_x = {
+          const ac_x = {
             _id: data._id,
             priority: self.activity_move().priority,
             feature: self.activity_move().feature
           };
-          ac_y = {
+          const ac_y = {
             _id: self.activity_move()._id,
             priority: data.priority,
             feature: data.feature
@@ -338,10 +335,10 @@ const ActivitiesManage = {
     <div class="container manage-settings" data-bind="css: {activitiesManage: activity_settings().manage && activity_settings().active}">
 
       <div class="row">
-        <div class="col-md-4">
-          <categories params="channel: channel, activity_settings: activity_settings"></categories>
+        <div class="col-md-6">
+          <categories params="channel: channel, activities: activities, activity_settings: activity_settings"></categories>
         </div>
-        <div class="col-md-8 manage-settings-col">
+        <div class="col-md-6 manage-settings-col">
 
             <div class="row activity-rows" data-bind='foreach: activityPages()[page_index()]'>
               <div class="row m-activity-row" data-bind='foreach: $data'>
@@ -352,7 +349,7 @@ const ActivitiesManage = {
                   activityMove: $parents[1].activity_move()._id},
                   dragZone: {name: 'sortable',
                   dragStart: $parents[1].dragStart,
-                  dragEnd: function(event){$parents[1].dragEnd($data, $parentContext.$index(), $index());}},
+                  dragEnd: function(event){ $parents[1].dragEnd($data, $parentContext.$index(), $index());} },
                   dragEvents: {accepts: 'sortable', dragOver: $parents[1].reorder,
                   data: {items: $parents[1].items(), item: $data}}">
 

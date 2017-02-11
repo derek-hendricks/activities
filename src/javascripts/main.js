@@ -5,58 +5,32 @@ import "./utils/knockout.dragdrop";
 
 import Router from "./router";
 
-import ActivitiesViewModel from "./view-models/activities";
-import ActivityViewModel from "./view-models/activity";
-import UserViewModel from "./view-models/user";
-import ImageViewModel from "./view-models/images";
-import CategoriesViewModel from "./view-models/categories";
-
-import ActivityComponent from "./components/activity_modal";
-import NewActivityComponent from "./components/new_activity";
-import ImageSearchResultsComponent from "./components/image_search_results";
-import ActivitySearchComponent from "./components/activity_search";
-import FeaturedActivityComponent from "./components/featured_activity";
-import FooterComponent from "./components/footer";
-import ActivitiesMngComponent from "./components/activities_manage";
-import CategoriesComponent from "./components/categories";
-import ImageSearch from "./components/image_search";
-
+import * as ViewModels from "./view-models";
+import * as Components from './components'
 
 const ViewModel = function () {
   const self = this;
   self.channel = Postal.channel();
-  self.user = new UserViewModel(self.channel);
-  self.activities = new ActivitiesViewModel(self.channel);
-  self.activity = new ActivityViewModel(self.activities, self.channel);
-  self.categories = new CategoriesViewModel(self.channel);
-  self.images = new ImageViewModel(self.channel);
+  self.activities = new ViewModels.Activities(self.channel);
+  self.activity = new ViewModels.Activity(self.activities, self.channel);
+  new ViewModels.User(self.channel);
+  new ViewModels.Categories(self.channel);
+  new ViewModels.Image(self.channel);
 
   new Router({channel: self.channel});
 
   Backbone.history.start();
 };
 
-let registerComponent = component => {
+for (let key in Components) {
+  registerComponent(Components[key]);
+}
+
+function registerComponent(component) {
   ko.components.register(component.name, {
     viewModel: component.viewModel,
     template: component.template
   });
 };
-
-let _components = [
-  ActivityComponent,
-  NewActivityComponent,
-  ImageSearchResultsComponent,
-  ActivitySearchComponent,
-  FeaturedActivityComponent,
-  FooterComponent,
-  ActivitiesMngComponent,
-  CategoriesComponent,
-  ImageSearch
-];
-
-for (let i = 0, l = _components.length; i < l; i++)  {
-  registerComponent(_components[i]);
-}
 
 ko.applyBindings(new ViewModel(), document.getElementById("activities"));

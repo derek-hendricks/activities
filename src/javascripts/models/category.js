@@ -5,4 +5,4 @@ const CategoryModel = Backbone.Model.extend({
   urlRoot: '/api/categories',
 });
 
-module.exports = CategoryModel;
+export default CategoryModel;

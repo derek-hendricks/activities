@@ -7,9 +7,7 @@ const FooterComponent = {
     const self = this;
     self.channel = params.channel;
     self.activities = ko.observableArray([]);
-    self.activity_settings = ko.observable({}).extend({
-      deferred: true
-    });
+    self.activity_settings = ko.observable({});
 
     params.activities.subscribe(activities => {
       if (!activities) return;
@@ -126,4 +124,4 @@ const FooterComponent = {
   `
 }
 
-module.exports = FooterComponent;
+export default FooterComponent;

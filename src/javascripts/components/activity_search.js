@@ -1,67 +1,98 @@
 import ko from "knockout";
 import _ from "underscore";
+import Utils from "../utils";
 
 const ActivitySearchComponent = {
   name: "activity-search",
   viewModel(params) {
     const self = this;
+    let activities = [];
     self.channel = params.channel;
-    self.search = ko.observable().extend({deferred: true});
-    self.suggestions = ko.observableArray([]).extend({deferred: true});
-    self.message = ko.observable();
+    self.params = params;
+    self.search = ko.observable().extend({
+      deferred: true
+    });
+    self.suggestions = ko.observableArray([]).extend({
+      deferred: true
+    });
+
+    self.SearchResult = {
+      show_message: params.error_message,
+      err: ko.observable()
+    };
+
+    params.activities.subscribe(function(_activities) {
+      if (_activities.length) activities = _activities;
+    })
+
+    function activitiesSearch(input, callback) {
+      let suggestions = [];
+      // input = input.toLowerCase();
+      for (let i = 0, l = activities.length; i < l; i++) {
+        let activity = activities[i].activity.toLowerCase();
+        let index = activity.indexOf(input);
+        if (index > -1 && Object.is(activity[0], input[0])) {
+          suggestions.push({
+            activity: activities[i],
+            name: activities[i].activity,
+            index: index,
+            length: activities[i].activity.length
+          });
+        }
+      }
+      suggestions.sort(Utils.indexSort).sort(Utils.lenSort);
+      callback(suggestions[0] ? null : input, suggestions);
+    };
 
     self.search.subscribe(text => {
-      let suggestions;
-      self.channel.publish("activity.search", {
-        attr: "activity", value: text,
-        callback(res) {
-          self.message("");
-          if (res.err) return self.message(res.err);
-          suggestions = res.suggestions.concat(self.suggestions());
+      activitiesSearch(text, (err, suggestions) => {
+          self.SearchResult.err("");
+          if (err) {
+            if (params.error_message) {
+              self.SearchResult.err(`Can't find <br/> ${err}`);
+              return self.suggestions([]);
+            }
+          }
+          // remove concat...
+          // suggestions.concat(self.suggestions());
           suggestions = _.uniq(suggestions, (suggestion, key, name) => suggestion.name);
           self.suggestions(suggestions);
-        }
       });
     });
 
-    self.setFeature = (data, event) => {
-      self.channel.publish("feature.image", data.activity);
-      self.message("");
+
+    self.selectActivity = (data) => {
+      params.onActivitySelect(data);
       self.search("");
       self.suggestions([]);
-      data.activity.feature = "true";
-      self.channel.publish("feature.activity.set", {activity: data.activity});
+      if (params.error_message) self.SearchResult.err("");
     }
 
-   self.search.subscribe(value => {
-     if (!value) {
-       self.suggestions([]);
-       self.message("");
-     }
-   });
+    self.search.subscribe(value => {
+      if (!value) {
+        self.suggestions([]);
+        self.SearchResult.err("");
+      }
+    });
 
   },
   template: `
-    <div class="row">
-      <div class="col-md-6"></div>
-      <div class="col-md-4 activity-search">
         <div class="row">
-          <div class="col-md-4 activity-search-container">
-            <p data-bind="visible: message">Can't find</p>
-            <div class="activity-search-message">
-              <p data-bind="text: message"></p>
+          <div data-bind="with: SearchResult">
+            <div data-bind="visible: show_message" class="col-md-4 activity-search-container">
+              <p data-bind="html: err"></p>
             </div>
           </div>
           <div class="col-md-8">
-            <input data-bind="textInput: search" placeholder="search" class="form-control">
+            <input data-bind="textInput: search, attr: { placeholder: params.placeholder }" class="form-control" />
             <div data-bind="visible: suggestions().length > 0, foreach: suggestions" class="activity-search-suggestions">
-              <a data-bind="text: $data.name, click: $parent.setFeature"></a>
+              <div>
+                <a data-bind="text: $data.name, click: $parent.selectActivity"></a>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
   `
 }
 
-module.exports = ActivitySearchComponent;
+export default ActivitySearchComponent;

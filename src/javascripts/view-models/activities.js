@@ -6,39 +6,45 @@ import Queue from "../utils/d3-queue.min.js";
 const ViewModel = function (channel) {
   const self = this;
   let collection, activityModel;
+  self.channel = channel;
+
   self.activities = ko.observableArray([]);
+
   self.page_index = ko.observable(0).extend({
     deferred: true
   });
-  self.channel = channel;
 
-  self.channel.subscribe("activities.load", data => {
+  self.onActivitySelect = (data) => {
+    self.channel.publish("feature.image", data.activity);
+    data.activity.feature = "true";
+    self.channel.publish("feature.activity.set", { activity: data.activity });
+  }
+
+  self.channel.subscribe("Activities.load", data => {
     self.activities(data.response.activities);
     collection = data.collection;
     activityModel = collection;
   });
 
   self.activityPages = ko.computed(() => {
-    let featured, activities;
-    if (self.activities().length < 1) {
-      return [];
-    }
+    if (self.activities().length < 1) return [];
     self.activities.sort(utils.prioritySort);
-    featured = _.findIndex(self.activities(), {
+    let featured = _.findIndex(self.activities(), {
       feature: "true"
     });
     if (featured > 0) {
       self.activities.splice(0, 0, self.activities.splice(featured, 1)[0]);
     }
-    activities = self.activities().slice();
+    let activities = self.activities.slice();
     activities.shift();
     return setPages(activities);
   }, self).extend({
     deferred: true
   });
 
-  let setPages = (activities) => {
-    let ref, current = [], cols = 4, page_num = 20, pages = [], rows = [];
+  function setPages(activities) {
+    const cols = 4, page_num = 20;
+    let ref, current = [], pages = [], rows = [];
     rows.push(current);
     for (let i = 0, l = activities.length; i < l; i++) {
       ref = i + 1;
@@ -58,12 +64,12 @@ const ViewModel = function (channel) {
     return pages;
   }
 
-  self.setPage = (index, data, event) => {
+  self.setPage = (index) => {
     self.page_index(index());
   }
 
   self.getActivity = (attr, value) => {
-    let index = self.activities().findIndex((_activity) =>
+    const index = self.activities().findIndex((_activity) =>
       String(_activity[attr]).toLowerCase() === String(value).toLowerCase());
     return {
       index,
@@ -77,40 +83,37 @@ const ViewModel = function (channel) {
     }
   };
 
-  self.channel.subscribe("activity.search", data => {
-    let search, suggestions = [], index, input;
-    input = data.value.toLowerCase();
-    for (let i = 1, l = self.activities().length; i < l; i++) {
-      index = self.activities()[i].activity.toLowerCase().indexOf(input);
-      if (index > -1) {
-        suggestions.push({
-          activity: self.activities()[i],
-          name: self.activities()[i].activity,
-          index: index,
-          length: data.value.length
-        });
-      }
-    }
-    suggestions.sort(utils.indexSort).sort(utils.lenSort);
-    data.callback({
-      err: suggestions[0] ? null : data.value,
-      suggestions: suggestions
-    });
-  });
+  // self.channel.subscribe("activity.search", data => {
+  //   let suggestions = [];
+  //   const input = data.value.toLowerCase();
+  //   for (let i = 0, l = self.activities().length; i < l; i++) {
+  //     const index = self.activities()[i].activity.toLowerCase().indexOf(input);
+  //     if (index > -1) {
+  //       suggestions.push({
+  //         activity: self.activities()[i],
+  //         name: self.activities()[i].activity,
+  //         index: index,
+  //         length: data.value.length
+  //       });
+  //     }
+  //   }
+  //   suggestions.sort(utils.indexSort).sort(utils.lenSort);
+  //   data.callback({
+  //     err: suggestions[0] ? null : data.value,
+  //     suggestions: suggestions
+  //   });
+  // });
 
   self.channel.subscribe("feature.activity.set", data => {
-    let index, previous;
-    index = self.activities.indexOf(data.activity);
-    previous = self.activities()[0];
+    let index = self.activities.indexOf(data.activity);
+    let previous = self.activities()[0];
     previous.feature = "false";
     self.activities.splice(0, 1, previous);
     self.activities.unshift((self.activities()).splice(index, 1)[0]);
   });
 
   self.activityRemoved = (model, id, index) => {
-    model = model ? model : self.getActivityModel({
-      id: id
-    });
+    model = model ? model : self.getActivityModel({ id });
     index = index ? index : self.activities().indexOf(_.findWhere(self.activities(), {
       _id: model.id
     }));
@@ -119,19 +122,16 @@ const ViewModel = function (channel) {
   };
 
   self.channel.subscribe("activity_collection.updated", data => {
-    let index;
-    collection.add(data.model, {
-      merge: true
-    });
-    index = self.activities().indexOf(_.findWhere(self.activities(), {
+    collection.add(data.model, { merge: true });
+    const index = self.activities().indexOf(_.findWhere(self.activities(), {
       _id: data.model.id
     }));
     self.activities.splice(index, 1, data.model.attributes);
   });
 
   self.channel.subscribe("activities.modified", data => {
-    let activity_data, activity, activities;
-    activities = self.activities().slice();
+    var activity_data, activity;
+    let activities = self.activities.slice();
     for (let i = 0, l = data.activities.length; i < l; i++) {
       activity_data = self.getActivity("_id", data.activities[i]._id);
       activity = Object.assign(activity_data.activity, data.activities[i]);
@@ -146,8 +146,7 @@ const ViewModel = function (channel) {
   });
 
   self.channel.subscribe("delete.all", data => {
-    let queue, activity, query
-    queue = Queue();
+    let queue = Queue();
     queue.defer(callback => {
       self.channel.publish("users.delete", {
         callback(err) {
@@ -156,14 +155,12 @@ const ViewModel = function (channel) {
       });
     });
     queue.defer(callback => {
-      activity = collection.models[0];
-      query = {
-        all: true
-      };
+      let activity = collection.models[0];
+      let query = { all: true };
       activity.destroy({
         data: {
           col: "activities",
-          query: query
+          query
         },
         processData: true,
         success(models, response) {
@@ -178,14 +175,12 @@ const ViewModel = function (channel) {
     });
     queue.await(err => {
       self.channel.publish("feature.image", {});
-      if (data.callback) data.callback({
-        err
-      });
+      if (data.callback) data.callback({ err });
     });
   });
 
   self.channel.subscribe("activities.delete.selected", data => {
-    let queue = Queue();
+    const queue = Queue();
     queue.defer(callback => {
       self.channel.publish("users.delete", {
         callback(err) {
@@ -194,9 +189,9 @@ const ViewModel = function (channel) {
       });
     });
     queue.defer(callback => {
-      let activity_index, query, activity_ids
-      activity_ids = activities.map(activity => activity.id);
-      query = {
+      var activity_index;
+      const activity_ids = activities.map(activity => activity.id);
+      const query = {
         activities: {
           "_id": {
             "$in": activity_ids
@@ -206,7 +201,7 @@ const ViewModel = function (channel) {
       activities[0].destroy({
         data: {
           col: "activities",
-          query: query
+          query
         },
         processData: true,
         success(models, response) {
@@ -222,8 +217,9 @@ const ViewModel = function (channel) {
       });
     });
     queue.await(err => {
+      // TODO: success and error notification
     });
   });
 };
 
-module.exports = ViewModel;
+export default ViewModel;

@@ -5,4 +5,4 @@ const UserModel = Backbone.Model.extend({
   urlRoot: '/api/users'
 });
 
-module.exports = UserModel;
+export default UserModel;
