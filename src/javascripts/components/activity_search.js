@@ -25,9 +25,8 @@ const ActivitySearchComponent = {
       if (_activities.length) activities = _activities;
     })
 
-    function activitiesSearch(input, callback) {
-      let suggestions = [];
-      // input = input.toLowerCase();
+    function activitiesSearch(_input, callback) {
+      let suggestions = [], input = _input.toLowerCase();
       for (let i = 0, l = activities.length; i < l; i++) {
         let activity = activities[i].activity.toLowerCase();
         let index = activity.indexOf(input);
@@ -53,13 +52,10 @@ const ActivitySearchComponent = {
               return self.suggestions([]);
             }
           }
-          // remove concat...
-          // suggestions.concat(self.suggestions());
           suggestions = _.uniq(suggestions, (suggestion, key, name) => suggestion.name);
           self.suggestions(suggestions);
       });
     });
-
 
     self.selectActivity = (data) => {
       params.onActivitySelect(data);

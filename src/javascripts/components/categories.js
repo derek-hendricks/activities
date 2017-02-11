@@ -35,7 +35,9 @@ const Categories = {
         params.channel.publish("get.categories", {
           callback(data) {
             self.categories(data.categories);
-            self.displayActivities(data.categories[0]);
+            if (data.categories.length) {
+              self.displayActivities(data.categories[0]);
+            }
           }
         });
         subscription.dispose();
@@ -75,27 +77,24 @@ const Categories = {
           created_at: new Date()
         }
       },
-      query = {
-        _id: self.name()
-      },
-      attr = {
-        _id: self.name(),
-        created_at: new Date()
-      };
+        query = {
+          _id: self.name()
+        },
+        attr = {
+          _id: self.name(),
+          created_at: new Date()
+        };
       params.channel.publish("category.create", {
         category: {
           attr,
           update,
           query,
           upsert: true
-        },
-        callback: function (err) {
-          if (!err) {
-            self.categories.unshift(attr);
-            self.name("");
-          }
         }
       });
+      self.categories.unshift(attr);
+      self.active_category(attr._id);
+      self.name("");
     };
   },
 
@@ -126,7 +125,7 @@ const Categories = {
         <div class="col-md-5 category-activities">
           <div class="row">
             <div data-bind="with: activityData" class="col-md-12">
-            <div data-bind="if: category_activities().length < 1">
+            <div data-bind="if: $parent.active_category() && category_activities().length < 1">
               <span data-bind="text: $parent.active_category"></span>
               <span>doesn't have any activities</span>
             </div>

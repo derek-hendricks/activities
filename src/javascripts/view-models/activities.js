@@ -83,27 +83,6 @@ const ViewModel = function (channel) {
     }
   };
 
-  // self.channel.subscribe("activity.search", data => {
-  //   let suggestions = [];
-  //   const input = data.value.toLowerCase();
-  //   for (let i = 0, l = self.activities().length; i < l; i++) {
-  //     const index = self.activities()[i].activity.toLowerCase().indexOf(input);
-  //     if (index > -1) {
-  //       suggestions.push({
-  //         activity: self.activities()[i],
-  //         name: self.activities()[i].activity,
-  //         index: index,
-  //         length: data.value.length
-  //       });
-  //     }
-  //   }
-  //   suggestions.sort(utils.indexSort).sort(utils.lenSort);
-  //   data.callback({
-  //     err: suggestions[0] ? null : data.value,
-  //     suggestions: suggestions
-  //   });
-  // });
-
   self.channel.subscribe("feature.activity.set", data => {
     let index = self.activities.indexOf(data.activity);
     let previous = self.activities()[0];

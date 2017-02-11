@@ -29,6 +29,7 @@ const ViewModel = function(channel) {
   };
 
   self.channel.subscribe("category.create", (data) => {
+    if (!data.hasOwnProperty('callback')) data.callback = function() {};
     let category = new model();
     category.save(null, {
       data: {
@@ -63,7 +64,9 @@ const ViewModel = function(channel) {
       model = getCategoryFromCollection(query);
       model.set(attr);
     }
-    collection.add(model, { merge: true });
+    collection.add(model, {
+      merge: true
+    });
   };
 
 };

@@ -191,7 +191,7 @@ router.get("/images", (req, res, next) => {
 });
 
 router.get("/categories", (req, res, next) => {
-  db.collection("categories").find().toArray((err, results) => {
+  db.collection("categories").find().sort({"created_at": -1}).toArray((err, results) => {
     if (err) return next(err);
     res.json({
       categories: results
